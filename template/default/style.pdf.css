@@ -16,7 +16,11 @@
 #headertitles{
 	border: none !important;
 }
-
+.show_product_base_price,
+.show_product_tax,
+.show_product_total_price {
+	min-width: 90px;
+}
 .font-small {
 	font-size: 7pt;
 }
@@ -58,11 +62,17 @@ tfoot, thead, .content-table td, .content-table td, .bordered , tr.show_order_it
 }
 
 .content-table td, th {
-	/* border: 1px solid #000; */
 	text-align: center;
 	padding: 0.1cm;
 	font-weight: normal;
 	word-break: break-word;
+}
+
+.content-table td.show_product_title_description{
+	text-align: right;
+}
+.title{
+	font-weight: bold;
 }
 
 .header-item-wrapper {

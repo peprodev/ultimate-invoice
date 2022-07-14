@@ -1,14 +1,14 @@
 === PeproDev Ultimate Invoice ===
 Contributors: peprodev, amirhpcom, blackswanlab
 Donate link: https://pepro.dev/donate
-Tags: woocommerce invoice, invoice, email invoice, attach pdf invoice, pdf invoice, functionality, dark mode, wordpress, modern design, customization, e-commerce
+Tags: woocommerce invoice, pdf invoice, persian
 Requires at least: 5.0
-Tested up to: 6.0
-Version: 1.7.4
-Stable tag: 1.7.4
+Tested up to: 6.0.1
+Version: 1.8.0
+Stable tag: 1.8.0
 Requires PHP: 7.0
 WC requires at least: 5.0
-WC tested up to: 6.6.1
+WC tested up to: 6.7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,6 +19,7 @@ Create HTML/PDF Invoices of WooCommerce Orders, Attach PDF Invoice to Mail and L
 
 ## **Ultimate Invoice plugin for WooCommerce!**
 
+Create customizable PDF/HTML invoices for WooCommerce, attach to Email, Packing Slips, Shipping Labels, Shipping Tracking, Single-shop feature and ...
 This plugin lets you to Generate Awesome Invoices for WooCommerce orders and:
 
 -   Download PDF invoices
@@ -151,6 +152,30 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 
 
 == Changelog ==
+
+= Version 1.8.0 🔥 / 2022-07-14 / 1401-04-23 =
+- Added 4 ways of showing Coupons on total
+- Added 7 ways of showing Line item's price
+- Added 3 ways of showing Line item's tax
+- Added 3 ways of calculating Line item's discount
+- Added 3 ways of showing Line item's discount (Amount/Percentage)
+- Added 3 line item meta, editable and viewable by admins (_puiw_regular, _puiw_sale, _puiw_html)
+- Fixed some of Invoice templates styles
+- Fixed checkout error caused by out-of-stock line items
+- Fixed swatch dropdown showed wrong color-scheme
+- Changed some options layout
+- Changed order metabox layout
+- Changed setting panel font, layout, responsiveness
+- Changed checkboxes to iOS-like toggles
+- Changed WC_Order behavior to save current-live line items sale/regular prices
+- DEV: added public function *PeproUltimateInvoice_Template->get_show_tax_display*
+- DEV: added public function *PeproUltimateInvoice_Template->get_show_coupons_code_at_totals*
+- DEV: added public function *PeproUltimateInvoice_Template->get_show_coupons_description_at_totals*
+- DEV: added public function *PeproUltimateInvoice_Template->get_show_coupons_discount_at_totals*
+- DEV: added public function *PeproUltimateInvoice_Template->get_show_coupons_amount_at_totals*
+- DEV: added public function *PeproUltimateInvoice_Template->get_show_discount_calc*
+- DEV: added public function *PeproUltimateInvoice_Template->get_show_discount_display*
+
 
 = Version 1.7.4 / 2022-06-26 / 1401-04-05 =
 - Fixed *Uncaught Error: Call to a member function get_id() on null*
@@ -399,23 +424,25 @@ Join us at [https://pepro.dev/](https://pepro.dev/) and also don't forget to che
 
 == Upgrade Notice ==
 
-= Version 1.7.4 / 2022-06-26 / 1401-04-05 =
-- Fixed *Uncaught Error: Call to a member function get_id() on null*
-
-= Version 1.7.3 / 2022-06-07 / 1401-03-17 =
-- Fixed total calculation
-- Fixed wrong discount precent
-- Fixed Checkout issue
-- Added some CSS to invoice
-
-= Version 1.7.1 =
-- Added Debug Info in Setting (admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=debug)
-- DEV: added *puiw_debug_list_items* hook
-
-= Version 1.7.0 / 2022-05-30 / 1401-03-09 =
-- Compatibility with WP v6 and WC v6.5
-- Fixed Gateway Proccess issue
-- Fixed Barcode Showing issue
-- Fixed Backend CSS issue
-- Fixed HTML Invoice watermark Issue
-- *We are still working on Discount Issue*
+= Version 1.8.0 🔥 / 2022-07-14 / 1401-04-23 =
+- Added 4 ways of showing Coupons on total
+- Added 7 ways of showing Line item's price
+- Added 3 ways of showing Line item's tax
+- Added 3 ways of calculating Line item's discount
+- Added 3 ways of showing Line item's discount (Amount/Percentage)
+- Added 3 line item meta, editable and viewable by admins (_puiw_regular, _puiw_sale, _puiw_html)
+- Fixed some of Invoice templates styles
+- Fixed checkout error caused by out-of-stock line items
+- Fixed swatch dropdown showed wrong color-scheme
+- Changed some options layout
+- Changed order metabox layout
+- Changed setting panel font, layout, responsiveness
+- Changed checkboxes to iOS-like toggles
+- Changed WC_Order behavior to save current-live line items sale/regular prices
+- DEV: added public function *PeproUltimateInvoice_Template->get_show_tax_display*
+- DEV: added public function *PeproUltimateInvoice_Template->get_show_coupons_code_at_totals*
+- DEV: added public function *PeproUltimateInvoice_Template->get_show_coupons_description_at_totals*
+- DEV: added public function *PeproUltimateInvoice_Template->get_show_coupons_discount_at_totals*
+- DEV: added public function *PeproUltimateInvoice_Template->get_show_coupons_amount_at_totals*
+- DEV: added public function *PeproUltimateInvoice_Template->get_show_discount_calc*
+- DEV: added public function *PeproUltimateInvoice_Template->get_show_discount_display*

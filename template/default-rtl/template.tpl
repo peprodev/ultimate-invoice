@@ -147,7 +147,7 @@
             <th class="show_product_weight" if="show_product_weight">وزن</th>
             <th class="show_product_dimensions" if="show_product_dimensions">ابعاد</th>
             <th class="show_product_base_price" style="width: 2.3cm">مبلغ واحد</th>
-            <th class="show_discount_precent" if="show_discount_precent" style="width: 2.3cm">درصد تخفیف</th>
+            <th class="show_discount_precent" if="show_discount_precent" style="width: 2.3cm">تخفیف</th>
             <th class="show_product_tax" if="show_product_tax" style="width: 2.3cm">مالیات</th>
             <th class="show_product_total_price" colspan="{{{product_nettotal_colspan}}}">جمع کل</th>
         </tr>

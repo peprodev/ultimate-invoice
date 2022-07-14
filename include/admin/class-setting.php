@@ -1,5 +1,5 @@
 <?php
-# @Last modified time: 2022/07/12 12:19:30
+# @Last modified time: 2022/07/14 21:35:34
 
 defined("ABSPATH") or die("Pepro Ultimate Invoice :: Unauthorized Access!");
 
@@ -58,10 +58,6 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
           // prevent gap between page load css and page first byte transfer
           echo get_option( "puiw_dark_mode", "no") === "yes" ? "<script>document.getElementsByTagName('html')[0].classList.add('dark');</script>" : "";
           $this->wp_enqueue_scripts();
-          $ext = "@font-face { font-family: 'bodyfont'; font-style: normal; font-weight: 400; src: url('".PEPROULTIMATEINVOICE_URL."/assets/css/96594ad4.woff2') format('woff2'); }";
-          $css = file_get_contents(PEPROULTIMATEINVOICE_DIR . '/assets/admin/wc_setting' . $this->debugEnabled(".css",".min.css"));
-          $css = str_replace("{dir}", PEPROULTIMATEINVOICE_URL."/assets/" , $css);
-          echo "<style>$ext $css</style>";
         }
         $sections = array(
           'general' => _x("Store Details", "wc-setting", $this->td),
@@ -89,173 +85,280 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
           case 'items':
             $section_data = apply_filters( "puiw_setting_section_{$current_section}",
                 array(
-                  "puiw_items_title"                            => array(
+                  "puiw_items_title" => array(
                     'name' => _x("Show/Hide items in Invoices", "wc-setting", $this->td),
                     'type' => 'title',
                     'id'=> 'puiw_items_title'
                   ),
-                  'puiw_show_store_national_id'                 => array(
+                  'puiw_show_store_national_id' => array(
                     'name' => _x("Show Store National Id", "wc-setting", $this->td),
                     'type' => 'checkbox',
                     'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'id'   => 'puiw_show_store_national_id',
                   ),
-                  'puiw_show_store_registration_number'         => array(
+                  'puiw_show_store_registration_number' => array(
                     'name' => _x("Show Store Registration Number", "wc-setting", $this->td),
                     'type' => 'checkbox',
                     'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'id'   => 'puiw_show_store_registration_number',
                   ),
-                  'puiw_show_store_economical_number'           => array(
+                  'puiw_show_store_economical_number' => array(
                     'name' => _x("Show Store Economical Number", "wc-setting", $this->td),
                     'type' => 'checkbox',
                     'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'id'   => 'puiw_show_store_economical_number',
                   ),
-                  'puiw_show_customer_address'                  => array(
+                  'puiw_show_customer_address' => array(
                     'name' => _x("Show Customer Address", "wc-setting", $this->td),
                     'type' => 'checkbox',
                     'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'id'   => 'puiw_show_customer_address',
                   ),
-                  'puiw_show_customer_phone'                    => array(
+                  'puiw_show_customer_phone' => array(
                     'name' => _x("Show Customer Phone", "wc-setting", $this->td),
                     'type' => 'checkbox',
                     'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'id'   => 'puiw_show_customer_phone',
                   ),
-                  'puiw_show_customer_email'                    => array(
+                  'puiw_show_customer_email' => array(
                     'name' => _x("Show Customer E-mail", "wc-setting", $this->td),
                     'type' => 'checkbox',
                     'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'id'   => 'puiw_show_customer_email',
                   ),
-                  'puiw_show_order_date'                        => array(
+                  'puiw_show_order_date' => array(
                     'name' => _x("Show Order Date", "wc-setting", $this->td),
                     'type' => 'checkbox',
                     'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'id'   => 'puiw_show_order_date',
                   ),
-                  'puiw_show_payment_method'                    => array(
+                  'puiw_show_payment_method' => array(
                     'name' => _x("Show Payment method", "wc-setting", $this->td),
                     'type' => 'checkbox',
                     'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'id'   => 'puiw_show_payment_method',
                   ),
-                  'puiw_show_shipping_method'                   => array(
+                  'puiw_show_shipping_method' => array(
                     'name' => _x("Show Shipping method", "wc-setting", $this->td),
                     'type' => 'checkbox',
                     'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'id'   => 'puiw_show_shipping_method',
                   ),
-                  'puiw_transaction_ref_id'                     => array(
+                  'puiw_transaction_ref_id' => array(
                     'name' => _x("Show Transaction Ref. ID", "wc-setting", $this->td),
                     'type' => 'checkbox',
                     'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'id'   => 'puiw_transaction_ref_id',
                   ),
-                  'puiw_paid_date'                     => array(
+                  'puiw_paid_date' => array(
                     'name' => _x("Show Paid Date", "wc-setting", $this->td),
                     'type' => 'checkbox',
                     'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'id'   => 'puiw_paid_date',
                   ),
-                  'puiw_purchase_complete_date'                     => array(
+                  'puiw_purchase_complete_date' => array(
                     'name' => _x("Show Purchase Completed Date", "wc-setting", $this->td),
                     'type' => 'checkbox',
                     'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'id'   => 'puiw_purchase_complete_date',
                   ),
-                  'puiw_shipping_date'                     => array(
+                  'puiw_shipping_date' => array(
                     'name' => _x("Show Shipping Date", "wc-setting", $this->td),
                     'type' => 'checkbox',
                     'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'id'   => 'puiw_shipping_date',
                   ),
-                  'puiw_order_status'                     => array(
+                  'puiw_order_status' => array(
                     'name' => _x("Show Order Status", "wc-setting", $this->td),
                     'type' => 'checkbox',
                     'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'id'   => 'puiw_order_status',
                   ),
-                  'puiw_show_product_image'                     => array(
-                    'name' => _x("Show Product Image", "wc-setting", $this->td),
+                  'puiw_show_product_image' => array(
+                    'name' => _x("Show Product Image Column", "wc-setting", $this->td),
                     'type' => 'checkbox',
                     'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'id'   => 'puiw_show_product_image',
                   ),
-                  'puiw_show_product_purchase_note'             => array(
+                  'puiw_show_product_purchase_note' => array(
                     'name' => _x("Show Product Purchase note", "wc-setting", $this->td),
                     'type' => 'checkbox',
                     'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'id'   => 'puiw_show_product_purchase_note',
                   ),
-                  'puiw_show_order_items'                       => array(
+                  'puiw_show_order_items' => array(
                     'name' => _x("Show Order Items", "wc-setting", $this->td),
                     'type' => 'checkbox',
                     'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'id'   => 'puiw_show_order_items',
                   ),
-                  'puiw_show_order_total'                       => array(
+                  'puiw_show_order_total' => array(
                     'name' => _x("Show Order Total", "wc-setting", $this->td),
                     'type' => 'checkbox',
                     'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'id'   => 'puiw_show_order_total',
                   ),
-                  'puiw_show_product_weight'                    => array(
-                    'name'     => _x("Show Product Weight", "wc-setting", $this->td),
+                  'puiw_show_product_weight' => array(
+                    'name'     => _x("Show Weight Column", "wc-setting", $this->td),
                     'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'type'     => 'checkbox',
                     'id'       => 'puiw_show_product_weight',
                   ),
-                  'puiw_show_product_dimensions'                => array(
-                    'name'     => _x("Show Product Dimensions", "wc-setting", $this->td),
+                  'puiw_show_product_dimensions' => array(
+                    'name'     => _x("Show Dimensions Column", "wc-setting", $this->td),
                     'desc'     => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'type'     => 'checkbox',
                     'id'       => 'puiw_show_product_dimensions',
                   ),
-                  'puiw_show_discount_precent'                => array(
-                    'name'     => _x("Show Product Discount percentage", "wc-setting", $this->td),
+                  'puiw_show_discount_precent' => array(
+                    'name'     => _x("Show Discount Column", "wc-setting", $this->td),
                     'desc'     => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'type'     => 'checkbox',
                     'id'       => 'puiw_show_discount_precent',
                   ),
-                  'puiw_show_product_tax'                => array(
-                    'name'     => _x("Show Product Calculated Tax", "wc-setting", $this->td),
+                  'puiw_show_product_tax' => array(
+                    'name'     => _x("Show Tax Column", "wc-setting", $this->td),
                     'desc'     => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'type'     => 'checkbox',
                     'id'       => 'puiw_show_product_tax',
                   ),
-                  'puiw_show_product_sku'                       => array(
-                    'name'     => _x("Show Product SKU", "wc-setting", $this->td),
+                  'puiw_show_product_sku' => array(
+                    'name'     => _x("Show SKU Column", "wc-setting", $this->td),
                     'desc'     => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'type'     => 'checkbox',
                     'id'       => 'puiw_show_product_sku',
                   ),
-                  'puiw_show_product_sku2'                      => array(
+                  'puiw_show_product_sku2' => array(
                     'name'     => _x("Use ID when SKU's unavailable", "wc-setting", $this->td),
                     'desc'     => _x("Check to use or leave unchecked to not", "wc-setting", $this->td),
                     'type'     => 'checkbox',
                     'id'       => 'puiw_show_product_sku2',
                   ),
-                  'puiw_show_user_uin'                          => array(
+                  'puiw_show_user_uin' => array(
                     'name'     => _x("Activate User UIN feature & Show it", "wc-setting", $this->td),
-                    'desc' => _x("Check to add or leave unchecked to hide", "wc-setting", $this->td),
-                    'desc_tip' => _x("Show User UIN (Unique Identification Number) in invoice which will be received at checkout page", "wc-setting", $this->td),
+                    'label'     => _x("Check to add or leave unchecked to hide", "wc-setting", $this->td),
+                    'desc'     => _x("Check to add or leave unchecked to hide", "wc-setting", $this->td),
+                    'desc_tip' => _x("Show User UIN (Unique Identification Number) in invoice which will be received at checkout page (will save as 'billing_uin' user meta)", "wc-setting", $this->td),
                     'type'     => 'checkbox',
                     'id'       => 'puiw_show_user_uin',
                   ),
-                  'puiw_show_shipping_address'                  => array(
+                  'puiw_show_coupons_code_at_totals' => array(
+                    'type' => 'checkbox',
+                    'name' => _x("Show Coupon(s) Code at Order totals", "wc-setting", $this->td),
+                    'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
+                    'id'   => 'puiw_show_coupons_code_at_totals',
+                  ),
+                  'puiw_show_coupons_amount_at_totals' => array(
+                    'type' => 'checkbox',
+                    'name' => _x("Show Coupon(s) Amount at Order totals", "wc-setting", $this->td),
+                    'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
+                    'id'   => 'puiw_show_coupons_amount_at_totals',
+                  ),
+                  'puiw_show_coupons_discount_at_totals' => array(
+                    'type' => 'checkbox',
+                    'name' => _x("Show Coupon(s) Discount at Order totals", "wc-setting", $this->td),
+                    'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
+                    'id'   => 'puiw_show_coupons_discount_at_totals',
+                  ),
+                  'puiw_show_coupons_description_at_totals' => array(
+                    'type' => 'checkbox',
+                    'name' => _x("Show Coupon(s) Description at Order totals", "wc-setting", $this->td),
+                    'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
+                    'default' => 'yes',
+                    'id'   => 'puiw_show_coupons_description_at_totals',
+                  ),
+                  'puiw_show_price_template' => array(
+                    'name'    => _x("Line item Price Display", "wc-setting", $this->td),
+                    'type'    => 'radio',
+                    'id'      => 'puiw_show_price_template',
+                    'default' => 'show_both_regular_and_sale_price',
+                    'options' => array(
+                      'show_wc_price'                     => _x("Show WC_Order price (as shown in order details screen)", "wc-setting", $this->td),
+                      'show_only_regular_price'           => _x("Show Current-live regular price", "wc-setting", $this->td),
+                      'show_only_sale_price'              => _x("Show Current-live sale price", "wc-setting", $this->td),
+                      'show_both_regular_and_sale_price'  => _x("Show Current-live regular/sale price", "wc-setting", $this->td),
+                      'show_saved_regular_price'          => _x("Show Saved Line-item regular price", "wc-setting", $this->td),
+                      'show_saved_sale_price'             => _x("Show Saved Line-item sale price", "wc-setting", $this->td),
+                      'show_saved_regular_and_sale_price' => _x("Show Saved Line-item sale/regular price", "wc-setting", $this->td),
+                    ),
+                  ),
+                  'puiw_show_tax_display' => array(
+                    'name'    => _x("Line item Tax Display", "wc-setting", $this->td),
+                    'type'    => 'radio',
+                    'default' => 'labelamount',
+                    'options' => array(
+                        "amount"      => _x("Show taxes amount", "wc-setting", $this->td),
+                        "labelamount" => _x("Show taxes label and amount", "wc-setting", $this->td),
+                        "onlytotal"   => _x("Show line total tax amount", "wc-setting", $this->td),
+                    ),
+                    'id'   => 'puiw_show_tax_display',
+                  ),
+                  'puiw_show_discount_calc' => array(
+                    'name'     => _x("Line item Discount Calculation", "wc-setting", $this->td),
+                    'type'     => 'radio',
+                    'default'  => 'wcorder',
+                    'desc_tip' => _x("Since ver. 1.8, both regular and sale price of products are saved into line-items meta in order to use later in discount calculation.", "wc-setting", $this->td),
+                    'options'  => array(
+                        "wcorder"   => _x("Based on WC_Order (as shown in order details screen)", "wc-setting", $this->td),
+                        "liveprice" => _x("Based on Product's current-live sale/regular price", "wc-setting", $this->td),
+                        "savepirce" => _x("Based on Line-item saved sale/regular price", "wc-setting", $this->td),
+                        // "advanced"  => _x("Based on Discounted Line-item saved sale/regular price", "wc-setting", $this->td),
+                    ),
+                    'id'   => 'puiw_show_discount_calc',
+                  ),
+                  'puiw_show_discount_display' => array(
+                    'name'    => _x("Line item Discount Display", "wc-setting", $this->td),
+                    'type'    => 'radio',
+                    'default' => 'precentage',
+                    'options' => array(
+                        "value"  => _x("Show discount value", "wc-setting", $this->td),
+                        "precnt" => _x("Show discount precentage", "wc-setting", $this->td),
+                        "both"   => _x("Show discount precentage and value", "wc-setting", $this->td),
+                    ),
+                    'id'   => 'puiw_show_discount_display',
+                  ),
+                  'puiw_show_order_note' => array(
+                    'name'    => _x("Show Order Note?", "wc-setting", $this->td),
+                    'type'    => 'radio',
+                    'id'      => 'puiw_show_order_note',
+                    'default' => 'note_provided_by_customer',
+                    'options' => array(
+                      'hide_note_from_invoice'        => _x("Hide Note from invoice", "wc-setting", $this->td),
+                      'note_provided_by_customer'     => _x("Show Note provided by customer", "wc-setting", $this->td),
+                      'note_provided_by_shop_manager' => _x("Show Note provided by shop manager", "wc-setting", $this->td),
+                      'note_provided_by_both'         => _x("Show Note provided by customer & shop manager", "wc-setting", $this->td),
+                    ),
+                  ),
+                  'puiw_items_sorting' => array(
+                    'id'      => 'puiw_items_sorting',
+                    'name'    => _x("Invoice Items Sorting", "wc-setting", $this->td),
+                    'type'    => 'radio',
+                    'default' => 'NONE',
+                    'options' => array(
+                      'NONE'         => _x("Default", "wc-setting", $this->td),
+                      'ID'           => _x("By Item ID", "wc-setting", $this->td),
+                      'PID'          => _x("By Product ID", "wc-setting", $this->td),
+                      'SKU'          => _x("By SKU", "wc-setting", $this->td),
+                      'QTY'          => _x("By Quantity", "wc-setting", $this->td),
+                      'NAME'         => _x("By Name", "wc-setting", $this->td),
+                      'PRICE'        => _x("By Price", "wc-setting", $this->td),
+                      'TOTAL'        => _x("By Total", "wc-setting", $this->td),
+                      'WEIGHT'       => _x("By Weight", "wc-setting", $this->td),
+                      'SUBTOTAL'     => _x("By Subtotal", "wc-setting", $this->td),
+                      'SUBTOTAL_TAX' => _x("By Subtotal Tax", "wc-setting", $this->td),
+                    ),
+                  ),
+                  'puiw_show_shipping_address' => array(
                     'name' => _x("Address on Invoices", "wc-setting", $this->td),
                     'type' => 'radio',
                     'default' => 'billing',
                     'options' => array(
-                        "billing" => _x("Use Billing Address", "wc-setting", $this->td),
-                        "shipping" => _x("Use Shipping Address", "wc-setting", $this->td),
+                      "billing" => _x("Use Billing Address", "wc-setting", $this->td),
+                      "shipping" => _x("Use Shipping Address", "wc-setting", $this->td),
                     ),
                     'id'   => 'puiw_show_shipping_address',
                   ),
-                  'puiw_address_display_method'                 => array(
+                  'puiw_address_display_method' => array(
                     'name'    => _x("Customer Address template", "wc-setting", $this->td),
                     'type'    => 'text',
                     'placeholder'       => sprintf(__("Enter %s here", $this->td), _x("Customer Address template", "wc-setting", $this->td)),
@@ -263,53 +366,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'desc'    => _x("Use following tags and build your own addressing template.", "wc-setting", $this->td) . "<br><a class='short-tags button'>[first_name]</a> <a class='short-tags button'>[last_name]</a> <a class='short-tags button'>[company]</a> <a class='short-tags button'>[country]</a>
                     <a class='short-tags button'>[province]</a> <a class='short-tags button'>[city]</a> <a class='short-tags button'>[address1]</a> <a class='short-tags button'>[address2]</a> <a class='short-tags button'>[po_box]</a> <a class='short-tags button'>[email]</a> <a class='short-tags button'>[phone]</a> <a class='short-tags button'>[uin]</a>",
                   ),
-                  'puiw_show_order_note'                        => array(
-                    'name'=> _x("Show Order Note?", "wc-setting", $this->td),
-                    'type'=> 'select',
-                    'id'=> 'puiw_show_order_note',
-                    'class'=> 'wc-enhanced-select',
-                    'default'=> 'note_provided_by_customer',
-                    'options' => array(
-                      'hide_note_from_invoice' => _x("Hide Note from invoice", "wc-setting", $this->td),
-                      'note_provided_by_customer' => _x("Show Note provided by customer", "wc-setting", $this->td),
-                      'note_provided_by_shop_manager' => _x("Show Note provided by shop manager", "wc-setting", $this->td),
-                      'note_provided_by_both' => _x("Show Note provided by customer & shop manager", "wc-setting", $this->td),
-                    ),
-                  ),
-                  'puiw_show_price_template'                    => array(
-                    'name'=> _x("Show Price Template", "wc-setting", $this->td),
-                    'type'=> 'select',
-                    'id'=> 'puiw_show_price_template',
-                    'class'=> 'wc-enhanced-select',
-                    'default'=> 'show_both_regular_and_sale_price',
-                    'options' => array(
-                      'show_only_regular_price'           => _x("Show Live Price (regular)", "wc-setting", $this->td),
-                      'show_only_sale_price'              => _x("Show Live Price (sale)", "wc-setting", $this->td),
-                      'show_both_regular_and_sale_price'  => _x("Show Live Price (sale & regular)", "wc-setting", $this->td),
-                      'show_wc_price'                     => _x("Show Invoice Calculated price", "wc-setting", $this->td),
-                    ),
-                  ),
-                  'puiw_items_sorting'                    => array(
-                    'id'=> 'puiw_items_sorting',
-                    'name'=> _x("Invoice Items Sorting", "wc-setting", $this->td),
-                    'type'=> 'select',
-                    'class'=> 'wc-enhanced-select',
-                    'default'=> 'NONE',
-                    'options' => array(
-                      'NONE' => _x("Default", "wc-setting", $this->td),
-                      'ID' => _x("By Item ID", "wc-setting", $this->td),
-                      'PID' => _x("By Product ID", "wc-setting", $this->td),
-                      'SKU' => _x("By SKU", "wc-setting", $this->td),
-                      'QTY' => _x("By Quantity", "wc-setting", $this->td),
-                      'NAME' => _x("By Name", "wc-setting", $this->td),
-                      'PRICE' => _x("By Price", "wc-setting", $this->td),
-                      'TOTAL' => _x("By Total", "wc-setting", $this->td),
-                      'WEIGHT' => _x("By Weight", "wc-setting", $this->td),
-                      'SUBTOTAL' => _x("By Subtotal", "wc-setting", $this->td),
-                      'SUBTOTAL_TAX' => _x("By Subtotal Tax", "wc-setting", $this->td),
-                    ),
-                  ),
-                  'puiw_items_end'                              => array(
+                  'puiw_items_end' => array(
                     'type' => 'sectionend',
                     'id'   => 'puiw_items_end'
                   ),
@@ -319,36 +376,36 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
           case 'report':
             $section_data = apply_filters( "puiw_setting_section_{$current_section}",
                 array(
-                  'puiw_report_title'                           => array(
+                  'puiw_report_title' => array(
                     'name' => _x("Inventory Report Setting", "wc-setting", $this->td),
                     'type' => 'title',
                     'id'   => 'puiw_report_title'
                   ),
-                  'puiw_shelf_number_id'                        => array(
+                  'puiw_shelf_number_id' => array(
                     'name'     => _x("Shelf Storage Number ID in Inventory Report ", "wc-setting", $this->td),
                     'desc'     => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'type'     => 'checkbox',
                     'id'       => 'puiw_shelf_number_id',
                   ),
-                  'puiw_show_product_sku_inventory'             => array(
+                  'puiw_show_product_sku_inventory' => array(
                     'name'     => _x("Show Product SKU in Inventory Report", "wc-setting", $this->td),
                     'desc'     => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'type'     => 'checkbox',
                     'id'       => 'puiw_show_product_sku_inventory',
                   ),
-                  'puiw_show_product_sku2_inventory'            => array(
+                  'puiw_show_product_sku2_inventory' => array(
                     'name'     => _x("Use ID when SKU's unavailable", "wc-setting", $this->td),
                     'desc'     => _x("Check to use or leave unchecked to not", "wc-setting", $this->td),
                     'type'     => 'checkbox',
                     'id'       => 'puiw_show_product_sku2_inventory',
                   ),
-                  'puiw_show_product_image_inventory'           => array(
+                  'puiw_show_product_image_inventory' => array(
                     'name' => _x("Show Product Image in Inventory Report", "wc-setting", $this->td),
                     'type' => 'checkbox',
                     'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'id'   => 'puiw_show_product_image_inventory',
                   ),
-                  'puiw_show_product_weight_in_inventory'       => array(
+                  'puiw_show_product_weight_in_inventory' => array(
                     'name' => _x("Show Product Weight in Inventory Report", "wc-setting", $this->td),
                     'type' => 'checkbox',
                     'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
@@ -360,25 +417,25 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'id'   => 'puiw_show_product_total_weight_in_inventory',
                   ),
-                  'puiw_show_product_dimensions_in_inventory'   => array(
+                  'puiw_show_product_dimensions_in_inventory' => array(
                     'name' => _x("Show Product Dimensions in Inventory Report", "wc-setting", $this->td),
                     'type' => 'checkbox',
                     'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'id'   => 'puiw_show_product_dimensions_in_inventory',
                   ),
-                  'puiw_show_product_quantity_in_inventory'     => array(
+                  'puiw_show_product_quantity_in_inventory' => array(
                     'name' => _x("Show Product Quantity in Inventory Report", "wc-setting", $this->td),
                     'type' => 'checkbox',
                     'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'id'   => 'puiw_show_product_quantity_in_inventory',
                   ),
-                  'puiw_show_product_note_in_inventory'         => array(
+                  'puiw_show_product_note_in_inventory' => array(
                     'name' => _x("Show Product Note in Inventory Report", "wc-setting", $this->td),
                     'type' => 'checkbox',
                     'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     'id'   => 'puiw_show_product_note_in_inventory',
                   ),
-                  'puiw_show_order_note_inventory'              => array(
+                  'puiw_show_order_note_inventory' => array(
                     'name'=> _x("Show Order Notes in Inventory Report", "wc-setting", $this->td),
                     'type'=> 'select',
                     'id'=> 'puiw_show_order_note_inventory',
@@ -391,7 +448,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                       'note_provided_by_both' => _x("Show Note provided by customer & shop manager", "wc-setting", $this->td),
                     ),
                   ),
-                  'puiw_price_inventory_report'                 => array(
+                  'puiw_price_inventory_report' => array(
                     'name'=> _x("Price in Inventory Report", "wc-setting", $this->td),
                     'type'=> 'select',
                     'id'=> 'puiw_price_inventory_report',
@@ -406,7 +463,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
 
                     ),
                   ),
-                  'puiw_inventory_css_style'                    => array(
+                  'puiw_inventory_css_style' => array(
                     'name'              => _x("Inventory Report Custom CSS", "wc-setting", $this->td),
                     'type'              => 'textarea',
                     'id'                => 'puiw_inventory_css_style',
@@ -414,7 +471,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'desc_tip'          => _x("You can add custom css here to be used in Inventory Report", "wc-setting", $this->td),
                     'custom_attributes' => array( 'dir'  => 'ltr','rows' => '5', )
                   ),
-                  'puiw_report_end'                             => array(
+                  'puiw_report_end' => array(
                     'type' => 'sectionend',
                     'id'   => 'puiw_report_end'
                   ),
@@ -424,12 +481,12 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
           case 'theme':
             $section_data = apply_filters( "puiw_setting_section_{$current_section}",
                 array(
-                  'puiw_theme_title'                            => array(
+                  'puiw_theme_title' => array(
                     'name' => _x("Invoices Theming Setting", "wc-setting", $this->td),
                     'type' => 'title',
                     'id'   => 'puiw_theme_title'
                   ),
-                  'puiw_template'                               => array(
+                  'puiw_template' => array(
                     'name'    => _x("Default Theme", "wc-setting", $this->td),
                     'type'    => 'select',
                     'class'   => 'wc-enhanced-select',
@@ -439,7 +496,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'custom_attributes' => array( 'selecteditem' => get_option("puiw_template"), ),
                     'options' => $PeproUltimateInvoice->load_themes(),
                   ),
-                  'puiw_preinvoice_template'                    => array(
+                  'puiw_preinvoice_template' => array(
                     'name'    => _x("Pre-Invoice Theme", "wc-setting", $this->td),
                     'type'    => 'select',
                     'class'   => 'wc-enhanced-select',
@@ -449,7 +506,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'custom_attributes' => array( 'selecteditem' => get_option("puiw_preinvoice_template"), ),
                     'options' => $PeproUltimateInvoice->load_themes(),
                   ),
-                  'puiw_theme_color'                            => array(
+                  'puiw_theme_color' => array(
                     'name'    => _x("Theme Colors set", "wc-setting", $this->td),
                     'type'    => 'text',
                     'id'      => 'puiw_theme_color',
@@ -458,7 +515,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'placeholder'       => sprintf(__("Enter %s here", $this->td), _x("Theme primary color", "wc-setting", $this->td)),
                     'custom_attributes' => array( 'dir' => 'ltr', )
                   ),
-                  'puiw_theme_color2'                           => array(
+                  'puiw_theme_color2' => array(
                     'name'    => "",
                     'type'    => 'text',
                     'id'      => 'puiw_theme_color2',
@@ -467,7 +524,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'placeholder'       => sprintf(__("Enter %s here", $this->td), _x("Theme secondary color", "wc-setting", $this->td)),
                     'custom_attributes' => array( 'dir' => 'ltr', )
                   ),
-                  'puiw_theme_color3'                           => array(
+                  'puiw_theme_color3' => array(
                     'name'    => "",
                     'type'    => 'text',
                     'id'      => 'puiw_theme_color3',
@@ -476,7 +533,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'placeholder'       => sprintf(__("Enter %s here", $this->td), _x("Theme tertiary color", "wc-setting", $this->td)),
                     'custom_attributes' => array( 'dir' => 'ltr', )
                   ),
-                  'puiw_swatch'                                 => array(
+                  'puiw_swatch' => array(
                     'name'    => "",
                     'type'    => 'select',
                     'class'   => 'swatch-select',
@@ -485,7 +542,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'custom_attributes' => array( 'swatches' => esc_js(get_option("puiw_color_swatches","")), ),
                     'options' => array(),
                   ),
-                  'puiw_preinvoice_theme_color'                 => array(
+                  'puiw_preinvoice_theme_color' => array(
                     'name'    => _x("Pre-Invoice Theme Colors set", "wc-setting", $this->td),
                     'type'    => 'text',
                     'id'      => 'puiw_preinvoice_theme_color',
@@ -494,7 +551,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'placeholder'       => sprintf(__("Enter %s here", $this->td), _x("Theme primary color", "wc-setting", $this->td)),
                     'custom_attributes' => array( 'dir' => 'ltr', )
                   ),
-                  'puiw_preinvoice_theme_color2'                => array(
+                  'puiw_preinvoice_theme_color2' => array(
                     'name'    => "",
                     'type'    => 'text',
                     'id'      => 'puiw_preinvoice_theme_color2',
@@ -503,7 +560,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'placeholder'       => sprintf(__("Enter %s here", $this->td), _x("Theme secondary color", "wc-setting", $this->td)),
                     'custom_attributes' => array( 'dir' => 'ltr', )
                   ),
-                  'puiw_preinvoice_theme_color3'                => array(
+                  'puiw_preinvoice_theme_color3' => array(
                     'name'    => "",
                     'type'    => 'text',
                     'id'      => 'puiw_preinvoice_theme_color3',
@@ -512,7 +569,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'placeholder'       => sprintf(__("Enter %s here", $this->td), _x("Theme tertiary color", "wc-setting", $this->td)),
                     'custom_attributes' => array( 'dir' => 'ltr', )
                   ),
-                  'puiw_preinvoice_swatch'                      => array(
+                  'puiw_preinvoice_swatch' => array(
                     'name'    => "",
                     'type'    => 'select',
                     'class'   => 'swatch-select',
@@ -521,7 +578,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'custom_attributes' => array( 'swatches' => esc_js(get_option("puiw_color_swatches","")), ),
                     'options' => array(),
                   ),
-                  'puiw_invoice_title'                          => array(
+                  'puiw_invoice_title' => array(
                     'name'              => _x("Invoice Title", "wc-setting", $this->td),
                     'placeholder'       => sprintf(__("Enter %s here", $this->td), _x("Invoice Title", "wc-setting", $this->td)),
                     'type'              => 'text',
@@ -529,7 +586,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'default'           => _x("Invoice %s", "wc-setting",$this->td),
                     'desc'              => _x("You can use %s instead of Invoice Number", "wc-setting", $this->td),
                   ),
-                  'puiw_font_size'                              => array(
+                  'puiw_font_size' => array(
                     'name'              => _x("Font size (px)", "wc-setting", $this->td),
                     'type'              => 'number',
                     'id'                => 'puiw_font_size',
@@ -537,21 +594,21 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'default'           => '12',
                     'custom_attributes' => array( 'dir'  => 'ltr', 'step' => '1', 'min'  => '8', 'max'  => '99', )
                   ),
-                  'puiw_invoice_prefix'                         => array(
+                  'puiw_invoice_prefix' => array(
                     'name'              => _x("Invoice Prefix", "wc-setting", $this->td),
                     'type'              => 'text',
                     'placeholder'       => sprintf(__("Enter %s here", $this->td), _x("Invoice Prefix", "wc-setting", $this->td)),
                     'id'                => 'puiw_invoice_prefix',
                     'custom_attributes' => array( 'dir' => 'ltr', )
                   ),
-                  'puiw_invoice_suffix'                         => array(
+                  'puiw_invoice_suffix' => array(
                     'name'              => _x("Invoice Suffix", "wc-setting", $this->td),
                     'type'              => 'text',
                     'placeholder'       => sprintf(__("Enter %s here", $this->td), _x("Invoice Suffix", "wc-setting", $this->td)),
                     'id'                => 'puiw_invoice_suffix',
                     'custom_attributes' => array( 'dir' => 'ltr', )
                   ),
-                  'puiw_invoice_start'                          => array(
+                  'puiw_invoice_start' => array(
                     'name'              => _x("Invoice Start Number", "wc-setting", $this->td),
                     'type'              => 'number',
                     'placeholder'       => sprintf(__("Enter %s here", $this->td), _x("Invoice Start Number", "wc-setting", $this->td)),
@@ -559,13 +616,13 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'id'                => 'puiw_invoice_start',
                     'custom_attributes' => array( 'dir' => 'ltr', )
                   ),
-                  'puiw_show_signatures'                        => array(
+                  'puiw_show_signatures' => array(
                     'name'     => _x("Show Signatures", "wc-setting", $this->td),
                     'type'     => 'checkbox',
                     'id'       => 'puiw_show_signatures',
                     'desc'     => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                   ),
-                  'puiw_signature'                              => array(
+                  'puiw_signature' => array(
                     'name'              => _x("Add Store Signature and Stamp", "wc-setting", $this->td),
                     'type'              => 'text',
                     'class'             => 'wc-select-uploader',
@@ -574,7 +631,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'id'                => 'puiw_signature',
                     'custom_attributes' => array( 'dir' => 'ltr', )
                   ),
-                  'puiw_watermark'                              => array(
+                  'puiw_watermark' => array(
                     'name'              => _x("Add Watermark to Invoices", "wc-setting", $this->td),
                     'type'              => 'text',
                     'class'             => 'wc-select-uploader',
@@ -583,7 +640,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'id'                => 'puiw_watermark',
                     'custom_attributes' => array( 'dir' => 'ltr', )
                   ),
-                  'puiw_watermark_opacity'                      => array(
+                  'puiw_watermark_opacity' => array(
                     'name'              => _x("Watermark opacity", "wc-setting", $this->td),
                     'type'              => 'number',
                     'placeholder'       => sprintf(__("Enter %s here", $this->td), _x("Watermark opacity", "wc-setting", $this->td)),
@@ -593,7 +650,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'custom_attributes' => array( 'dir'  => 'ltr', 'step' => '1', 'min'  => '1', 'max'  => '100',
                     )
                   ),
-                  'puiw_invoices_footer'                        => array(
+                  'puiw_invoices_footer' => array(
                     'name'              => _x("Invoices footer", "wc-setting", $this->td),
                     'type'              => 'textarea',
                     'id'                => 'puiw_invoices_footer',
@@ -601,7 +658,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'desc_tip'          => _x("HTML tags are allowed. DO NOT ADD CSS here!", "wc-setting", $this->td),
                     'custom_attributes' => array( 'rows' => '5', )
                   ),
-                  'puiw_custom_css_style'                       => array(
+                  'puiw_custom_css_style' => array(
                     'name'              => _x("HTML Custom CSS", "wc-setting", $this->td),
                     'type'              => 'textarea',
                     'id'                => 'puiw_custom_css_style',
@@ -609,7 +666,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'desc_tip'          => _x("You can add custom css here to be used in HTML Invoices", "wc-setting", $this->td),
                     'custom_attributes' => array( 'dir'  => 'ltr', 'rows' => '5', )
                   ),
-                  'puiw_pdf_css_style'                       => array(
+                  'puiw_pdf_css_style' => array(
                     'name'              => _x("PDF Custom CSS", "wc-setting", $this->td),
                     'type'              => 'textarea',
                     'id'                => 'puiw_pdf_css_style',
@@ -617,7 +674,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'desc_tip'          => _x("You can add custom css here to be used in PDF Invoices", "wc-setting", $this->td),
                     'custom_attributes' => array( 'dir'  => 'ltr', 'rows' => '5', )
                   ),
-                  'puiw_theme_end'                              => array(
+                  'puiw_theme_end' => array(
                     'type' => 'sectionend',
                     'id'   => 'puiw_theme_end'
                   ),
@@ -627,26 +684,26 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
           case 'misc':
               $section_data = apply_filters( "puiw_setting_section_{$current_section}",
                   array(
-                    'puiw_misc_title'                           => array(
+                    'puiw_misc_title' => array(
                       'name' => _x("Miscellaneous Setting", "wc-setting", $this->td),
                       'type' => 'title',
                       'id'   => 'puiw_misc_title'
                     ),
-                    'puiw_dark_mode'                            => array(
+                    'puiw_dark_mode' => array(
                       'name'     => _x("Use Dark-mode as Default", "wc-setting", $this->td),
                       'type'     => 'checkbox',
                       'default'  => 'no',
                       'id'       => 'puiw_dark_mode',
                       'desc' => _x("Check to use dark-mode as default color scheme for setting screen or leave unchecked to use default color scheme", "wc-setting", $this->td),
                     ),
-                    'puiw_disable_wc_dashboard'                 => array(
+                    'puiw_disable_wc_dashboard' => array(
                       'name'     => _x("Disable WC Dashboard", "wc-setting", $this->td),
                       'type'     => 'checkbox',
                       'id'       => 'puiw_disable_wc_dashboard',
                       'desc' => _x("Check to disable new Dashboard introduced in Woocommerce 4.0 or leave unchecked to use it", "wc-setting", $this->td),
                       'desc_tip' => _x("Refresh page after setting saved.", "wc-setting", $this->td),
                     ),
-                    'puiw_date_format'                          => array(
+                    'puiw_date_format' => array(
                       'name'              => _x("Date parsing template", "wc-setting", $this->td),
                       'type'              => 'text',
                       'placeholder'       => sprintf(__("Enter %s here", $this->td), _x("Date parsing template", "wc-setting", $this->td)),
@@ -845,25 +902,25 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                       'id'                => 'puiw_date_format',
                       'custom_attributes' => array( 'dir' => 'ltr', )
                     ),
-                    'puiw_date_shamsi'                          => array(
+                    'puiw_date_shamsi' => array(
                       'name'     => _x("Convert Date to Jalali/Shamsi", "wc-setting", $this->td),
                       'type'     => 'checkbox',
                       'id'       => 'puiw_date_shamsi',
                       'desc' => _x("Check to convert dates into Jalali/Shamsi format or leave unchecked to use default setting", "wc-setting", $this->td),
                     ),
-                    'puiw_show_shipped_date'                    => array(
+                    'puiw_show_shipped_date' => array(
                       'name'     => _x("Show Shipped Date on Order details", "wc-setting", $this->td),
                       'type'     => 'checkbox',
                       'id'       => 'puiw_show_shipped_date',
                       'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     ),
-                    'puiw_show_shipping_serial'                 => array(
+                    'puiw_show_shipping_serial' => array(
                       'name'     => _x("Show Shipping Track Serial on Order details", "wc-setting", $this->td),
                       'type'     => 'checkbox',
                       'id'       => 'puiw_show_shipping_serial',
                       'desc' => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     ),
-                    'puiw_force_persian_numbers'                => array(
+                    'puiw_force_persian_numbers' => array(
                       'name'     => _x("Force Persian/Faris Numbers?", "wc-setting", $this->td),
                       'type'     => 'radio',
                       'default'  => 'no',
@@ -874,7 +931,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                       ),
                       'id'       => 'puiw_force_persian_numbers',
                     ),
-                    'puiw_misc_end'                             => array(
+                    'puiw_misc_end' => array(
                       'type' => 'sectionend',
                       'id'   => 'puiw_misc_end'
                     ),
@@ -884,20 +941,20 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
           case 'integ':
               $section_data = apply_filters( "puiw_setting_section_{$current_section}",
                   array(
-                    'puiw_integ_title'                   => array(
+                    'puiw_integ_title' => array(
                       'id'   => 'puiw_integ_title',
                       'name' => _x("Integration Setting", "wc-setting", $this->td),
                       'type' => 'title',
                       'desc'  => sprintf(__('Integration with %s', $this->td ), "<a href='https://wordpress.org/plugins/woo-product-bundle/' target='_blank'>WPC Product Bundles</a>" ),
                     ),
-                    'puiw_woosb_show_bundles'            => array(
+                    'puiw_woosb_show_bundles' => array(
                       'id'       => 'puiw_woosb_show_bundles',
                       'name'     => _x("Show bundles", "wc-setting", $this->td),
                       'type'     => 'checkbox',
                       'default'  => 'no',
                       'desc'     => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     ),
-                    'puiw_woosb_show_bundles_subtitle'   => array(
+                    'puiw_woosb_show_bundles_subtitle' => array(
                       'id'       => 'puiw_woosb_show_bundles_subtitle',
                       'name'     => _x("Show bundles subtitle", "wc-setting", $this->td),
                       'type'     => 'checkbox',
@@ -910,14 +967,14 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                       'type'     => 'text',
                       'default'  => _x("Bundled products:", "wc-setting", $this->td),
                     ),
-                    'puiw_woosb_show_bundled_products'   => array(
+                    'puiw_woosb_show_bundled_products' => array(
                       'id'       => 'puiw_woosb_show_bundled_products',
                       'name'     => _x("Show bundled products", "wc-setting", $this->td),
                       'type'     => 'checkbox',
                       'default'  => 'no',
                       'desc'     => _x("Check to show or leave unchecked to hide", "wc-setting", $this->td),
                     ),
-                    'puiw_woosb_show_bundled_subtitle'   => array(
+                    'puiw_woosb_show_bundled_subtitle' => array(
                       'id'       => 'puiw_woosb_show_bundled_subtitle',
                       'name'     => _x("Show bundled products subtitle", "wc-setting", $this->td),
                       'type'     => 'checkbox',
@@ -930,14 +987,14 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                       'type'     => 'text',
                       'default'  => _x("Bundled in:", "wc-setting", $this->td),
                     ),
-                    'puiw_woosb_show_bundled_hierarchy'  => array(
+                    'puiw_woosb_show_bundled_hierarchy' => array(
                       'id'       => 'puiw_woosb_show_bundled_hierarchy',
                       'name'     => _x("Show bundled products hierarchy", "wc-setting", $this->td),
                       'type'     => 'checkbox',
                       'default'  => 'no',
                       'desc'     => _x("Check to show hierarchy or leave unchecked to show normally", "wc-setting", $this->td),
                     ),
-                    'puiw_integ_end'                     => array(
+                    'puiw_integ_end' => array(
                       'type' => 'sectionend',
                       'id'   => 'puiw_integ_end'
                     ),
@@ -947,18 +1004,18 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
           case 'barcode':
               $section_data = apply_filters( "puiw_setting_section_{$current_section}",
                   array(
-                    'puiw_barcode_title'                        => array(
+                    'puiw_barcode_title' => array(
                       'name' => _x("Invoices Barcode Setting", "wc-setting", $this->td),
                       'type' => 'title',
                       'id'   => 'puiw_barcode_title'
                     ),
-                    'puiw_show_barcode_id'                      => array(
+                    'puiw_show_barcode_id' => array(
                       'name'     => _x("Show Invoices Number Barcode", "wc-setting", $this->td),
                       'desc' => _x("Check to add or leave unchecked to hide", "wc-setting", $this->td),
                       'type'     => 'checkbox',
                       'id'       => 'puiw_show_barcode_id',
                     ),
-                    'puiw_show_shipping_ref_id'                 => array(
+                    'puiw_show_shipping_ref_id' => array(
                       'name'     => _x("Show Shipping Track Serial Barcode", "wc-setting", $this->td),
                       'desc' => _x("Check to add or leave unchecked to hide", "wc-setting", $this->td),
                       // 'desc_tip' => _x("Shop manager enters Track ID manually", "wc-setting", $this->td),
@@ -971,19 +1028,19 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     //   'type'     => 'checkbox',
                     //   'id'       => 'puiw_show_qr_code_id',
                     // ),
-                    'puiw_postal_stickey_label_for_store'       => array(
+                    'puiw_postal_stickey_label_for_store' => array(
                       'name'     => _x("Show Barcode in Sender Shipping slip", "wc-setting", $this->td),
                       'desc' => _x("Check to add or leave unchecked to hide", "wc-setting", $this->td),
                       'type'     => 'checkbox',
                       'id'       => 'puiw_postal_stickey_label_for_store',
                     ),
-                    'puiw_postal_stickey_label_for_customer'    => array(
+                    'puiw_postal_stickey_label_for_customer' => array(
                       'name'     => _x("Show Barcode in Recipient Shipping slip", "wc-setting", $this->td),
                       'desc' => _x("Check to add or leave unchecked to hide", "wc-setting", $this->td),
                       'type'     => 'checkbox',
                       'id'       => 'puiw_postal_stickey_label_for_customer',
                     ),
-                    'puiw_barcode_end'                          => array(
+                    'puiw_barcode_end' => array(
                       'type' => 'sectionend',
                       'id'   => 'puiw_barcode_end'
                     ),
@@ -993,12 +1050,12 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
           case 'email':
             $section_data = apply_filters( "puiw_setting_section_{$current_section}",
                 array(
-                  'puiw_email_title'                            => array(
+                  'puiw_email_title' => array(
                     'name' => _x("Invoices Email Setting", "wc-setting", $this->td),
                     'type' => 'title',
                     'id'   => 'puiw_automation_title'
                   ),
-                  'puiw_email_subject'                          => array(
+                  'puiw_email_subject' => array(
                     'name'              => _x("Email Subject", "wc-setting", $this->td),
                     'placeholder'       => sprintf(__("Enter %s here", $this->td), _x("Email Subject", "wc-setting", $this->td)),
                     'type'              => 'text',
@@ -1007,7 +1064,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'desc'              => _x("You can use %s instead of Invoice Number", "wc-setting", $this->td),
                     'desc_tip'          => true,
                   ),
-                  'puiw_email_from_name'                        => array(
+                  'puiw_email_from_name' => array(
                     'type'              => 'text',
                     'id'                => 'puiw_email_from_name',
                     'name'              => _x('"From" name', "wc-setting", $this->td),
@@ -1016,7 +1073,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'default'           => esc_attr( get_bloginfo( 'name', 'display' ) ),
                     'desc_tip'          => true,
                   ),
-                  'puiw_email_from_address'                     => array(
+                  'puiw_email_from_address' => array(
                     'type'              => 'text',
                     'id'                => 'puiw_email_from_address',
                     'name'              => _x('"From" address', "wc-setting", $this->td),
@@ -1025,7 +1082,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'default'           => get_option('admin_email'),
                     'desc_tip'          => true,
                   ),
-                  'puiw_send_invoices_via_email'                => array(
+                  'puiw_send_invoices_via_email' => array(
                     'name'     => _x("Send Invoices via Email to Customer", "wc-setting", $this->td),
                     'type'     => 'radio',
                     'id'       => 'puiw_send_invoices_via_email',
@@ -1037,7 +1094,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'desc' => _x("Choose whether send HTML invoices via Email to customers automatically or manually", "wc-setting", $this->td),
                     'desc_tip' => true,
                   ),
-                  'puiw_send_invoices_via_email_opt'            => array(
+                  'puiw_send_invoices_via_email_opt' => array(
                     'name'     => _x("Order Statuses for Automatic Sending to Customers", "wc-setting", $this->td),
                     'type'     => 'multiselect',
                     'class'    => 'chosen_select',
@@ -1046,7 +1103,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'default'  => "wc-completed",
                     'desc_tip' => _x("Send HTML Invoices via Email to customer when order status is among these selection. <br>Multiple selection allowed", "wc-setting", $this->td),
                   ),
-                  'puiw_send_invoices_via_email_admin'          => array(
+                  'puiw_send_invoices_via_email_admin' => array(
                     'name'     => _x("Send Invoices via Email to Shop Managers", "wc-setting", $this->td),
                     'type'     => 'radio',
                     'id'       => 'puiw_send_invoices_via_email_admin',
@@ -1058,7 +1115,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'desc' => _x("Choose whether send HTML invoices via Email to customers automatically or manually", "wc-setting", $this->td),
                     'desc_tip' => true,
                   ),
-                  'puiw_send_invoices_via_email_opt_admin'      => array(
+                  'puiw_send_invoices_via_email_opt_admin' => array(
                     'name'     => _x("Order Statuses for Automatic Sending to Managers", "wc-setting", $this->td),
                     'type'     => 'multiselect',
                     'class'    => 'chosen_select',
@@ -1067,7 +1124,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'default'  => "wc-completed",
                     'desc_tip' => _x("Send HTML Invoices via Email to Shop managers when order status is among these selection. <br>Multiple selection allowed", "wc-setting", $this->td),
                   ),
-                  'puiw_send_invoices_via_email_shpmngrs'       => array(
+                  'puiw_send_invoices_via_email_shpmngrs' => array(
                     'name'     => _x("Shop Managers who will receive invoice mail", "wc-setting", $this->td),
                     'type'     => 'multiselect',
                     'class'    => 'chosen_select',
@@ -1075,13 +1132,13 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'options'  => $this->get_wc_managers(),
                     'desc_tip' => _x("Send HTML Invoices via Email to Shop managers either manually through WC Orders screen or automatically. <br>Multiple selection allowed", "wc-setting", $this->td),
                   ),
-                  'puiw_attach_pdf_invoices_to_mail'            => array(
+                  'puiw_attach_pdf_invoices_to_mail' => array(
                     'name'     => _x("Attach PDF Invoices to mail", "wc-setting", $this->td),
                     'type'     => 'checkbox',
                     'id'       => 'puiw_attach_pdf_invoices_to_mail',
                     'desc' => _x("Check to attach a PDF Invoice to WooCommerce Mails or leave unchecked to not", "wc-setting", $this->td),
                   ),
-                  'puiw_email_end'                              => array(
+                  'puiw_email_end' => array(
                     'type' => 'sectionend',
                     'id'   => 'puiw_automation_end'
                 ),
@@ -1091,19 +1148,19 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
           case 'privacy':
             $section_data = apply_filters( "puiw_setting_section_{$current_section}",
                 array(
-                  'puiw_privacy_title'                          => array(
+                  'puiw_privacy_title' => array(
                     'name' => _x("Privacy Setting", "wc-setting", $this->td),
                     'type' => 'title',
                     'id'   => 'puiw_automation_title'
                   ),
-                  'puiw_allow_guest_users_view_invoices'        => array(
+                  'puiw_allow_guest_users_view_invoices' => array(
                     'name'     => _x("Allow Guest Users view invoices", "wc-setting", $this->td),
                     'type'     => 'checkbox',
                     'id'       => 'puiw_allow_guest_users_view_invoices',
                     'desc'     => _x("Check to allow or leave unchecked to disallow", "wc-setting", $this->td),
                     'desc_tip' => _x("Allow logged out visitors be able to see invoices by having its URL", "wc-setting", $this->td),
                   ),
-                  'puiw_allow_pdf_guest'                        => array(
+                  'puiw_allow_pdf_guest' => array(
                     'name'     => _x("Invoice Output for Guests", "wc-setting", $this->td),
                     'type'     => 'select',
                     'class'    => 'wc-enhanced-select',
@@ -1115,7 +1172,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                       'both' => _x("User HTML/PDF", "wc-setting", $this->td),
                     ),
                   ),
-                  'puiw_allow_users_have_invoices'              => array(
+                  'puiw_allow_users_have_invoices' => array(
                     'name'     => _x("Allow Customer/Users view invoices", "wc-setting", $this->td),
                     'type'     => 'checkbox',
                     'default'  => 'yes',
@@ -1123,7 +1180,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'desc'     => _x("Check to allow or leave unchecked to disallow", "wc-setting", $this->td),
                     'desc_tip' => _x("Allow logged in visitors be able to see their invoices by having its URL", "wc-setting", $this->td),
                   ),
-                  'puiw_allow_pdf_customer'                     => array(
+                  'puiw_allow_pdf_customer' => array(
                     'name'     => _x("Invoice Output for Customers", "wc-setting", $this->td),
                     'type'     => 'select',
                     'class'    => 'wc-enhanced-select',
@@ -1135,7 +1192,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                       'both' => _x("User HTML/PDF", "wc-setting", $this->td),
                     ),
                   ),
-                  'puiw_allow_users_use_invoices'               => array(
+                  'puiw_allow_users_use_invoices' => array(
                     'name'     => _x("Show Invoices option in orders list", "wc-setting", $this->td),
                     'type'     => 'checkbox',
                     'default'  => 'yes',
@@ -1143,7 +1200,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'desc'     => _x("Check to allow or leave unchecked to disallow", "wc-setting", $this->td),
                     'desc_tip' => _x("Add 'Get Invoice' button to customer order list so they could have invoice too", "wc-setting", $this->td),
                   ),
-                  'puiw_allow_users_use_invoices_criteria'      => array(
+                  'puiw_allow_users_use_invoices_criteria' => array(
                     'name'     => _x("Allowed Orders statuses", "wc-setting", $this->td),
                     'type'     => 'multiselect',
                     'class'    => 'chosen_select',
@@ -1152,7 +1209,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'options'  => $this->wc_get_order_statuses(),
                     'desc_tip' => _x("In which Order Status Customers can use 'Get Invoice' feature?<br>Multiple selection allowed", "wc-setting", $this->td),
                   ),
-                  'puiw_privacy_end'                            => array(
+                  'puiw_privacy_end' => array(
                     'type' => 'sectionend',
                     'id'   => 'puiw_automation_end'
                 ),
@@ -1162,32 +1219,32 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
           case 'extras':
             $section_data = apply_filters( "puiw_setting_section_{$current_section}",
                 array(
-                  'puiw_extras_title'                          => array(
+                  'puiw_extras_title' => array(
                     'name' => _x("Extras Setting", "wc-setting", $this->td),
                     'type' => 'title',
                     'id'   => 'puiw_automation_title'
                   ),
-                  'puiw_quick_shop'                            => array(
+                  'puiw_quick_shop' => array(
                     'name'     => _x("Enable Quick Shop Feature", "wc-setting", $this->td),
                     'type'     => 'checkbox',
                     'id'       => 'puiw_quick_shop',
                     'desc'     => _x("Check to Enable 'Quick Shop' Feature and integrate it with WPBakery Page Builder (if installed)", "wc-setting", $this->td),
                     'desc_tip' => _x("This will let users filter and shop all your products in one page. Use <code>[puiw_quick_shop]</code> shortcode or WPBakery Page Builder widget to display it", "wc-setting", $this->td),
                   ),
-                  'puiw_allow_preorder_invoice'                => array(
+                  'puiw_allow_preorder_invoice' => array(
                     'name'     => _x("Pre-order Invoices", "wc-setting", $this->td),
                     'type'     => 'checkbox',
                     'id'       => 'puiw_allow_preorder_invoice',
                     'desc' => _x("Check to allow users get pre-order invoices or leave unchecked to disallow", "wc-setting", $this->td),
                     'desc_tip' => _x("PRE-ORDER INVOICE means user does not place an order, but rather select products and get an invoice to be personally to present later in shopping, directly from your physical store.", "wc-setting", $this->td),
                   ),
-                  'puiw_allow_preorder_emptycart'              => array(
+                  'puiw_allow_preorder_emptycart' => array(
                     'name'     => _x("Clear Cart on Quick Buy", "wc-setting", $this->td),
                     'type'     => 'checkbox',
                     'id'       => 'puiw_allow_preorder_emptycart',
                     'desc'     => _x("Check to clear cart on pre-order invoice creation or leave unchecked to keep previous cart", "wc-setting", $this->td),
                   ),
-                  'puiw_preorder_shopmngr_extra_note'          => array(
+                  'puiw_preorder_shopmngr_extra_note' => array(
                     'name'              => _x("Extra Notes on Pre-order by Shop Manager", "wc-setting", $this->td),
                     'type'              => 'textarea',
                     'id'                => 'puiw_preorder_shopmngr_extra_note',
@@ -1195,7 +1252,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'desc_tip'          => _x("You can add custom note here to be added into pre-orders", "wc-setting", $this->td),
                     'custom_attributes' => array('rows' => '5', )
                   ),
-                  'puiw_preorder_customer_extra_note'          => array(
+                  'puiw_preorder_customer_extra_note' => array(
                     'name'              => _x("Extra Notes on Pre-order on behalf of Customer", "wc-setting", $this->td),
                     'type'              => 'textarea',
                     'id'                => 'puiw_preorder_customer_extra_note',
@@ -1203,7 +1260,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'desc_tip'          => _x("You can add custom note here to be added into pre-orders on behalf of customer", "wc-setting", $this->td),
                     'custom_attributes' => array('rows' => '5', )
                   ),
-                  'puiw_extras_end'                            => array(
+                  'puiw_extras_end' => array(
                     'type' => 'sectionend',
                     'id'   => 'puiw_automation_end'
                 ),
@@ -1213,12 +1270,12 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
           case 'pdf':
             $section_data = apply_filters( "puiw_setting_section_{$current_section}",
                 array(
-                  'puiw_pdf_title'                              => array(
+                  'puiw_pdf_title' => array(
                     'name' => _x("PDF Invoices Setting", "wc-setting", $this->td),
                     'type' => 'title',
                     'id'   => 'puiw_automation_title'
                   ),
-                  'puiw_pdf_size'                               => array(
+                  'puiw_pdf_size' => array(
                     'name'     => _x("PDF Page size", "wc-setting", $this->td),
                     'id'       => 'puiw_pdf_size',
                     'type'     => 'select',
@@ -1267,7 +1324,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                         'Royal'  => _x("Royal", "wc-setting", $this->td),
                       ),
                   ),
-                  'puiw_pdf_orientation'                        => array(
+                  'puiw_pdf_orientation' => array(
                     'name'     => _x("PDF Page Orientation ", "wc-setting", $this->td),
                     'id'       => 'puiw_pdf_orientation',
                     'type'     => 'radio',
@@ -1279,7 +1336,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                         'L'  => _x("Landscape", "wc-setting", $this->td),
                       ),
                   ),
-                  'puiw_pdf_font'                => array(
+                  'puiw_pdf_font' => array(
                     'name'     => _x("PDF Font", "wc-setting", $this->td),
                     'type'     => 'radio',
                     'default'  => 'iranyekanfa',
@@ -1294,7 +1351,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     ),
                     'id'       => 'puiw_pdf_font',
                   ),
-                  'puiw_pdf_end'                                => array(
+                  'puiw_pdf_end' => array(
                     'type' => 'sectionend',
                     'id'   => 'puiw_automation_end'
                 ),
@@ -1304,18 +1361,18 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
           default:
             $section_data = apply_filters( "puiw_setting_section_default",
                 array(
-                  'puiw_default_title'                          => array(
+                  'puiw_default_title' => array(
                     'name'              => _x("Store Details in Invoices", "wc-setting", $this->td),
                     'type'              => 'title',
                     'id'                => 'puiw_default_title'
                   ),
-                  'puiw_store_name'                             => array(
+                  'puiw_store_name' => array(
                     'name'              => _x("Store Name", "wc-setting", $this->td),
                     'placeholder'       => sprintf(__("Enter %s here", $this->td), _x("Store Name", "wc-setting", $this->td)),
                     'type'              => 'text',
                     'id'                => 'puiw_store_name',
                   ),
-                  'puiw_store_logo'                             => array(
+                  'puiw_store_logo' => array(
                     'name'              => _x("Store Logo", "wc-setting", $this->td),
                     'type'              => 'text',
                     'class'             => 'wc-select-uploader',
@@ -1324,63 +1381,63 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'css'               => 'display:none',
                     'custom_attributes' => array( 'dir' => 'ltr' , )
                   ),
-                  'puiw_store_website'                          => array(
+                  'puiw_store_website' => array(
                     'name'              => _x("Store Website", "wc-setting", $this->td),
                     'placeholder'       => sprintf(__("Enter %s here", $this->td), _x("Store Website", "wc-setting", $this->td)),
                     'type'              => 'text',
                     'id'                => 'puiw_store_website',
                     'custom_attributes' => array( 'dir' => 'ltr', )
                   ),
-                  'puiw_store_email'                            => array(
+                  'puiw_store_email' => array(
                     'name'              => _x("Store E-mail", "wc-setting", $this->td),
                     'placeholder'       => sprintf(__("Enter %s here", $this->td), _x("Store E-mail", "wc-setting", $this->td)),
                     'type'              => 'email',
                     'id'                => 'puiw_store_email',
                     'custom_attributes' => array( 'dir' => 'ltr', )
                   ),
-                  'puiw_store_phone'                            => array(
+                  'puiw_store_phone' => array(
                     'name'              => _x("Store Phone number", "wc-setting", $this->td),
                     'placeholder'       => sprintf(__("Enter %s here", $this->td), _x("Store Phone number", "wc-setting", $this->td)),
                     'type'              => 'text',
                     'id'                => 'puiw_store_phone',
                     'custom_attributes' => array( 'dir' => 'ltr', )
                   ),
-                  'puiw_store_national_id'                      => array(
+                  'puiw_store_national_id' => array(
                     'name'              => _x("Store National ID", "wc-setting", $this->td),
                     'placeholder'       => sprintf(__("Enter %s here", $this->td), _x("Store National ID", "wc-setting", $this->td)),
                     'type'              => 'text',
                     'id'                => 'puiw_store_national_id',
                     'custom_attributes' => array( 'dir' => 'ltr', )
                   ),
-                  'puiw_store_registration_number'              => array(
+                  'puiw_store_registration_number' => array(
                     'name'              => _x("Store Registration Number", "wc-setting", $this->td),
                     'placeholder'       => sprintf(__("Enter %s here", $this->td), _x("Store Registration Number", "wc-setting", $this->td)),
                     'type'              => 'text',
                     'id'                => 'puiw_store_registration_number',
                     'custom_attributes' => array( 'dir' => 'ltr', )
                   ),
-                  'puiw_store_economical_number'                => array(
+                  'puiw_store_economical_number' => array(
                     'name'              => _x("Store Economical Number", "wc-setting", $this->td),
                     'placeholder'       => sprintf(__("Enter %s here", $this->td), _x("Store Economical Number", "wc-setting", $this->td)),
                     'type'              => 'text',
                     'id'                => 'puiw_store_economical_number',
                     'custom_attributes' => array( 'dir' => 'ltr', )
                   ),
-                  'puiw_store_address'                          => array(
+                  'puiw_store_address' => array(
                     'name'              => _x("Store Address", "wc-setting", $this->td),
                     'placeholder'       => sprintf(__("Enter %s here", $this->td), _x("Store Address", "wc-setting", $this->td)),
                     'type'              => 'textarea',
                     'id'                => 'puiw_store_address',
                     'desc_tip'          => _x("This Address will be used instead of Woocommerce store address in invoices, leave empty to use Woocommerce default address", "wc-setting", $this->td),
                   ),
-                  'puiw_store_postcode'                         => array(
+                  'puiw_store_postcode' => array(
                     'name'              => _x("Store Postcode / ZIP", "wc-setting", $this->td),
                     'placeholder'       => sprintf(__("Enter %s here", $this->td), _x("Store Postcode / ZIP", "wc-setting", $this->td)),
                     'type'              => 'text',
                     'id'                => 'puiw_store_postcode',
                     'custom_attributes' => array( 'dir' => 'ltr', )
                   ),
-                  'puiw_default_end'                            => array(
+                  'puiw_default_end' => array(
                     'type' => 'sectionend',
                     'id'   => 'puiw_default_end'
                   ),
@@ -1642,7 +1699,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
         wp_enqueue_media();
         add_thickbox();
         // due to lag between page load and css load, we load css directrly at line 70
-        // wp_enqueue_style("pepro-ultimate-invoice-wc-setting", PEPROULTIMATEINVOICE_ASSETS_URL . "/admin/wc_setting.css");
+        wp_enqueue_style("pepro-ultimate-invoice-wc-setting", PEPROULTIMATEINVOICE_ASSETS_URL . "/admin/wc_setting.css");
         wp_enqueue_style("wp-color-picker");
         wp_enqueue_script("wp-color-picker");
         wp_enqueue_script('jquery');
@@ -1650,16 +1707,17 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
         wp_enqueue_script('jquery-ui-selectmenu');
         wp_register_script("pepro-ultimate-invoice-wc-setting", PEPROULTIMATEINVOICE_ASSETS_URL . "/admin/wc_setting"  . $this->debugEnabled(".js",".min.js"), array("jquery","wp-color-picker"));
         wp_localize_script( "pepro-ultimate-invoice-wc-setting", "_peproUltimateInvoice", array(
-            "title"          => _x("Select image file", "wc-setting-js", $this->td),
-            "btntext"        => _x("Use this image", "wc-setting-js", $this->td),
-            "clear"          => _x("Clear", "wc-setting-js", $this->td),
-            "currentlogo"    => _x("Current preview", "wc-setting-js", $this->td),
-            "selectbtn"      => _x("Select image", "wc-setting-js", $this->td),
-            "zephyrfix"      => true, /* fix for upsulotion admin css */
-            "plugin_url"     => PEPROULTIMATEINVOICE_URL,
-            "themeData"      => $PeproUltimateInvoice->load_themes(1),
-            "get_template"   => get_option("puiw_template", "default"),
-            "darkmode"       => get_option("puiw_dark_mode", "no"),
+            "title"        => _x("Select image file", "wc-setting-js", $this->td),
+            "btntext"      => _x("Use this image", "wc-setting-js", $this->td),
+            "clear"        => _x("Clear", "wc-setting-js", $this->td),
+            "currentlogo"  => _x("Current preview", "wc-setting-js", $this->td),
+            "selectbtn"    => _x("Select image", "wc-setting-js", $this->td),
+            "copied"       => _x("## copied to clipboard.", "wc-setting-js", $this->td),
+            "zephyrfix"    => true, /* fix for upsulotion admin css */
+            "plugin_url"   => PEPROULTIMATEINVOICE_URL,
+            "themeData"    => $PeproUltimateInvoice->load_themes(1),
+            "get_template" => get_option("puiw_template", "default"),
+            "darkmode"     => get_option("puiw_dark_mode", "no"),
           )
         );
         wp_enqueue_script("pepro-ultimate-invoice-wc-setting");

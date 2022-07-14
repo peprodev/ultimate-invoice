@@ -130,7 +130,7 @@
           <th class="show_product_weight" style="{{{show_product_weight_hc}}}"><div style="{{{show_product_weight_dn}}}">وزن</div></th>
           <th class="show_product_dimensions" style="{{{show_product_dimensions_hc}}}"><div style="{{{show_product_dimensions_dn}}}">ابعاد</div></th>
           <th class="show_product_base_price" width="1.5cm">مبلغ واحد</th>
-          <th class="show_discount_precent" width="1.5cm" style="{{{show_discount_precent_hc}}}"><div style="{{{show_discount_precent_dn}}}">درصد تخفیف</div></th>
+          <th class="show_discount_precent" width="1.5cm" style="{{{show_discount_precent_hc}}}"><div style="{{{show_discount_precent_dn}}}">تخفیف</div></th>
           <th class="show_product_tax" width="1.5cm" style="{{{show_product_tax_hc}}}"><div style="{{{show_product_tax_dn}}}">مالیات</div></th>
           <th class="show_product_total_price" width="1.5cm" colspan="{{{product_nettotal_colspan}}}">جمع کل</th>
         </tr>

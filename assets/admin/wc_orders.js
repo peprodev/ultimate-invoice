@@ -2,8 +2,8 @@
  * @Author: Amirhosseinhpv
  * @Date:   2020/10/20 22:23:23
  * @Email:  its@hpv.im
- * @Last modified by:   Amirhosseinhpv
- * @Last modified time: 2021/04/15 12:32:30
+ * @Last modified by:   amirhp-com
+ * @Last modified time: 2022/07/14 22:16:54
  * @License: GPLv2
  * @Copyright: Copyright © 2020 Amirhosseinhpv, All rights reserved.
  */
@@ -309,7 +309,7 @@
       puiw_hide_all();
     });
 
-    $(document).on("click tap", "ul.inner_content li a[data-action], #pepro-ultimate-invoice p a[data-action]", function(e) {
+    $(document).on("click tap", "ul.inner_content li a[data-action], #pepro-ultimate-invoice a[data-action]", function(e) {
       e.preventDefault();
       let me = $(this);
       if (me.data("action") !== "") {
@@ -510,7 +510,7 @@
       catch (err) {var dJSON = DEFAULT_SWATACHES;}
       styles = '';
       $.each(dJSON, function(index, val) {
-        var $elidraw = Math.floor(Math.random() * 26) + Date.now() + index++;
+        var $elidraw = Math.floor(Math.random() * Math.random()) + Date.now() + index++;
         var $elid = 'eu_puiw_' + $elidraw;
         el = $(select).append(`<option data-uniq="${$elid}" data-p="${val.p}" data-s="${val.s}" data-t="${val.t}" value="${$elid}">${val.n}</option>`);
         styles += `

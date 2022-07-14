@@ -1,5 +1,5 @@
 /**
- * @Last modified time: 2020/10/20 16:05:57
+ * @Last modified time: 2022/07/12 16:54:45
  */
 
 .jqueryswatches .holder {
@@ -65,12 +65,15 @@
 .jqueryswatches .info {
 	font-size: 20px;
 	text-align: center;
-	margin-top: 2rem;
 	text-align: start;
 	padding: 0.5rem 0;
 	color: #000;
 	width: 100%;
 	display: block;
+}
+
+.swatch.jqueryswatches {
+	padding-bottom: 3rem;
 }
 
 .jqueryswatches .info input.edit-swatch-name {
@@ -120,21 +123,33 @@
 
 .puiw_color_schemes_workspace,
 .puiw_color_schemes_workspace .swatch {
-	max-width: 700px;
 	position: relative;
-	margin: 3rem 0;
+	margin: 0;
 }
 
 .swatch-edit {
 	display: none;
 }
 
-.color-picker.editswatches {
-  /* text-align: center; */
-  /* visibility: hidden;
-  opacity: 0;
-  -webkit-filter: opacity(0);
-          filter: opacity(0); */;
+.puiw_color_schemes_workspace {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 1rem 3rem;
+}
+@media only screen and (max-width: 1400px) {
+	.puiw_color_schemes_workspace {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+@media only screen and (max-width: 1024px) {
+	.puiw_color_schemes_workspace {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+@media only screen and (max-width: 600px) {
+	.puiw_color_schemes_workspace {
+		grid-template-columns: repeat(1, 1fr);
+	}
 }
 
 .minicolors-theme-default.minicolors {

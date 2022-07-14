@@ -1,3 +1,13 @@
+/**
+ * @Author: amirhp-com
+ * @Date:   2022/07/12 12:16:17
+ * @Email:  its@amirhp.com
+ * @Last modified by:   amirhp-com
+ * @Last modified time: 2022/07/14 21:19:31
+ * @License: GPLv2
+ */
+
+
 :root {
 	--theme_color: {{{theme_color}}};
 	--theme_color2: {{{theme_color2}}};
@@ -34,21 +44,32 @@ html {
 	font-weight: normal;
 	src: url("{{{CURENT_DIR_URL}}}/fonts/woff2/iranyekanwebregular.woff2") format('woff2'), url("{{{CURENT_DIR_URL}}}/fonts/woff/iranyekanwebregular.woff") format('woff'));
 }
-
+.single_weight:empty + span br {
+	display: none;
+}
 svg.barcode {
 	width: 100%;
 	height: auto;
 	max-height: 1.5cm;
 }
-
+.content-table td.show_product_title_description {
+	padding: 0 0.5rem;
+}
 #invoice_qrcode {
 	margin: 0.5rem;
 }
-
+.show_product_tax, .show_product_base_price, .show_product_total_price{ min-width: 90px; }
+.show_product_total_price { width: 120px; }
+td[if="show_product_image"] img, td[class="show_product_image"] img {
+	float: inline-start;
+	border-radius: 5px;
+}
 tr.show_invoices_id_barcode_colspan td[colspan="2"]{
 	padding: 0 4px 4px 0 !important;
 }
-
+.show_product_purchase_note {
+	margin-top: 0.5rem !important;
+}
 div.watermark_print{
 	display: none;
 	width: 100%;

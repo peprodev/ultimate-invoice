@@ -4,6 +4,7 @@
 **PeproDev Ultimate Invoice**
 ==========================
 
+The Most Advanced Invoice Plugin you were looking for! Create customizable PDF/HTML invoices for WooCommerce, attach to Email, Packing Slips, Shipping Labels, Shipping Tracking, Single-shop feature and ...
 
 This plugin lets you to Generate Awesome Invoices for WooCommerce orders and:
 
@@ -86,4 +87,4 @@ This plugin lets you to Generate Awesome Invoices for WooCommerce orders and:
 
 ### **Developed by** [Perpro Development Group](https://pepro.dev/) for WooCommerce
 
-*Current Version: 1.7.4* \| *Lead Developer:* [amirhp.com](https://amirhp.com)
+*Current Version: 1.8.0* \| *Lead Developer:* [amirhp.com](https://amirhp.com)

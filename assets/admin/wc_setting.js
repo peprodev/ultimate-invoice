@@ -2,13 +2,52 @@
  * @Author: Amirhosseinhpv
  * @Date:   2020/10/20 22:23:23
  * @Email:  its@hpv.im
- * @Last modified by:   Amirhosseinhpv
- * @Last modified time: 2021/07/12 20:48:49
+ * @Last modified by:   amirhp-com
+ * @Last modified time: 2022/07/14 22:12:08
  * @License: GPLv2
  * @Copyright: Copyright © 2020 Amirhosseinhpv, All rights reserved.
  */
 (function($) {
   $(document).ready(function() {
+
+    $("body").addClass("ultinateinvoicebypeprodev")
+
+    function show_toast(data = "Sample Toast!", bg = "", delay = 4500) {
+      if (!$("toast").length) {
+        $(document.body).append($("<toast>"));
+      } else {
+        $("toast").removeClass("active");
+      }
+      setTimeout(function() {
+        $("toast").css("--toast-bg", bg).html(data).stop().addClass("active").delay(delay).queue(function() {
+          $(this).removeClass("active").dequeue().off("click tap");
+        }).on("click tap", function(e) {
+          e.preventDefault();
+          $(this).stop().removeClass("active");
+        });
+      }, 200);
+    }
+    var $success_color = "rgba(21, 139, 2, 0.8)";
+    var $error_color = "rgba(139, 2, 2, 0.8)";
+    var $info_color = "rgba(2, 133, 139, 0.8)";
+    if (!$("toast").length) {
+      $(document.body).append($("<toast>"));
+    }
+
+    function copy_clipboard(data) {
+      var $temp = $("<textarea>");
+      $("body").append($temp);
+      $temp.val(data).select();
+      document.execCommand("copy");
+      $temp.remove();
+    }
+
+    $(".forminp.forminp-radio ul").each(function(i,j) {
+      if ($(this).find("li").length > 7) {
+        $(this).addClass("morefive")
+      }
+    });
+
     if (_peproUltimateInvoice.zephyrfix) {
       $("link#us-core-admin-css").remove();
       $(".usof-colpick").remove();
@@ -19,7 +58,31 @@
       $("html").addClass("dark");
     }
 
-    // $=jQuery; $("table [id]").each(function(i,j){$(this).parents("tr").find("th").append($("<id>"+$(j).attr("id")+"</id>").css({"display": "block","font-family": "Consolas","background": "#dad9d9"}));})
+    $(document).on("click tap", "#wp-admin-bar-puiw_toolbar_showids", function(e) {
+      e.preventDefault();
+
+      if ($("#wp-admin-bar-puiw_toolbar_showids").is(".active")) {
+        $("tr.hasID id").remove()
+        $("tr.hasID").removeClass("hasID")
+        $(this).toggleClass("active");
+        return false;
+      }
+
+      $(this).toggleClass("active");
+
+      $("tr [name]").each(function(i, j) {
+        $(this).parents("tr").addClass("hasID");
+        $(this).parents("tr").find("th").append($("<id>" + $(j).attr("name") + "</id>"));
+      })
+
+    });
+
+    $(document).on("click tap", "id", function(e) {
+      e.preventDefault();
+      var txt = $(this).text();
+      copy_clipboard(txt);
+      show_toast(_peproUltimateInvoice.copied.replace(/##/gi, txt), $success_color);
+    });
 
     $(".wc-select-uploader").each(function(n, i) {
       $this = $(this);
@@ -45,6 +108,7 @@
       $parent_three.appendTo($parent);
       $parent_two_p.remove();
       $parent_three_p.remove();
+      $parent.addClass("notme");
     }
 
     if ($(".puiw_preinvoice_swatch_one").length) {
@@ -57,7 +121,10 @@
       $parent_three.appendTo($parent);
       $parent_two_p.remove();
       $parent_three_p.remove();
+      $parent.addClass("notme");
     }
+
+    $("tr:not(.notme) td").attr("colspan", 3);
 
     $(".wc-color-picker").wpColorPicker();
 
@@ -302,7 +369,7 @@
       }
       styles = '';
       $.each(dJSON, function(index, val) {
-        var $elidraw = Math.floor(Math.random() * 26) + Date.now() + index++;
+        var $elidraw = Math.floor(Math.random() * Math.random()) + Date.now() + index++;
         var $elid = 'eu_puiw_' + $elidraw;
         el = $(select).append(`<option data-uniq="${$elid}" data-p="${val.p}" data-s="${val.s}" data-t="${val.t}" value="${$elid}">${val.n}</option>`);
         styles += `

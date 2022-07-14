@@ -1,5 +1,5 @@
 <?php
-# @Last modified time: 2022/07/12 12:13:02
+# @Last modified time: 2022/07/14 21:52:39
 namespace peproulitmateinvoice;
 use voku\CssToInlineStyles\CssToInlineStyles;
 
@@ -76,120 +76,123 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
         public function get_default_dynamic_params($order_id,$order)
         {
           $opts = array(
-              "order_date_created"                        => $order->get_date_created() ? $this->fn->get_date($order->get_date_created()) : "",
-              "order_date_modified"                       => $order->get_date_modified() ? $this->fn->get_date($order->get_date_modified()) : "",
-              "order_date_completed"                      => $order->get_date_completed() ? $this->fn->get_date($order->get_date_completed()) : "",
-              "order_date_current"                        => $this->fn->get_date(date_i18n("Y/m/d H:i",current_time("timestamp"))),
-              "order_date_paid"                           => $order->get_date_paid() ? $this->fn->get_date($order->get_date_paid()) :"",
-              "order_status"                              => wc_get_order_status_name($order->get_status()),
-              "order_total"                               => $order->get_formatted_order_total(),
-              "order_date_shipped"                        => !empty(get_post_meta($order_id,"_shipping_puiw_invoice_shipdate",true)) ? $this->fn->get_date( get_post_meta($order_id,"_shipping_puiw_invoice_shipdate",true),"Y/m/d",true ) : "",
-              "order_date_shipped_raw"                    => get_post_meta($order_id,"_shipping_puiw_invoice_shipdate",true),
-              "order_date_shipped_raw_shamsi"             => get_post_meta($order_id,"_shipping_puiw_invoice_shipdatefa",true),
-              "store_name"                                => $this->fn->get_store_name(),
-              "store_logo"                                => $this->fn->get_store_logo("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="),
-              "store_website"                             => $this->fn->get_store_website(),
-              "store_email"                               => $this->fn->get_store_email(),
-              "store_phone"                               => $this->fn->get_store_phone(),
-              "store_address"                             => $this->fn->get_store_address(),
-              "wc_store_address"                          => $this->fn->get_wc_store_address(),
-              "store_postcode"                            => $this->fn->get_store_postcode(),
-              "store_national_id"                         => $this->fn->get_store_national_id(),
-              "store_registration_number"                 => $this->fn->get_store_registration_number(),
-              "store_economical_number"                   => $this->fn->get_store_economical_number(),
-              "send_invoices_via_email"                   => $this->fn->get_send_invoices_via_email(),
-              "send_invoices_via_email_admin"             => $this->fn->get_send_invoices_via_email_admin(),
-              "allow_users_use_invoices"                  => $this->fn->get_allow_users_use_invoices(),
-              "show_invoices_id_barcode"                  => $this->fn->get_show_invoices_id_barcode(),
-              "show_shippingslip_store"                   => $this->fn->get_show_shippingslip_store(),
-              "show_shippingslip_customer"                => $this->fn->get_show_shippingslip_customer(),
-              "show_qr_code_id"                           => $this->fn->get_show_qr_code_id(),
-              "postal_qr_code_label_for_store"            => $this->fn->get_postal_qr_code_label_for_store(),
-              "postal_qr_code_label_for_customer"         => $this->fn->get_postal_qr_code_label_for_customer(),
-              "date_shamsi"                               => $this->fn->get_date_shamsi(),
-              "disable_wc_dashboard"                      => $this->fn->get_disable_wc_dashboard(),
-              "allow_preorder_invoice"                    => $this->fn->get_allow_preorder_invoice(),
-              "allow_preorder_emptycart"                  => $this->fn->get_allow_preorder_emptycart(),
-              "allow_pdf_customer"                        => $this->fn->get_allow_pdf_customer(),
-              "allow_pdf_guest"                           => $this->fn->get_allow_pdf_guest(),
-              "pdf_size"                                  => $this->fn->get_pdf_size(),
-              "pdf_orientation"                           => $this->fn->get_pdf_orientation(),
-              "attach_pdf_invoices_to_mail"               => $this->fn->get_attach_pdf_invoices_to_mail(),
-              "custom_css_style"                          => $this->fn->get_custom_css_style(),
-              "custom_pdf_css_style"                      => $this->fn->get_pdf_css_style(),
-              "inventory_css_style"                       => $this->fn->get_inventory_css_style(),
-              "template"                                  => $this->fn->get_template(),
-              "theme_color"                               => $this->fn->get_theme_color(),
-              "theme_color2"                              => $this->fn->get_theme_color2(),
-              "theme_color3"                              => $this->fn->get_theme_color3(),
-              "preinvoice_template"                       => $this->fn->get_preinvoice_template(),
-              "preinvoice_theme_color"                    => $this->fn->get_preinvoice_theme_color(),
-              "preinvoice_theme_color2"                   => $this->fn->get_preinvoice_theme_color2(),
-              "preinvoice_theme_color3"                   => $this->fn->get_preinvoice_theme_color3(),
-              "font_size"                                 => $this->fn->get_font_size() . "px",
-              "font_sizes"                                => $this->fn->get_font_size() - 4 . "px",
-              "font_sizem"                                => $this->fn->get_font_size() - 2 . "px",
-              "invoice_prefix"                            => $this->fn->get_invoice_prefix(),
-              "invoice_suffix"                            => $this->fn->get_invoice_suffix(),
-              "invoice_start"                             => $this->fn->get_invoice_start(),
-              "signature"                                 => $this->fn->get_signature(),
-              "watermark"                                 => $this->fn->get_watermark(),
-              "watermark_opacity"                         => $this->fn->get_watermark_opacity(),
-              "watermark_opacity_10"                      => $this->fn->get_watermark_opacity()/100,
-              "invoices_footer"                           => $this->fn->get_invoices_footer(),
-              "show_custom_footer"                        => empty($this->fn->get_invoices_footer())?"no":"yes",
-              "show_signature"                            => $this->fn->get_show_signatures(),
-              "show_shelf_number_id"                      => $this->fn->get_show_shelf_number_id(),
-              "show_product_sku_inventory"                => $this->fn->get_show_product_sku_inventory(),
-              "show_product_sku2_inventory"               => $this->fn->get_show_product_sku2_inventory(),
-              "show_product_image_inventory"              => $this->fn->get_show_product_image_inventory(),
-              "show_product_weight_in_inventory"          => $this->fn->get_show_product_weight_in_inventory(),
-              "show_product_total_weight_in_inventory"    => $this->fn->get_show_product_total_weight_in_inventory(),
-              "show_product_dimensions_in_inventory"      => $this->fn->get_show_product_dimensions_in_inventory(),
-              "show_product_quantity_in_inventory"        => $this->fn->get_show_product_quantity_in_inventory(),
-              "show_product_note_in_inventory"            => $this->fn->get_show_product_note_in_inventory(),
-              "price_inventory_report"                    => $this->fn->get_price_inventory_report(),
-              "show_order_note_inventory"                 => $this->fn->get_show_order_note_inventory(),
-              "show_store_national_id"                    => $this->fn->get_show_store_national_id(),
-              "show_store_registration_number"            => $this->fn->get_show_store_registration_number(),
-              "show_store_economical_number"              => $this->fn->get_show_store_economical_number(),
-              "show_customer_address"                     => $this->fn->get_show_customer_address(),
-              "show_customer_phone"                       => $this->fn->get_show_customer_phone(),
-              "show_customer_email"                       => $this->fn->get_show_customer_email(),
-              "show_order_date"                           => $this->fn->get_show_order_date(),
-              "show_payment_method"                       => $this->fn->get_show_payment_method(),
-              "show_shipping_method"                      => $this->fn->get_show_shipping_method(),
-              "show_shipping_address"                     => $this->fn->get_show_shipping_address(),
-              "address_display_method"                    => $this->fn->get_address_display_method(),
-              "show_transaction_ref_id"                   => $this->fn->get_show_transaction_ref_id(),
-              "show_paid_date"                            => $this->fn->get_show_paid_date(),
-              "show_purchase_complete_date"               => $this->fn->get_show_purchase_complete_date(),
-              "show_shipping_date"                        => $this->fn->get_show_shipping_date(),
-              "show_order_status"                         => $this->fn->get_show_order_status(),
-              "show_product_image"                        => $this->fn->get_show_product_image(),
-              "show_product_purchase_note"                => $this->fn->get_show_product_purchase_note(),
-              "show_order_items"                          => $this->fn->get_show_order_items(),
-              "show_order_total"                          => $this->fn->get_show_order_total(),
-              "show_order_note"                           => $this->fn->get_show_order_note(),
-              "show_user_uin"                             => $this->fn->get_show_user_uin(),
-              "show_shipping_ref_id"                      => $this->fn->get_show_shipping_ref_id(),
-              "show_price_template"                       => $this->fn->get_show_price_template(),
-              "show_product_weight"                       => $this->fn->get_show_product_weight(),
-              "show_product_dimensions"                   => $this->fn->get_show_product_dimensions(),
-              "show_discount_precent"                     => $this->fn->get_show_discount_precent(),
-              "show_product_tax"                          => $this->fn->get_show_product_tax(),
-              "show_product_sku"                          => $this->fn->get_show_product_sku(),
-              "show_product_sku2"                         => $this->fn->get_show_product_sku2(),
-              "trnslt__print"                             => __("Print", $this->td),
-              "trnslt__seller"                            => __("Seller", $this->td),
-              "trnslt__buyer"                             => __("Buyer", $this->td),
-              "trnslt__dates"                             => __("Extras", $this->td),
-              "show_shipping_ref_id_colspan"              => 1,
-              "invoice_final_prices_pre_colspan"          => 7,
-              "product_description_colspan"               => 4,
-              "product_nettotal_colspan"                  => 1,
-              "invoice_final_prices_colspan"              => 5,
-              "invoice_final_row_colspan"                 => 14,
+              "order_date_created"                     => $order->get_date_created() ? $this->fn->get_date($order->get_date_created()) : "",
+              "order_date_modified"                    => $order->get_date_modified() ? $this->fn->get_date($order->get_date_modified()) : "",
+              "order_date_completed"                   => $order->get_date_completed() ? $this->fn->get_date($order->get_date_completed()) : "",
+              "order_date_current"                     => $this->fn->get_date(date_i18n("Y/m/d H:i",current_time("timestamp"))),
+              "order_date_paid"                        => $order->get_date_paid() ? $this->fn->get_date($order->get_date_paid()) :"",
+              "order_status"                           => wc_get_order_status_name($order->get_status()),
+              "order_total"                            => $order->get_formatted_order_total(),
+              "order_date_shipped"                     => !empty(get_post_meta($order_id,"_shipping_puiw_invoice_shipdate",true)) ? $this->fn->get_date( get_post_meta($order_id,"_shipping_puiw_invoice_shipdate",true),"Y/m/d",true ) : "",
+              "order_date_shipped_raw"                 => get_post_meta($order_id,"_shipping_puiw_invoice_shipdate",true),
+              "order_date_shipped_raw_shamsi"          => get_post_meta($order_id,"_shipping_puiw_invoice_shipdatefa",true),
+              "store_name"                             => $this->fn->get_store_name(),
+              "store_logo"                             => $this->fn->get_store_logo("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="),
+              "store_website"                          => $this->fn->get_store_website(),
+              "store_email"                            => $this->fn->get_store_email(),
+              "store_phone"                            => $this->fn->get_store_phone(),
+              "store_address"                          => $this->fn->get_store_address(),
+              "wc_store_address"                       => $this->fn->get_wc_store_address(),
+              "store_postcode"                         => $this->fn->get_store_postcode(),
+              "store_national_id"                      => $this->fn->get_store_national_id(),
+              "store_registration_number"              => $this->fn->get_store_registration_number(),
+              "store_economical_number"                => $this->fn->get_store_economical_number(),
+              "send_invoices_via_email"                => $this->fn->get_send_invoices_via_email(),
+              "send_invoices_via_email_admin"          => $this->fn->get_send_invoices_via_email_admin(),
+              "allow_users_use_invoices"               => $this->fn->get_allow_users_use_invoices(),
+              "show_invoices_id_barcode"               => $this->fn->get_show_invoices_id_barcode(),
+              "show_shippingslip_store"                => $this->fn->get_show_shippingslip_store(),
+              "show_shippingslip_customer"             => $this->fn->get_show_shippingslip_customer(),
+              "show_qr_code_id"                        => $this->fn->get_show_qr_code_id(),
+              "postal_qr_code_label_for_store"         => $this->fn->get_postal_qr_code_label_for_store(),
+              "postal_qr_code_label_for_customer"      => $this->fn->get_postal_qr_code_label_for_customer(),
+              "date_shamsi"                            => $this->fn->get_date_shamsi(),
+              "disable_wc_dashboard"                   => $this->fn->get_disable_wc_dashboard(),
+              "allow_preorder_invoice"                 => $this->fn->get_allow_preorder_invoice(),
+              "allow_preorder_emptycart"               => $this->fn->get_allow_preorder_emptycart(),
+              "allow_pdf_customer"                     => $this->fn->get_allow_pdf_customer(),
+              "allow_pdf_guest"                        => $this->fn->get_allow_pdf_guest(),
+              "pdf_size"                               => $this->fn->get_pdf_size(),
+              "pdf_orientation"                        => $this->fn->get_pdf_orientation(),
+              "attach_pdf_invoices_to_mail"            => $this->fn->get_attach_pdf_invoices_to_mail(),
+              "custom_css_style"                       => $this->fn->get_custom_css_style(),
+              "custom_pdf_css_style"                   => $this->fn->get_pdf_css_style(),
+              "inventory_css_style"                    => $this->fn->get_inventory_css_style(),
+              "template"                               => $this->fn->get_template(),
+              "theme_color"                            => $this->fn->get_theme_color(),
+              "theme_color2"                           => $this->fn->get_theme_color2(),
+              "theme_color3"                           => $this->fn->get_theme_color3(),
+              "preinvoice_template"                    => $this->fn->get_preinvoice_template(),
+              "preinvoice_theme_color"                 => $this->fn->get_preinvoice_theme_color(),
+              "preinvoice_theme_color2"                => $this->fn->get_preinvoice_theme_color2(),
+              "preinvoice_theme_color3"                => $this->fn->get_preinvoice_theme_color3(),
+              "font_size"                              => $this->fn->get_font_size() . "px",
+              "font_sizes"                             => $this->fn->get_font_size() - 4 . "px",
+              "font_sizem"                             => $this->fn->get_font_size() - 2 . "px",
+              "invoice_prefix"                         => $this->fn->get_invoice_prefix(),
+              "invoice_suffix"                         => $this->fn->get_invoice_suffix(),
+              "invoice_start"                          => $this->fn->get_invoice_start(),
+              "signature"                              => $this->fn->get_signature(),
+              "watermark"                              => $this->fn->get_watermark(),
+              "watermark_opacity"                      => $this->fn->get_watermark_opacity(),
+              "watermark_opacity_10"                   => $this->fn->get_watermark_opacity()/100,
+              "invoices_footer"                        => $this->fn->get_invoices_footer(),
+              "show_custom_footer"                     => empty($this->fn->get_invoices_footer())?"no":"yes",
+              "show_signature"                         => $this->fn->get_show_signatures(),
+              "show_shelf_number_id"                   => $this->fn->get_show_shelf_number_id(),
+              "show_product_sku_inventory"             => $this->fn->get_show_product_sku_inventory(),
+              "show_product_sku2_inventory"            => $this->fn->get_show_product_sku2_inventory(),
+              "show_product_image_inventory"           => $this->fn->get_show_product_image_inventory(),
+              "show_product_weight_in_inventory"       => $this->fn->get_show_product_weight_in_inventory(),
+              "show_product_total_weight_in_inventory" => $this->fn->get_show_product_total_weight_in_inventory(),
+              "show_product_dimensions_in_inventory"   => $this->fn->get_show_product_dimensions_in_inventory(),
+              "show_product_quantity_in_inventory"     => $this->fn->get_show_product_quantity_in_inventory(),
+              "show_product_note_in_inventory"         => $this->fn->get_show_product_note_in_inventory(),
+              "price_inventory_report"                 => $this->fn->get_price_inventory_report(),
+              "show_order_note_inventory"              => $this->fn->get_show_order_note_inventory(),
+              "show_store_national_id"                 => $this->fn->get_show_store_national_id(),
+              "show_store_registration_number"         => $this->fn->get_show_store_registration_number(),
+              "show_store_economical_number"           => $this->fn->get_show_store_economical_number(),
+              "show_customer_address"                  => $this->fn->get_show_customer_address(),
+              "show_customer_phone"                    => $this->fn->get_show_customer_phone(),
+              "show_customer_email"                    => $this->fn->get_show_customer_email(),
+              "show_order_date"                        => $this->fn->get_show_order_date(),
+              "show_payment_method"                    => $this->fn->get_show_payment_method(),
+              "show_shipping_method"                   => $this->fn->get_show_shipping_method(),
+              "show_shipping_address"                  => $this->fn->get_show_shipping_address(),
+              "address_display_method"                 => $this->fn->get_address_display_method(),
+              "show_transaction_ref_id"                => $this->fn->get_show_transaction_ref_id(),
+              "show_paid_date"                         => $this->fn->get_show_paid_date(),
+              "show_purchase_complete_date"            => $this->fn->get_show_purchase_complete_date(),
+              "show_shipping_date"                     => $this->fn->get_show_shipping_date(),
+              "show_order_status"                      => $this->fn->get_show_order_status(),
+              "show_product_image"                     => $this->fn->get_show_product_image(),
+              "show_product_purchase_note"             => $this->fn->get_show_product_purchase_note(),
+              "show_order_items"                       => $this->fn->get_show_order_items(),
+              "show_order_total"                       => $this->fn->get_show_order_total(),
+              "show_order_note"                        => $this->fn->get_show_order_note(),
+              "show_user_uin"                          => $this->fn->get_show_user_uin(),
+              "show_shipping_ref_id"                   => $this->fn->get_show_shipping_ref_id(),
+              "show_price_template"                    => $this->fn->get_show_price_template(),
+              "show_tax_display"                       => $this->fn->get_show_tax_display(),
+              "show_product_weight"                    => $this->fn->get_show_product_weight(),
+              "show_product_dimensions"                => $this->fn->get_show_product_dimensions(),
+              "show_discount_precent"                  => $this->fn->get_show_discount_precent(),
+              "show_discount_calc"                     => $this->fn->get_show_discount_calc(),
+              "show_discount_display"                  => $this->fn->get_show_discount_display(),
+              "show_product_tax"                       => $this->fn->get_show_product_tax(),
+              "show_product_sku"                       => $this->fn->get_show_product_sku(),
+              "show_product_sku2"                      => $this->fn->get_show_product_sku2(),
+              "trnslt__print"                          => __("Print", $this->td),
+              "trnslt__seller"                         => __("Seller", $this->td),
+              "trnslt__buyer"                          => __("Buyer", $this->td),
+              "trnslt__dates"                          => __("Extras", $this->td),
+              "show_shipping_ref_id_colspan"           => 1,
+              "invoice_final_prices_pre_colspan"       => 7,
+              "product_description_colspan"            => 4,
+              "product_nettotal_colspan"               => 1,
+              "invoice_final_prices_colspan"           => 5,
+              "invoice_final_row_colspan"              => 14,
           );
           $use_billing = $opts["show_shipping_address"];
 
@@ -618,50 +621,148 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
               $somemeta     = $item->get_meta('_whatever', true);
               $product      = $item->get_product();
               if (!$product){continue;}
-              $type         = $item->get_type();
-              $active_price = $product->get_price(); // The product active raw price
-              $sale_price   = $product->get_sale_price(); // The product raw sale price
-              $regular_price= $product->get_regular_price(); // The product raw regular price
-              $name         = apply_filters( "puiw_invoice_item_get_name",              $item->get_name(), $product, $item, $order);
-              $extra_classes= apply_filters( "puiw_invoice_item_extra_classes",         [], $product, $item_id, $item, $order, $n);
-              $quantity     = apply_filters( "puiw_invoice_item_get_quantity",          $item->get_quantity(), $product, $item, $order);
-              $subtotal     = apply_filters( "puiw_invoice_item_get_subtotal",          wc_price($item->get_subtotal()), $product, $item, $order);
-              $tax          = apply_filters( "puiw_invoice_item_get_subtotal_tax",      wc_price($item->get_subtotal_tax()), $product, $item, $order);
-              $total        = apply_filters( "puiw_invoice_item_get_total",             wc_price($item->get_total()), $product, $item, $order);
-              $taxclass     = apply_filters( "puiw_invoice_item_get_tax_class",         $item->get_tax_class(), $product, $item, $order);
-              $taxstat      = apply_filters( "puiw_invoice_item_get_tax_status",        $item->get_tax_status(), $product, $item, $order);
-              $allmeta      = apply_filters( "puiw_invoice_item_get_meta_data",         $item->get_meta_data(), $product, $item, $order);
-              $description  = apply_filters( "puiw_invoice_item_get_purchase_note",     $product->get_purchase_note(), $product, $item, $order);
-              $description .= $this->get_item_meta($item_id, $item, $product);
-              $weight_raw   = apply_filters( "puiw_invoice_item_get_product_weight_raw",$product->get_weight() , $product, $item, $order);
-              $weight       = apply_filters( "puiw_invoice_item_get_product_weight",    $this->fn->get_format_weight($weight_raw), $product, $item, $order);
-              $dimension    = apply_filters( "puiw_invoice_item_get_product_dimension", $this->fn->get_product_dimension($item->get_product_id()), $product, $item, $order);
-              $percentage   = (100-((float)$item->get_total() / (float)$item->get_subtotal() * 100));
-              $percentage   = ($percentage > 0) ? sprintf("%2d%%", $percentage) : "00.0%";
-              $discount     = apply_filters( "puiw_invoice_item_get_product_discount", $percentage, $product, $item, $order);
-              $sku          = $product->get_sku();
-              if ($opt["show_product_sku2"] == "yes"){$sku = empty($sku) || !$sku ? "#$product_id" : $sku;}
+              $type                = $item->get_type();
+              $active_price        = $product->get_price(); // The product active raw price
+              $sale_price          = (float)$product->get_sale_price(); // The product raw sale price
+              $regular_price       = (float)$product->get_regular_price(); // The product raw regular price
+              $prev_regular_price  = (float)$item->get_meta('_puiw_regular', true);
+              $prev_sale_price     = (float)$item->get_meta('_puiw_sale', true);
+              $prev_price_html     = $item->get_meta('_puiw_html', true);
+              $name                = apply_filters( "puiw_invoice_item_get_name",              $item->get_name(), $product, $item, $order);
+              $extra_classes       = apply_filters( "puiw_invoice_item_extra_classes",         [], $product, $item_id, $item, $order, $n);
+              $quantity            = apply_filters( "puiw_invoice_item_get_quantity",          $item->get_quantity(), $product, $item, $order);
+              $subtotal            = apply_filters( "puiw_invoice_item_get_subtotal",          wc_price($item->get_subtotal()), $product, $item, $order);
+              $tax                 = apply_filters( "puiw_invoice_item_get_subtotal_tax",      wc_price($item->get_subtotal_tax()), $product, $item, $order);
+              $net_total           = apply_filters( "puiw_invoice_item_get_total",             wc_price($item->get_total()), $product, $item, $order);
+              $tax_total           = apply_filters( "puiw_invoice_item_get_total_tax",         wc_price($item->get_total_tax()), $product, $item, $order);
+              $total               = apply_filters( "puiw_invoice_item_get_total_tax_inc",     wc_price($item->get_total() + $item->get_total_tax()), $product, $item, $order);
+              $taxclass            = apply_filters( "puiw_invoice_item_get_tax_class",         $item->get_tax_class(), $product, $item, $order);
+              $taxstat             = apply_filters( "puiw_invoice_item_get_tax_status",        $item->get_tax_status(), $product, $item, $order);
+              $allmeta             = apply_filters( "puiw_invoice_item_get_meta_data",         $item->get_meta_data(), $product, $item, $order);
+              $description         = apply_filters( "puiw_invoice_item_get_purchase_note",     $product->get_purchase_note(), $product, $item, $order);
+              $description        .= $this->get_item_meta($item_id, $item, $product);
+              $weight_raw          = apply_filters( "puiw_invoice_item_get_product_weight_raw",$product->get_weight() , $product, $item, $order);
+              $weight              = apply_filters( "puiw_invoice_item_get_product_weight",    $this->fn->get_format_weight($weight_raw), $product, $item, $order);
+              $dimension           = apply_filters( "puiw_invoice_item_get_product_dimension", $this->fn->get_product_dimension($item->get_product_id()), $product, $item, $order);
+              $sku                 = $product->get_sku();
+
+              if ($opt["show_product_sku2"] == "yes"){
+                $sku = empty($sku) || !$sku ? "#$product_id" : $sku;
+              }
               $product_weight = $weight_raw ?: 0;
               if ($product_weight) {
                 $total_weight += floatval( $product_weight * $quantity );
                 $opt["invoice_total_weight"] = apply_filters( "puiw_printinvoice_calculate_invoice_total_weight", $this->fn->get_format_weight($total_weight), $total_weight, $product_weight, $quantity, $product, $item, $order);
               }
               $opt["invoice_total_qty"] = (int) $opt["invoice_total_qty"] + $quantity;
+
+              // Line item Price Display
               switch ($opt["show_price_template"]) {
+
+                //Show WC_Order price (as shown in order details screen)
+                case 'show_wc_price':
+                  $base_price = wc_price($order->get_item_subtotal( $item, false, true ), array( 'currency' => $order->get_currency() ) );
+                break;
+                //Show Current-live regular price
                 case 'show_only_regular_price':
                   $base_price = wc_price($product->get_regular_price(), array( 'currency' => $order->get_currency() ));
-                  break;
+                break;
+                //Show Current-live sale price
                 case 'show_only_sale_price':
                   $base_price = wc_price($product->get_sale_price(), array( 'currency' => $order->get_currency() ));
-                  break;
+                break;
+                //Show Current-live regular/sale price
                 case 'show_both_regular_and_sale_price':
-                  $base_price = wc_price($product->get_price(), array( 'currency' => $order->get_currency() ));
-                  break;
+                  $base_price = $product->get_price_html();
+                break;
+                //Show Saved Line-item regular price
+                case 'show_saved_regular_price':
+                  $base_price = wc_price($prev_regular_price, array( 'currency' => $order->get_currency() ));
+                break;
+                //Show Saved Line-item sale price
+                case 'show_saved_sale_price':
+                  $base_price = wc_price($prev_sale_price, array( 'currency' => $order->get_currency() ));
+                break;
+                //Show Saved Line-item sale/regular price
+                case 'show_saved_regular_and_sale_price':
+                  $base_price = $prev_price_html;
+                break;
                 default:
-			            $base_price = wc_price($order->get_item_subtotal( $item, false, true ), array( 'currency' => $order->get_currency() ) );
+                  $base_price = wc_price($order->get_item_subtotal( $item, false, true ), array( 'currency' => $order->get_currency() ) );
+                break;
+              }
+
+              $discount_display = "";
+              $refunded_dispaly = "";
+              $refunded         = -1 * $order->get_total_refunded_for_item( $item_id );
+              if ( $refunded ) {
+                $refunded_dispaly = '<small class="refunded">' . wc_price( $refunded, array( 'currency' => $order->get_currency() ) ) . '</small>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+              }
+              $discount_amount = wc_price( 00 , array( 'currency' => $order->get_currency() ) );
+              $discount_precent = sprintf("%'02.1f%%", 0);
+
+              // Line item Discount Calculation
+              switch ($opt["show_discount_calc"]) {
+                // Based on WC_Order (as shown in order details screen)
+                case 'wcorder':
+                  if ( $item->get_subtotal() !== $item->get_total() ) {
+                    $discount_amount = $item->get_subtotal() - $item->get_total() > 0 ? wc_price( wc_format_decimal( $item->get_subtotal() - $item->get_total(), '' ), array( 'currency' => $order->get_currency() ) ) : "";
+                    $percentage = (100-((float)$item->get_total() / (float)$item->get_subtotal() * 100));
+                    $discount_precent = sprintf("%'02.1f%%", $percentage);
+                  }
+                break;
+                  // Based on Product's current-live sale/regular price
+                case 'liveprice':
+                  if ( $sale_price > 0 && $sale_price < $regular_price ) {
+                    $discount_amount  = (($regular_price - $sale_price) > 0) ? wc_price( wc_format_decimal( $regular_price - $sale_price, '' ), array( 'currency' => $order->get_currency() ) ) : "";
+                    $percentage       = abs(100-($regular_price / $sale_price * 100));
+                    $discount_precent = $percentage > 0 ? sprintf("%'02.1f%%", $percentage) : "";
+                  }else{
+                    $discount_amount  = "";
+                    $discount_precent = "";
+                  }
+                break;
+                  // Based on Line-item saved sale/regular price
+                case 'savepirce':
+                if ( $prev_sale_price > 0 && $prev_sale_price < $prev_regular_price ) {
+                  $discount_amount  = (($prev_regular_price - $prev_sale_price) > 0) ? wc_price( wc_format_decimal( $prev_regular_price - $prev_sale_price, '' ), array( 'currency' => $order->get_currency() ) ) : "";
+                  $percentage       = abs(100-($prev_regular_price / $prev_sale_price * 100));
+                  $discount_precent = $percentage > 0 ? sprintf("%'02.1f%%", $percentage) : "";
+                }else{
+                  $discount_amount  = "";
+                  $discount_precent = "";
+                }
+                break;
+                  // Based on Discounted Line-item saved sale/regular price
+                case 'advanced':
+                  // in next releases, maybe
+                break;
+              }
+
+              // Line item Discount Display
+              switch ($opt["show_discount_display"]) {
+                // Show discount value
+                case 'value':
+                  $discount_display = $discount_amount;
+                break;
+                // Show discount precentage
+                case 'precnt':
+                  $discount_display = $discount_precent;
+                break;
+                // Show discount precentage and value
+                case 'both':
+                default:
+                  $discount_display = "<div>".(!empty($discount_precent) ? "($discount_precent)" : "")."</div><div>$discount_amount</div>";
                   break;
               }
+              $discount_display = apply_filters( "puiw_invoice_item_get_product_discount", $discount_display, $discount_precent, $discount_amount, $opt["show_discount_calc"], $opt["show_discount_display"], $product, $item, $order);
+
+              if (empty(trim($base_price))) {
+                $base_price = wc_price($order->get_item_subtotal( $item, false, true ), array( 'currency' => $order->get_currency() ) );
+              }
+
               $tax_formatted = $tax;
+              $tax_formatted_amount = $tax;
               if ( wc_tax_enabled() ) {
                 $order_taxes      = $order->get_taxes();
                 $tax_classes      = \WC_Tax::get_tax_classes();
@@ -670,6 +771,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
               }
               if ( ( $tax_data = $item->get_taxes() ) && wc_tax_enabled() ) {
                 $tax_formatted = "";
+                $tax_formatted_amount = "";
             		foreach ( $order_taxes as $tax_item ) {
                   $column_label   = ! empty( $tax_item['label'] ) ? $tax_item['label'] : __( 'Tax', 'woocommerce' );
             			$tax_item_id    = $tax_item->get_rate_id();
@@ -679,14 +781,42 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
                     $tax_formatted .= '<small class="refunded">' . wc_price( $refunded, array( 'currency' => $order->get_currency() ) ) . '</small>';
                   }
                   $tax_formatted .= '</div>';
+
+                  $tax_formatted_amount .= '<div class="line_tax">'.(( '' !== $tax_item_total ) ? wc_price( wc_round_tax_total( $tax_item_total ), array( 'currency' => $order->get_currency() ) ) : '&ndash;');
+                  if ( $refunded = -1 * $order->get_tax_refunded_for_item( $item_id, $tax_item_id, 'fee' ) ) {
+                    $tax_formatted_amount .= '<small class="refunded">' . wc_price( $refunded, array( 'currency' => $order->get_currency() ) ) . '</small>';
+                  }
+                  $tax_formatted_amount .= '</div>';
             		}
             	}
               $tax_formatted = apply_filters( "puiw_printinvoice_create_html_lineitem_tax_formatted", $tax_formatted, $order, $item);
+              switch ($opt["show_tax_display"]) {
+
+                //Show taxes amount
+                case "amount":
+                $tax_formatted = $tax_formatted_amount;
+                break;
+
+                //Show line total tax amount
+                case "onlytotal":
+                $tax_formatted = $tax_total;
+                break;
+
+                //Show taxes label and amount
+                case "labelamount":
+                default:
+                $tax_formatted = $tax_formatted;
+                break;
+              }
+
               if ($this->is_bundled_child($item_id)){
                 $base_price = "";
                 $subtotal = "";
-                if ($this->_woosb_show_bundled_hierarchy == "yes"){$n--;}
+                if ($this->_woosb_show_bundled_hierarchy == "yes"){
+                  $n = $n-1;
+                }
               }
+
               $totalweight = apply_filters( "puiw_printinvoice_create_html_total_weight", $this->fn->get_format_weight(floatval($product_weight*$quantity)), floatval($product_weight*$quantity), $product_weight, $quantity, $item_id, $item, $product_id, $order );
               $optm = array(
                 "n"                           => $n,
@@ -697,11 +827,11 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
                 "base_price"                  => $base_price,
                 "description"                 => $description,
                 "extra_classes"               => implode(" ", (array) $extra_classes),
-                "discount"                    => $discount,
-                "weight"                      => $weight,
+                "discount"                    => $discount_display,
+                "weight"                      => $weight_raw>0?$weight:"",
+                "total_weight"                => $totalweight,
                 "product_description_colspan" => $opt["product_description_colspan"],
                 "product_nettotal_colspan"    => $opt["product_nettotal_colspan"],
-                "total_weight"                => $totalweight,
                 "dimension"                   => $dimension,
                 "tax"                         => $tax_formatted,
                 "nettotal"                    => $total,
@@ -710,10 +840,10 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
               $optm = apply_filters( "puiw_printinvoice_create_html_item_row_metas", $optm, $item_id, $item, $product_id, $order );
 
               foreach ($optm as $key => $value) {
-                  if (!in_array($key, $keepOriginalENnumbers)) {
-                    $value = $this->fn->parse_number($value);
-                  }
-                  $product_row = str_replace("{{{{$key}}}}", $value, $product_row);
+                if (!in_array($key, $keepOriginalENnumbers)) {
+                  $value = $this->fn->parse_number($value);
+                }
+                $product_row = str_replace("{{{{$key}}}}", $value, $product_row);
               }
               $opt["invoice_products_list"] .= $product_row;
           }
@@ -1621,19 +1751,19 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           do_action( 'woocommerce_before_order_itemmeta', $item_id, $item, $product );
 
           if ( $meta_data = $item->get_formatted_meta_data('') ) {
-            $echo .= "<div class='view order_item_meta'><table cellspacing='0' class='display_meta'>";
+            $echo .= "<div class='view order_item_meta'><div cellspacing='0' class='display_meta'>";
             foreach ( $meta_data as $meta_id => $meta ){
               if ( in_array( $meta->key, $hidden_order_itemmeta, true ) ) { continue; }
               if ($this->_woosb_show_bundles_subtitle == "no" && "bundled-products" === sanitize_title($meta->key,"")){ continue; }
               if ($this->_woosb_show_bundles_subtitle == "yes" && "bundled-products" === sanitize_title($meta->key,"")){ $meta->display_key = $this->_woosb_show_bundles_prefix; }
               $found_any = true;
-              $echo .= "<tr style='background: unset;' class='". sanitize_title("$meta->key","") ."'>
-                      <th style='border: none;'><strong>" . wp_kses_post( $meta->display_key ) . "</strong>:</th>
-                      <td style='border: none;'>" . wp_kses_post( force_balance_tags( $meta->display_value ) ) . "</td>
-              </tr>";
+              $echo .= "<div style='background: unset;' class='". sanitize_title("$meta->key","") ."'>
+                      <span class='itemmeta_label' style='font-weight: bold'>" . wp_kses_post( $meta->display_key ) . ":</span>
+                      <span class='itemmeta_value'> " . strip_tags(force_balance_tags( $meta->display_value ) ) . "</span>
+              </div>";
             }
             if ($found_any){
-              echo "$echo</table></div>";
+              echo "$echo</div></div>";
             }
             $ob_get_contents = ob_get_contents();
             ob_end_clean();

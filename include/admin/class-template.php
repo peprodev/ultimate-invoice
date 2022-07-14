@@ -1811,12 +1811,12 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
       return apply_filters("puiw_get_show_shipping_ref_id", $show_shipping_ref_id, $default);
     }
     /**
-     * get price template?
+     * Line item Price Display
      *
      * @method PeproUltimateInvoice_Template->get_show_price_template()
-     * @param string $default default show price template
-     * @return string price template (show_only_regular_price, show_only_sale_price, show_both_regular_and_sale_price)
-     * @version 1.0.0
+     * @param string $default default Line item Price Display
+     * @return string Line item Price Display (show_wc_price, show_only_regular_price, show_only_sale_price, show_both_regular_and_sale_price, show_saved_regular_price, show_saved_sale_price, show_saved_regular_and_sale_price)
+     * @version 2.0.0
      * @since 1.0.0
      * @license https://pepro.dev/license Pepro.dev License
      */
@@ -1825,6 +1825,118 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
       $show_price_template = get_option("puiw_show_price_template",$default);
       $show_price_template = empty($show_price_template) ? $default : $show_price_template;
       return apply_filters("puiw_get_show_price_template", $show_price_template, $default);
+    }
+    /**
+     * Line item Tax Display
+     *
+     * @method PeproUltimateInvoice_Template->get_show_tax_display()
+     * @param string $default default Line item Tax Display
+     * @return string Line item Tax Display (amount, labelamount, onlytotal)
+     * @version 1.0.0
+     * @since 1.8.0
+     * @license https://pepro.dev/license Pepro.dev License
+     */
+    public function get_show_tax_display($default="onlytotal")
+    {
+      $show_tax_display = get_option("puiw_show_tax_display",$default);
+      $show_tax_display = empty($show_tax_display) ? $default : $show_tax_display;
+      return apply_filters("puiw_get_show_tax_display", $show_tax_display, $default);
+    }
+    /**
+     * Show Coupons Code At Order Totals?
+     *
+     * @method PeproUltimateInvoice_Template->get_show_coupons_code_at_totals()
+     * @param string $default default show coupons code
+     * @return string yes/no
+     * @version 1.0.0
+     * @since 1.8.0
+     * @license https://pepro.dev/license Pepro.dev License
+     */
+    public function get_show_coupons_code_at_totals($default="yes")
+    {
+      $coupons_code = get_option("puiw_show_coupons_code_at_totals",$default);
+      $coupons_code = empty($coupons_code) ? $default : $coupons_code;
+      return apply_filters("puiw_get_show_coupons_code_at_totals", $coupons_code, $default);
+    }
+    /**
+     * Show Coupons Description At Order Totals?
+     *
+     * @method PeproUltimateInvoice_Template->get_show_coupons_description_at_totals()
+     * @param string $default default show coupons description
+     * @return string yes/no
+     * @version 1.0.0
+     * @since 1.8.0
+     * @license https://pepro.dev/license Pepro.dev License
+     */
+    public function get_show_coupons_description_at_totals($default="yes")
+    {
+      $coupons_description = get_option("puiw_show_coupons_description_at_totals",$default);
+      $coupons_description = empty($coupons_description) ? $default : $coupons_description;
+      return apply_filters("puiw_get_show_coupons_description_at_totals", $coupons_description, $default);
+    }
+    /**
+     * Show Coupons Discount At Order Totals?
+     *
+     * @method PeproUltimateInvoice_Template->get_show_coupons_discount_at_totals()
+     * @param string $default default show coupons discount
+     * @return string yes/no
+     * @version 1.0.0
+     * @since 1.8.0
+     * @license https://pepro.dev/license Pepro.dev License
+     */
+    public function get_show_coupons_discount_at_totals($default="no")
+    {
+      $coupons_discount = get_option("puiw_show_coupons_discount_at_totals",$default);
+      $coupons_discount = empty($coupons_discount) ? $default : $coupons_discount;
+      return apply_filters("puiw_get_show_coupons_discount_at_totals", $coupons_discount, $default);
+    }
+    /**
+     * Show Coupons Amount At Order Totals?
+     *
+     * @method PeproUltimateInvoice_Template->get_show_coupons_amount_at_totals()
+     * @param string $default default show coupons amount
+     * @return string yes/no
+     * @version 1.0.0
+     * @since 1.8.0
+     * @license https://pepro.dev/license Pepro.dev License
+     */
+    public function get_show_coupons_amount_at_totals($default="no")
+    {
+      $coupons_amount = get_option("puiw_show_coupons_amount_at_totals",$default);
+      $coupons_amount = empty($coupons_amount) ? $default : $coupons_amount;
+      return apply_filters("puiw_get_show_coupons_amount_at_totals", $coupons_amount, $default);
+    }
+    /**
+     * Line item Discount Calculation
+     *
+     * @method PeproUltimateInvoice_Template->get_show_discount_calc()
+     * @param string $default default status
+     * @return string (wcorder, liveprice, savepirce, advanced)
+     * @version 1.0.0
+     * @since 1.8.0
+     * @license https://pepro.dev/license Pepro.dev License
+     */
+    public function get_show_discount_calc($default="wcorder")
+    {
+      $discount_calc = get_option("puiw_show_discount_calc",$default);
+      $discount_calc = empty($discount_calc) ? $default : $discount_calc;
+      return apply_filters("puiw_get_show_discount_calc", $discount_calc, $default);
+    }
+    /**
+     * Line item Discount Display
+     *
+     * @method PeproUltimateInvoice_Template->get_show_discount_display()
+     * @param string $default default status
+     * @return string (value, precnt, both)
+     * @version 1.0.0
+     * @since 1.8.0
+     * @license https://pepro.dev/license Pepro.dev License
+     */
+    public function get_show_discount_display($default="precentage")
+    {
+      $discount_display = get_option("puiw_show_discount_display",$default);
+      $discount_display = empty($discount_display) ? $default : $discount_display;
+      return apply_filters("puiw_get_show_discount_display", $discount_display, $default);
     }
     /**
      * show product weight?

@@ -1,14 +1,3 @@
-/**
- * @Author: Amirhosseinhpv
- * @Date:   2020/09/20 23:08:05
- * @Email:  its@hpv.im
- * @Last modified by:   Amirhosseinhpv
- * @Last modified time: 2020/10/20 14:58:34
- * @License: GPLv2
- * @Copyright: Copyright © 2020 Amirhosseinhpv, All rights reserved.
- */
-
-
 :root {
 	--theme_color: {{{theme_color}}};
 	--theme_color2: {{{theme_color2}}};
@@ -35,7 +24,11 @@
 .font-medium {
 	font-size: 8pt;
 }
-
+.show_product_base_price,
+.show_product_tax,
+.show_product_total_price {
+	min-width: 90px;
+}
 table * {
 	font-size: 9px !important;
 	direction: rtl;
@@ -62,13 +55,19 @@ tfoot, thead, .content-table td, .content-table td, .bordered , tr.show_order_it
 	border: 1px solid {{{theme_color}}} !important;
 }
 
-.content-table td, th {
-	/* border: 1px solid #000; */
+.content-table td, th{
 	text-align: center;
 	padding: 0.1cm;
 	font-weight: normal;
 	word-break: break-word;
 }
+.content-table td.show_product_title_description{
+	text-align: right;
+}
+.title{
+	font-weight: bold;
+}
+
 td table.display_meta * {
 	margin: 0;
 }
@@ -204,5 +203,4 @@ img[src=""] {
 	display: none;
 }
 
-.show_product_title_description, .show_product_title_description * { text-align: right !important; }
 tfoot td:last-of-type * { text-align: right; vertical-align: top; }

@@ -1,14 +1,11 @@
 /**
- * @Author: Amirhosseinhpv
+ * @Author: amirhp-com
  * @Date:   2020/10/20 22:23:23
- * @Email:  its@hpv.im
- * @Last modified by:   Amirhosseinhpv
- * @Last modified time: 2020/10/20 22:35:54
+ * @Email:  its@amirhp.com
+ * @Last modified by:   amirhp-com
+ * @Last modified time: 2022/07/14 22:45:03
  * @License: GPLv2
- * @Copyright: Copyright © 2020 Amirhosseinhpv, All rights reserved.
  */
-
-
 :root {
 	--puiw--spinner-color: #0073aa;
 	--puiw--bg: #03051a;
@@ -22,8 +19,14 @@
 @font-face {
 	font-family: bodyfont;
 	font-style: normal;
-	font-weight: 400;
-	src: url("../css/96594ad4.woff2") format('woff2');
+	font-weight: normal;
+	src: url("../css/96594ad4.woff") format('woff');
+}
+@font-face {
+	font-family: bodyfont;
+	font-style: normal;
+	font-weight: bold;
+	src: url("../css/96594ad5.woff") format('woff');
 }
 
 #TB_ajaxContent,
@@ -149,36 +152,87 @@ ul.inner_content a:hover {
 }
 
 .button.admn.pwui_opts:hover img {
-	-webkit-filter: drop-shadow(0px 0px 7px #0baed2);
 	filter: drop-shadow(0px 0px 7px #0baed2);
 	transition: all 0.4s ease-in-out;
 }
 
 .button.admn.pwui_opts.pdf:hover img {
-	-webkit-filter: drop-shadow(0px 0px 7px #d21d0b);
 	filter: drop-shadow(0px 0px 7px #d21d0b);
 }
 
 .button.admn.pwui_opts.html:hover img {
-	-webkit-filter: drop-shadow(0px 0px 7px #0bd20d);
 	filter: drop-shadow(0px 0px 7px #0bd20d);
 }
 
 .button.pwui_opts:not(.admn) {
 	display: flex;
 	align-items: center;
+	justify-content: center;
 }
 
 .button.pwui_opts:not(.admn):active img,
 .button.pwui_opts:not(.admn):focus img,
 .button.pwui_opts:not(.admn):hover img {
 	transition: all 0.4s ease-in-out;
-	-webkit-filter: invert(1) !important;
 	filter: invert(1) !important;
 }
 
 .piuw_toolkit > * {
 	margin-bottom: 0;
+}
+
+input#puiwc_advanced_opts[type=checkbox] {
+	-webkit-appearance: none !important;
+	-moz-appearance: none !important;
+	appearance: none !important;
+	-webkit-tap-highlight-color: transparent !important;
+	cursor: pointer !important;
+}
+
+input#puiwc_advanced_opts[type=checkbox]:focus {
+	outline: 0 !important;
+	box-shadow: none !important;
+	outline: none !important;
+}
+
+input#puiwc_advanced_opts[type=checkbox] {
+	height: 1.25rem !important;
+	width: 3rem !important;
+	min-width: 1.25rem !important;
+	max-width: 3rem !important;
+	border-radius: 16px !important;
+	display: inline-block !important;
+	position: relative !important;
+	margin: 0 !important;
+	border: none !important;
+	background: #ec4f4f !important;
+}
+
+input#puiwc_advanced_opts[type=checkbox]:after {
+	content: "" !important;
+	position: absolute !important;
+	top: 4px !important;
+	left: 4px !important;
+	width: 0.8rem !important;
+	height: 0.8rem !important;
+	border-radius: 50% !important;
+	background: white !important;
+	box-shadow: 0 1px 2px rgba(44, 44, 44, 0.2) !important;
+	transition: all 0.2s cubic-bezier(0.5, 0.1, 0.75, 1.35) !important;
+}
+
+input#puiwc_advanced_opts[type=checkbox]:checked {
+	background: #22be15 !important;
+	box-shadow: none !important;
+	outline: none !important;
+}
+
+input#puiwc_advanced_opts[type=checkbox]:checked:before {
+	content: "" !important;
+}
+
+input#puiwc_advanced_opts[type=checkbox]:checked:after {
+	transform: translatex(calc(3rem - 0.8rem - 8px)) !important;
 }
 
 .puiw_close_overly {
@@ -357,7 +411,6 @@ ul.inner_content a:hover {
 	box-sizing: content-box;
 }
 /* inside orders page */
-
 .form-field._billing_puiw_billing_uin_field,
 .form-field._shipping_puiw_invoice_track_id_field {
 	width: 100% !important;
@@ -500,11 +553,11 @@ label[for] {
 	user-select: none;
 }
 
-
 [dir=rtl] .ui-selectmenu-button span.ui-selectmenu-text {
-  text-align: right;
+	text-align: right;
 	padding: 0.4em 1em 0.4em 2.1em;
 }
+
 [dir=rtl] .ui-selectmenu-button span.ui-icon {
 	right: auto;
 	left: 0.5em;
@@ -512,4 +565,54 @@ label[for] {
 
 .wc-customer-search + .select2 {
 	z-index: 1 !important;
+}
+
+.puiw_half_container a[href] img {
+	display: inline-block;
+	filter: invert(.9);
+}
+
+.puiw_half_container a[href] {
+	font-size: 0 !important;
+}
+
+.puiw_half_container > div {
+	width: 100%;
+}
+
+.puiw_half_container {
+	display: grid;
+	margin-bottom: 5px;
+	grid-template-columns: repeat(4, auto);
+	gap: 0.5rem;
+}
+
+.advabced_puiwc > div.puiw_half {
+	margin-bottom: 1rem;
+}
+
+.advabced_puiwc > div label {
+	margin-bottom: 0.35rem;
+	display: block;
+}
+
+.puiw-color-pickers .wp-color-result-text {
+	display: none;
+}
+
+.puiw-color-pickers {
+	display: grid;
+	grid-template-columns: repeat(3, auto);
+	justify-content: start;
+	position: relative;
+}
+
+.wp-picker-container.wp-picker-active {
+	position: absolute;
+	z-index: 9999999999999;
+}
+
+.puiw_half_container > div:nth-of-type(1),
+.puiw_half_container > div:nth-of-type(2) {
+	grid-column: auto / 2 span;
 }
