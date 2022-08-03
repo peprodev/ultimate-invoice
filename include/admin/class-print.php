@@ -1,5 +1,5 @@
 <?php
-# @Last modified time: 2022/07/14 21:52:39
+# @Last modified time: 2022/08/03 13:40:13
 namespace peproulitmateinvoice;
 use voku\CssToInlineStyles\CssToInlineStyles;
 
@@ -706,8 +706,8 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
                 // Based on WC_Order (as shown in order details screen)
                 case 'wcorder':
                   if ( $item->get_subtotal() !== $item->get_total() ) {
-                    $discount_amount = $item->get_subtotal() - $item->get_total() > 0 ? wc_price( wc_format_decimal( $item->get_subtotal() - $item->get_total(), '' ), array( 'currency' => $order->get_currency() ) ) : "";
-                    $percentage = (100-((float)$item->get_total() / (float)$item->get_subtotal() * 100));
+                    $discount_amount  = $item->get_subtotal() - $item->get_total() > 0 ? wc_price( wc_format_decimal( $item->get_subtotal() - $item->get_total(), '' ), array( 'currency' => $order->get_currency() ) ) : "";
+                    $percentage       = $this->calc_precentage((float)$item->get_subtotal(), (float)$item->get_total());
                     $discount_precent = sprintf("%'02.1f%%", $percentage);
                   }
                 break;
@@ -715,7 +715,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
                 case 'liveprice':
                   if ( $sale_price > 0 && $sale_price < $regular_price ) {
                     $discount_amount  = (($regular_price - $sale_price) > 0) ? wc_price( wc_format_decimal( $regular_price - $sale_price, '' ), array( 'currency' => $order->get_currency() ) ) : "";
-                    $percentage       = abs(100-($regular_price / $sale_price * 100));
+                    $percentage       = $this->calc_precentage($sale_price, $regular_price);
                     $discount_precent = $percentage > 0 ? sprintf("%'02.1f%%", $percentage) : "";
                   }else{
                     $discount_amount  = "";
@@ -726,7 +726,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
                 case 'savepirce':
                 if ( $prev_sale_price > 0 && $prev_sale_price < $prev_regular_price ) {
                   $discount_amount  = (($prev_regular_price - $prev_sale_price) > 0) ? wc_price( wc_format_decimal( $prev_regular_price - $prev_sale_price, '' ), array( 'currency' => $order->get_currency() ) ) : "";
-                  $percentage       = abs(100-($prev_regular_price / $prev_sale_price * 100));
+                  $percentage       = $this->calc_precentage($prev_sale_price, $prev_regular_price);
                   $discount_precent = $percentage > 0 ? sprintf("%'02.1f%%", $percentage) : "";
                 }else{
                   $discount_amount  = "";
@@ -870,6 +870,11 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           $tcona = ob_get_contents();
           ob_end_clean();
           return $tcona;
+        }
+        public function calc_precentage($offprice=0, $realprice=0)
+        {
+          // 100 - (newPrice / wasPrice) * 100
+          return round(100 - (($offprice / $realprice) * 100), 5);
         }
         public function create_pdf($order_id=0, $force_download = false, $MODE="I", $showerror=true)
         {

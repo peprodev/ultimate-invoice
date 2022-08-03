@@ -4,7 +4,7 @@ Donate link: https://pepro.dev/donate
 Tags: woocommerce invoice, pdf invoice, persian
 Requires at least: 5.0
 Tested up to: 6.0.1
-Version: 1.8.0
+Version: 1.8.1
 Stable tag: 1.8.0
 Requires PHP: 7.0
 WC requires at least: 5.0
@@ -152,6 +152,9 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 
 
 == Changelog ==
+
+= Version 1.8.1 / 2022-08-03 / 1401-05-12 =
+- Fixed discount percentage calculating
 
 = Version 1.8.0 🔥 / 2022-07-14 / 1401-04-23 =
 - Added 4 ways of showing Coupons on total
@@ -423,6 +426,9 @@ PEPRO DEV is a premium supplier of quality WordPress plugins, services and suppo
 Join us at [https://pepro.dev/](https://pepro.dev/) and also don't forget to check our [free offerings](http://profiles.wordpress.org/peprodev/), we hope you enjoy them!
 
 == Upgrade Notice ==
+
+= Version 1.8.1 / 2022-08-03 / 1401-05-12 =
+- Fixed discount percentage calculating
 
 = Version 1.8.0 🔥 / 2022-07-14 / 1401-04-23 =
 - Added 4 ways of showing Coupons on total
