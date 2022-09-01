@@ -1,5 +1,5 @@
 <?php
-# @Last modified time: 2022/08/03 13:40:13
+# @Last modified time: 2022/09/01 20:05:19
 namespace peproulitmateinvoice;
 use voku\CssToInlineStyles\CssToInlineStyles;
 
@@ -1050,28 +1050,168 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
             }
             $mpdf->Output($name . ($force_download ? ".pdf" : ""),($force_download ? "D" : "I"));
         }
+        public function create_slips_pdf($order_id=0, $force_download = false, $MODE="I", $showerror=true)
+        {
+          if (!$order_id || empty(trim($order_id)) || !is_numeric(trim($order_id))){ return __('Incorrect data!', $this->td); }
+          (int) $order_id = trim($order_id);
+          $order = wc_get_order($order_id);
+          if (!$order) {return false;}
+          $skipAuth = true;
+          if ("S" !== $MODE){
+            $skipAuth = false;
+            if (!$this->has_access("PDF",$order)){ global $PeproUltimateInvoice; $PeproUltimateInvoice->die("printClass_create_pdf auth_check", __("Err 403 - Access Denied", $this->td), $PeproUltimateInvoice->Unauthorized_Access); }
+          }
+          if (!$this->CheckPDFRequirements()){ $this->CheckPDFRequirements($showerror); }
+          global $PeproUltimateInvoice;
+          require_once PEPROULTIMATEINVOICE_DIR . '/include/vendor/autoload.php';
+          $class                   = "pepro-one-page-purchase---invoice-simple " . is_rtl() ? "rtl" : "";
+          $dire                    = is_rtl() ? 'rtl' : 'ltr';
+          $texe                    = is_rtl() ? 'right' : 'left';
+          $defaultConfig           = (new \Mpdf\Config\ConfigVariables())->getDefaults();
+          $fontDirs                = $defaultConfig['fontDir'];
+          $defaultFontConfig       = (new \Mpdf\Config\FontVariables())->getDefaults();
+          $fontData                = $defaultFontConfig['fontdata'];
+          $template                = $this->fn->get_template();
+          $templateDirpath         = apply_filters( "puiw_get_template_dir_path", $template, $order);
+          $contents                = file_get_contents("$templateDirpath/default.cfg");
+          $template_pdf_setting    = $this->parseTemplate($contents);
+          $get_allow_pdf_customer  = $this->fn->get_allow_pdf_customer();
+          $get_pdf_size            = $this->fn->get_pdf_size() . ("L" == $this->fn->get_pdf_orientation() ? "-L" : "");
+          $_fontData               = $fontData + [
+            'dejavu' => [
+              'R' => 'DejaVuSans.ttf',
+              'B' => 'DejaVuSans-Bold.ttf',
+              'useOTL' => 0xFF,
+              'useKashida' => 75,
+            ],
+            'iranyekanen' => [
+              'R' => 'IRANYekanRegular.ttf',
+              'B' => 'IRANYekanBold.ttf',
+              'useOTL' => 0xFF,
+              'useKashida' => 75,
+            ],
+            'iranyekanfa' => [
+              'R' => 'IRANYekanRegular(FaNum).ttf',
+              'B' => 'IRANYekanBold(FaNum).ttf',
+              'useOTL' => 0xFF,
+              'useKashida' => 75,
+            ],
+            'iransans' => [
+              'R' => 'IRANSans.ttf',
+              'B' => 'IRANSans_Bold.ttf',
+              'useOTL' => 0xFF,
+              'useKashida' => 75,
+            ],
+            'iransansfa' => [
+              'R' => 'IRANSans(FaNum).ttf',
+              'B' => 'IRANSans(FaNum)_Bold.ttf',
+              'useOTL' => 0xFF,
+              'useKashida' => 75,
+            ],
+            'danaen' => [
+              'R' => 'Dana-Regular.ttf',
+              'B' => 'Dana-Bold.ttf',
+              'useOTL' => 0xFF,
+              'useKashida' => 75,
+            ],
+            'danafa' => [
+              'R' => 'Dana-FaNum-Regular.ttf',
+              'B' => 'Dana-FaNum-Bold.ttf',
+              'useOTL' => 0xFF,
+              'useKashida' => 75,
+            ]];
+
+          @ini_set('display_errors', 0);
+          error_reporting(0);
+
+          $mpdf = new \Mpdf\Mpdf(array(
+            'fontDir'                => array_merge($fontDirs, [plugin_dir_path(__FILE__)]),
+            'fontdata'               => $_fontData,
+            'default_font'           => $this->fn->get_pdf_font(),
+            'format'                 => $get_pdf_size, // A4-L
+            'mode'                   => 'utf-8',
+            'margin_right'           => $template_pdf_setting["pdf_margin_right"],
+            'margin_left'            => $template_pdf_setting["pdf_margin_left"],
+            'margin_top'             => $template_pdf_setting["pdf_margin_top"],
+            'margin_bottom'          => $template_pdf_setting["pdf_margin_bottom"],
+            'margin_header'          => $template_pdf_setting["pdf_margin_header"],
+            'margin_footer'          => $template_pdf_setting["pdf_margin_footer"],
+            'debug'                  => false,
+            'allow_output_buffering' => true,
+            'showImageErrors'        => false,
+            'mirrorMargins'          => 0,
+            'autoLangToFont'         => true,
+            'defaultPageNumStyle'    => 'arabic-indic',
+          ));
+          $opts = apply_filters( "puiw_generate_pdf_name_orderid_format", array(
+            "invoice_prefix"=> $this->fn->get_invoice_prefix(),
+            "invoice_suffix"=> $this->fn->get_invoice_suffix(),
+            "invoice_start"=> $this->fn->get_invoice_start(),
+          ));
+          $order_id_formatted = $opts["invoice_prefix"] . ($opts["invoice_start"]+$order_id) . $opts["invoice_suffix"] ?: "0000000000000000";
+          $pdf_title          = sprintf(_x("Invoice #%s on %s", "invoice-template", $PeproUltimateInvoice->td), $order_id_formatted, get_bloginfo('title'));
+          $pdf_title          = apply_filters( "puiw_generate_pdf_title_of_pdf",$pdf_title);
+          $datenow            = current_time('timestamp');
+          $mpdf->SetDirectionality($dire);
+          $mpdf->SetTitle($pdf_title);
+          $mpdf->SetSubject($pdf_title);
+          $mpdf->SetAuthor($PeproUltimateInvoice->title_d);
+          $mpdf->SetCreator($PeproUltimateInvoice->title_tw);
+          if (!$order) {
+            $errrxt = _x('Error! Invoice does not exist.', 'invoice-template', $PeproUltimateInvoice->td);
+            $err_html .= "<body dir='$dire'><h2 style='text-align:center;'>$errrxt</h2><p style='text-align:center;' dir='$dire'>" .
+            sprintf(_x('Created by %s<br>( %s )', 'invoice-template', $PeproUltimateInvoice->td), $PeproUltimateInvoice->title_t,"<a href='https://pepro.dev/'>".$PeproUltimateInvoice->title_d.'</a>') .
+            "</p><br><span><hr style='width: 80%;'><p style='text-align:center;' dir='$dire'>" .
+            sprintf(_x('%sBack to Dashboard%s', 'invoice-template', $PeproUltimateInvoice->td), "<a href='".get_permalink(get_option('woocommerce_myaccount_page_id'))."'>", '</a>'). " / " .
+            sprintf(_x('%sBack to Orders%s', 'invoice-template', $PeproUltimateInvoice->td), "<a href='".wc_get_endpoint_url('orders', '', get_permalink(get_option('woocommerce_myaccount_page_id')))."'>", '</a>').
+            "</span></p></body>";
+            $mpdf->WriteHTML($err_html);
+          }
+          else{
+            $stylesheet      = $this->get_pdf_style($order_id, $order);
+            $PDF_EXTRA_STYLE = $this->create_slips($order_id, "CSS");
+            $html_invoice    = $this->create_slips($order_id, "PDF");
+            $mpdf->WriteHTML($stylesheet.$PDF_EXTRA_STYLE, \Mpdf\HTMLParserMode::HEADER_CSS);
+            $mpdf->WriteHTML($html_invoice, \Mpdf\HTMLParserMode::HTML_BODY);
+          }
+          $datetime = date_i18n("Y_m_d_H_i", $datenow);
+          if ($this->fn->get_date_shamsi() == "yes") {
+            $datetime = pu_jdate("Y-m-d_H-i-s", (int) $datenow, "", "local", "en");
+          }
+          $name = "PackingSlip-$order_id_formatted-$datetime";
+          $name = apply_filters("puiw_get_export_pdf_name", $name , $order_id_formatted, $order_id, $datenow);
+          if ("S" == $MODE){
+            $rand       = md5(time());
+            $namedir    = PEPROULTIMATEINVOICE_DIR . "/pdf_temp";
+            $namedotext = "PackingSlip-$order_id_formatted.$datetime.pdf";
+            $namedir    = apply_filters( "puiw_get_default_mail_pdf_temp_path", $namedir);
+            $namedotext = apply_filters( "puiw_get_default_mail_pdf_temp_name", $namedotext);
+            wp_mkdir_p($namedir);
+            $tmpname = "$namedir/$namedotext";
+            $er      = $mpdf->Output($tmpname, "F");
+            return $namedotext;
+          }
+          $mpdf->Output($name . ($force_download ? ".pdf" : ""),($force_download ? "D" : "I"));
+        }
         public function create_slips($order_id=0, $MODE="HTML")
         {
           if (!$order_id || empty(trim($order_id)) || !is_numeric(trim($order_id))) {return __('Incorrect data!', $this->td);}
           (int) $order_id = trim($order_id);
-          $order = wc_get_order($order_id);
+          $order          = wc_get_order($order_id);
           if (!$order) {return __('Incorrect Order!', $this->td);}
           ob_start();
-          $opts = $this->get_default_dynamic_params($order_id,$order);
-          $opt = apply_filters("puiw_printslips_create_html_options", $opts, $order);
-
-          $templateDirpath = apply_filters( "puiw_get_template_dir_path", $opt["template"], $order);
-          $opt["CURENT_DIR_URL"] = apply_filters( "puiw_get_template_dir_url", plugin_dir_url($opt["template"]) ,$opt["template"] ,$order);
-
-          $keepOriginalHTMLtags = $this->get_preserve_html_tags($opt, $order);
+          $opts                  = $this->get_default_dynamic_params($order_id,$order);
+          $opt                   = apply_filters("puiw_printslips_create_html_options", $opts, $order);
+          $templateDirpath       = apply_filters("puiw_get_template_dir_path",  $opt["template"], $order);
+          $opt["CURENT_DIR_URL"] = apply_filters("puiw_get_template_dir_url",   plugin_dir_url($opt["template"]) ,$opt["template"] ,$order);
+          $keepOriginalHTMLtags  = $this->get_preserve_html_tags($opt, $order);
           $keepOriginalENnumbers = $this->get_preserve_english_numbers($opt, $order);
           do_action("puiw_printslips_before_create_html", $opt, $opts, $order);
           $extrainvoiceheaddata  = '';
-          $main_css_style        = file_get_contents("$templateDirpath/style.slips.css");
-          $body_content          = '<p style="text-align:center;"><a class="print-button" href="javascript:;" onclick="window.print();return false;">'.__("PRINT",$this->td).'</a></p>';
-          $body_content         .= file_get_contents("$templateDirpath/template.slips.tpl");
-          $invoicehtmltitle      = "{{{invoice_title}}} | {{{store_name}}}";
-          $extrainvoiceheaddata .= '<script src="'.PEPROULTIMATEINVOICE_URL.'/assets/js/qrcode.min.js"></script>';
+          $main_css_style        = file_get_contents("$templateDirpath/style.slips".("PDF" == $MODE || "CSS" == $MODE ? ".pdf" : "").".css");
+          $body_content          = "PDF" == $MODE ? "" : '<p style="text-align:center;"><a class="print-button" href="javascript:;" onclick="window.print();return false;">'.__("PRINT",$this->td).'</a></p>';
+          $body_content         .= file_get_contents("$templateDirpath/template.slips".("PDF" == $MODE ? ".pdf" : "").".tpl");
+          $invoicehtmltitle      = "PDF" == $MODE ? "" : "{{{invoice_title}}} | {{{store_name}}}";
           $order_note_a          = apply_filters( "puiw_printslips_order_note_customer", "<strong>".__("Note provided by Customer",$this->td)."</strong><br>" . $this->fn->get_order_note($order,"a") , $this->fn->get_order_note($order,"a"), $order, $opt);
           $order_note_b          = apply_filters( "puiw_printslips_order_note_shopmngr", "<strong>".__("Note provided by Shop manager",$this->td)."</strong><br>" . $this->fn->get_order_note($order,"b") , $this->fn->get_order_note($order,"b"), $order, $opt);
 
@@ -1127,8 +1267,6 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
             $opt["invoice_final_prices_colspan"] = $opt["invoice_final_prices_colspan"] -1 ;
           }
 
-          // $opt["product_nettotal_colspan"] = $opt["product_nettotal_colspan"] + 1 ;
-
           if ($opt["show_product_sku"] !== "yes"){
             $opt["invoice_final_row_colspan"] = $opt["invoice_final_row_colspan"] -1 ;
           }
@@ -1138,13 +1276,15 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           }
           $opt["invoice_notes"] = $notes;
 
-          $body_content = apply_filters( "puiw_printslips_HTML_body", $body_content);
+          $body_content         = apply_filters( "puiw_printslips_HTML_body", $body_content);
           $extrainvoiceheaddata = apply_filters( "puiw_printslips_HTML_extrahead", $extrainvoiceheaddata);
-          $invoicehtmltitle = apply_filters( "puiw_printslips_HTML_title", $invoicehtmltitle);
-          $main_css_style = apply_filters( "puiw_printslips_HTML_style", $main_css_style);
-          $template = "<!DOCTYPE html><html lang=\"fa\" dir=\"ltr\"><head><title>$invoicehtmltitle</title>$extrainvoiceheaddata<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /><style type='text/css'>{$main_css_style}{{{custom_css_style}}}</style></head>$body_content</html>";
-          $product_row_RAW = file_get_contents("$templateDirpath/template.row.tpl");
-          $n=0;$total_weight = 0;
+          $invoicehtmltitle     = apply_filters( "puiw_printslips_HTML_title", $invoicehtmltitle);
+          $main_css_style       = apply_filters( "puiw_printslips_HTML_style", $main_css_style);
+          $template_css         = "{$main_css_style}{{{custom_css_style}}}";
+          $template             = "<!DOCTYPE html><html lang=\"fa\" dir=\"ltr\"><head><title>$invoicehtmltitle</title>$extrainvoiceheaddata<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /><style type='text/css'>{$main_css_style}{{{custom_css_style}}}</style></head>$body_content</html>";
+          $template             = "PDF" == $MODE ? $body_content : $template;
+          $product_row_RAW      = file_get_contents("$templateDirpath/template.row.tpl");
+          $n                    = 0;$total_weight = 0;
           foreach ( apply_filters( "puiw_order_items", $order->get_items(), $order) as $item_id => $item ) {
             $n             += 1;
             $product_row    = ($product_row_RAW);
@@ -1237,15 +1377,18 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
             }
             $value = apply_filters("puiw_printslips_create_html_options_{$key}_value", $value, $key, $order);
             if (!in_array($key, $keepOriginalHTMLtags)){
-              $template = str_replace("{{{{$key}}}}", wp_strip_all_tags($value, 1), ($template));
+              $template_css = str_replace("{{{{$key}}}}", wp_strip_all_tags($value, 1), ($template_css));
+              $template      = str_replace("{{{{$key}}}}", wp_strip_all_tags($value, 1), ($template));
             }
             else{
-              $template = str_replace("{{{{$key}}}}", $value, $template);
+              $template_css = str_replace("{{{{$key}}}}", $value, $template_css);
+              $template      = str_replace("{{{{$key}}}}", $value, $template);
             }
           }
           if(apply_filters("puiw_printslips_return_html_minfied", true, $template, $opt, $order)){
             $template = $this->minify_html($template);
           }
+          if ("CSS" == $MODE) { return $template_css; }
           do_action("puiw_printslips_after_create_html", $opt, $opts, $order);
           do_action("puiw_printslips_before_return_html", $opt, $opts, $order);
           echo apply_filters("puiw_printslips_return_html", $template, $opt, $opts, $order);
@@ -1751,7 +1894,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           ob_start();
           $ob_get_contents = ""; $echo = ""; $found_any = false;
           if (!$item || empty($item)) return '';
-          $hidden_order_itemmeta = apply_filters( 'woocommerce_hidden_order_itemmeta', array( '_qty', '_tax_class', '_product_id', '_variation_id', '_line_subtotal', '_line_subtotal_tax', '_line_total', '_line_tax', 'method_id', 'cost', '_reduced_stock', ) );
+          $hidden_order_itemmeta = apply_filters('woocommerce_hidden_order_itemmeta', array( '_qty', '_tax_class', '_product_id', '_variation_id', '_line_subtotal', '_line_subtotal_tax', '_line_total', '_line_tax', 'method_id', 'cost', '_reduced_stock', ) );
 
           do_action( 'woocommerce_before_order_itemmeta', $item_id, $item, $product );
 

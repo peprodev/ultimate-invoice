@@ -11,8 +11,8 @@ Developer URI: https://amirhp.com
 Plugin URI: https://peprodev.com/pepro-woocommerce-ultimate-invoice/
 Requires at least: 5.0
 Tested up to: 6.0.1
-Version: 1.8.2
-Stable tag: 1.8.0
+Version: 1.8.3
+Stable tag: 1.8.3
 Requires PHP: 7.0
 WC requires at least: 5.0
 WC tested up to: 6.7.0
@@ -22,7 +22,7 @@ Copyright: (c) 2022 Pepro Dev. Group, All rights reserved.
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
-# @Last modified time: 2022/08/15 21:14:11
+# @Last modified time: 2022/09/01 20:59:16
 
 namespace peproulitmateinvoice;
 use voku\CssToInlineStyles\CssToInlineStyles;
@@ -76,7 +76,7 @@ if (!class_exists("PeproUltimateInvoice")) {
 
             self::$_instance            = $this;
             $this->td                   = "pepro-ultimate-invoice";
-            $this->version              = "1.8.1";
+            $this->version              = "1.8.3";
             $this->db_slug              = $this->td;
             $this->plugin_file          = __FILE__;
             $this->plugin_dir           = plugin_dir_path(__FILE__);
@@ -512,51 +512,58 @@ if (!class_exists("PeproUltimateInvoice")) {
                   frameborder='0' scrolling='no' src='".home_url("?invoice-slips=$order_id")."' title='OrderID#$order_id'></iframe>";
                 }
               }
-              $printBtn = "<style> .print-button {
-                cursor: pointer;
-                text-decoration: none;
-                background-color: #555;
-                padding: 1rem;
-                margin: auto;
-                -webkit-margin-end: 2px;
-                margin-inline-end: 2px;
-                color: aliceblue;
-                display: inline-block;
-                border-radius: 15px;
-                line-height: 0;
-              } @media print {
+              $printBtn = "<style>
                 .print-button {
-                  display: none;
+                  cursor: pointer;
+                  text-decoration: none;
+                  background-color: #555;
+                  padding: 1rem;
+                  margin: auto;
+                  -webkit-margin-end: 2px;
+                  margin-inline-end: 2px;
+                  color: aliceblue;
+                  display: inline-block;
+                  border-radius: 15px;
+                  line-height: 0;
+                 }
+                 @media print { .print-button { display: none; }
                 }
-              }</style>";
+              </style>";
               $printBtn .= "<p style='text-align: center'><a class=\"print-button\" href=\"javascript:;\" onclick=\"window.print();return false;\" >".__("Print",$this->td)."</a></p>";
               die("<title>".__("Bulk Packing Slip",$this->td)."</title>{$printBtn}{$inventory_temp}");
             }
 
             if (isset($_GET["invoice"]) && !empty(trim(sanitize_text_field($_GET["invoice"])))) {
-                $orderid = (int) trim(sanitize_text_field($_GET["invoice"]));
-                if (wc_get_order($orderid)){ die($this->print->create_html($orderid)); }
+              $orderid = (int) trim(sanitize_text_field($_GET["invoice"]));
+              if (wc_get_order($orderid)){ die($this->print->create_html($orderid)); }
             }
             if (isset($_GET["invoice-pdf"]) && !empty(trim(sanitize_text_field($_GET["invoice-pdf"])))) {
-                $force_download = false;
-                if (isset($_GET["download"]) && !empty(sanitize_text_field($_GET["download"]))) { $force_download = true; }
-                die($this->print->create_pdf((int) trim(sanitize_text_field($_GET["invoice-pdf"])), $force_download));
+              $force_download = false;
+              if (isset($_GET["download"]) && !empty(sanitize_text_field($_GET["download"]))) { $force_download = true; }
+              die($this->print->create_pdf((int) trim(sanitize_text_field($_GET["invoice-pdf"])), $force_download));
             }
             if (isset($_GET["invoice-slips"]) && !empty(trim(sanitize_text_field($_GET["invoice-slips"])))) {
-                die($this->print->create_slips((int) trim(sanitize_text_field($_GET["invoice-slips"]))));
+              die($this->print->create_slips((int) trim(sanitize_text_field($_GET["invoice-slips"]))));
             }
+
+            if (isset($_GET["invoice-slips-pdf"]) && !empty(trim(sanitize_text_field($_GET["invoice-slips-pdf"])))) {
+              $force_download = false;
+              if (isset($_GET["download"]) && !empty(sanitize_text_field($_GET["download"]))) { $force_download = true; }
+              die($this->print->create_slips_pdf((int) trim(sanitize_text_field($_GET["invoice-slips-pdf"])), $force_download));
+            }
+
             if (isset($_GET["invoice-inventory"]) && !empty(trim(sanitize_text_field($_GET["invoice-inventory"])))) {
-                die($this->print->create_inventory((int) trim(sanitize_text_field($_GET["invoice-inventory"]))));
+              die($this->print->create_inventory((int) trim(sanitize_text_field($_GET["invoice-inventory"]))));
             }
 
             if (isset($_GET["ultimate-invoice-reset"])) {
-                wp_die("Pepro Ultimate Invoice — FORCE RESET TO DEFAULT Settings done!<br />Return count: " . $this->change_default_settings("RESET") , "Force-reset Options", array("link_text"=> __("Back to Settings",$this->td), "link_url" => admin_url( "admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate" ), "text_direction" => "ltr"));
+              wp_die("Pepro Ultimate Invoice — FORCE RESET TO DEFAULT Settings done!<br />Return count: " . $this->change_default_settings("RESET") , "Force-reset Options", array("link_text"=> __("Back to Settings",$this->td), "link_url" => admin_url( "admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate" ), "text_direction" => "ltr"));
             }
             if (isset($_GET["ultimate-invoice-set"])) {
-                wp_die("Pepro Ultimate Invoice — RESET TO DEFAULT Settings done!<br />Return count: " . $this->change_default_settings("SET") , "Reset Options", array("link_text"=> __("Back to Settings",$this->td), "link_url" => admin_url( "admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate" ), "text_direction" => "ltr"));
+              wp_die("Pepro Ultimate Invoice — RESET TO DEFAULT Settings done!<br />Return count: " . $this->change_default_settings("SET") , "Reset Options", array("link_text"=> __("Back to Settings",$this->td), "link_url" => admin_url( "admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate" ), "text_direction" => "ltr"));
             }
             if (isset($_GET["ultimate-invoice-clear"])) {
-                wp_die("Pepro Ultimate Invoice — FORCE CLEAR Settings done!<br />Return count: " . $this->change_default_settings("CLEAR") , "Clear Options", array("link_text"=> __("Back to Settings",$this->td), "link_url" => admin_url( "admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate" ), "text_direction" => "ltr"));
+              wp_die("Pepro Ultimate Invoice — FORCE CLEAR Settings done!<br />Return count: " . $this->change_default_settings("CLEAR") , "Clear Options", array("link_text"=> __("Back to Settings",$this->td), "link_url" => admin_url( "admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate" ), "text_direction" => "ltr"));
             }
             if (isset($_GET["ultimate-invoice-get"])) {
               $string = "<div class='log5'>".highlight_string("<?php".PHP_EOL.$this->change_default_settings("GET"), 1) ."</div><style>.log5{text-align: left; direction: ltr; padding: 1rem; display: block; overflow: auto;z-index: 77777777777 !important;position: relative;background: white;} .log5 code {background: transparent !important;}</style>";
@@ -949,25 +956,21 @@ if (!class_exists("PeproUltimateInvoice")) {
             $styleFiles = glob(PEPROULTIMATEINVOICE_DIR ."template/*/default.cfg");
             $styleFiles = apply_filters("puiw_get_templates_list", $styleFiles);
             foreach ($styleFiles as $style) {
-                $file = file($style);
-                $contents = '';
-                foreach ($file as $lines => $line) {
-                    $contents.= $line;
-                }
-                $styleExifDAta = $this->parseTemplate($contents);
-                $template = sprintf(_x('%1$s — by %2$s', "theme-name", $this->td), $styleExifDAta["name"], $styleExifDAta["designer"]);
-                $simple_path = apply_filters("puiw_load_themes_simple_path", dirname($style), $style);
-                $simple_title = apply_filters("puiw_load_themes_simple_title", $template, $styleExifDAta["name"], $styleExifDAta["designer"], $styleExifDAta);
+                $contents                = file_get_contents($style);
+                $styleExifDAta           = $this->parseTemplate($contents);
+                $template                = sprintf(_x('%1$s — by %2$s', "theme-name", $this->td), $styleExifDAta["name"], $styleExifDAta["designer"]);
+                $simple_path             = apply_filters("puiw_load_themes_simple_path", dirname($style), $style);
+                $simple_title            = apply_filters("puiw_load_themes_simple_title", $template, $styleExifDAta["name"], $styleExifDAta["designer"], $styleExifDAta);
                 $tempaltes[$simple_path] = $simple_title;
-                $tempaltesInfoTemp = array(
-                  "title" => $template,
-                  "name" => $styleExifDAta["name"],
-                  "author" => $styleExifDAta["designer"],
+                $tempaltesInfoTemp       = array(
+                  "title"   => $template,
+                  "name"    => $styleExifDAta["name"],
+                  "author"  => $styleExifDAta["designer"],
                   "version" => $styleExifDAta["version"],
-                  "folder" => basename(dirname($style)),
-                  "path" => dirname($style),
-                  "url" => plugin_dir_url($style),
-                  "icon" => trailingslashit(plugin_dir_url($style))."screenshot.png",
+                  "folder"  => basename(dirname($style)),
+                  "path"    => dirname($style),
+                  "url"     => plugin_dir_url($style),
+                  "icon"    => trailingslashit(plugin_dir_url($style))."screenshot.png",
                 );
                 $tempaltesInfo[dirname($style)] = apply_filters("puiw_load_themes_advanced_info", $tempaltesInfoTemp);
             }
@@ -1052,6 +1055,7 @@ if (!class_exists("PeproUltimateInvoice")) {
             $url2     = home_url("?invoice-pdf={$id}");
             $url4     = home_url("?invoice-inventory={$id}");
             $url3     = home_url("?invoice-slips={$id}");
+            $url11     = home_url("?invoice-slips-pdf={$id}");
             $current  = $this->tpl->get_template();
             echo '<template id="puiw_DateSelectorContainer" style="display:none;"><div id="puiw_DateContainer" data-date="" style="width: 100%;"></div></template>';
 
@@ -1102,7 +1106,13 @@ if (!class_exists("PeproUltimateInvoice")) {
                 <a rel='puiw_tooltip' data-action='puiw_act_href'
                 title='<?php echo _x("View Packing Slip for shipping", "wc-orders-popup", $this->td); ?>' class='button button-primary pwui_opts btn-wide' href='<?php echo $url3; ?>'
                 target='_blank' data-ref='<?php echo $id; ?>'><?php echo "<img src='".PEPROULTIMATEINVOICE_ASSETS_URL."/img/unpacking.png'/>" .
-                _x("Sender/Receiver Packing Slip", "wc-orders-popup", $this->td); ?></a>
+                _x("Packing Slip", "wc-orders-popup", $this->td); ?></a>
+              </div>
+              <div class="puiw_half">
+                <a rel='puiw_tooltip' data-action='puiw_act_href'
+                title='<?php echo _x("View PDF Packing Slip for shipping", "wc-orders-popup", $this->td); ?>' class='button button-primary pwui_opts btn-wide' href='<?php echo $url11; ?>'
+                target='_blank' data-ref='<?php echo $id; ?>'><?php echo "<img src='".PEPROULTIMATEINVOICE_ASSETS_URL."/img/unpacking.png'/>" .
+                _x("PDF Packing Slip", "wc-orders-popup", $this->td); ?></a>
               </div>
               <div class="puiw_half">
                 <a rel='puiw_tooltip' data-action='puiw_act6' title='<?php echo _x("Mail Order Invoice to Customer", "wc-orders-popup", $this->td); ?>'

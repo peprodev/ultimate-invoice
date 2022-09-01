@@ -357,6 +357,9 @@
           case "puiw_act14":
             puiw_act14(order_id);
             break;
+          case "puiw_act15":
+            puiw_act11(order_id);
+            break;
           case "puiw_act_href":
               url = me.attr("href");
               if ($("#puiwc_advanced_opts").prop("checked")){
@@ -465,6 +468,12 @@
       let me = $(this);
       var lparam = me.data("ref");
       window.open(_i18n.home + "/?invoice-pdf=" + lparam + "&download=1");
+    });
+    $(document).on("click tap", ".puiw_download_slip_pdf", function(e) {
+      e.preventDefault();
+      let me = $(this);
+      var lparam = me.data("ref");
+      window.open(_i18n.home + "/?invoice-slips-pdf=" + lparam + "&download=1");
     });
 
     var DEFAULT_SWATACHES = `[{"n":"Smoke","p":"#9E9E9E","s":"#A6A6A6","t":"#B3B3B3"},{"n":"Mango","p":"#FFCC80","s":"#FCD59A","t":"#FFDFB0"},{"n":"Gold","p":"#FAEE84","s":"#FFF59D","t":"#FFF8B5"},{"n":"Grass","p":"#A5D6A7","s":"#AFE0B1","t":"#C3EBC5"},{"n":"Sea","p":"#90CAF9","s":"#A6D5FC","t":"#B5DEFF"},{"n":"Peach","p":"#EF9A9A","s":"#F5ABAB","t":"#F0BBBB"}]`;
@@ -604,7 +613,7 @@
       if (ULTIMATE_INVOICE_CURRENT_AJAX != null) {
         ULTIMATE_INVOICE_CURRENT_AJAX.abort();
       }
-      $(`${defs}.puiw_back_overly, .puiw_print_overly, .puiw_open_newtab, .puiw_download_pdf`).hide();
+      $(`${defs}.puiw_back_overly, .puiw_print_overly, .puiw_open_newtab, .puiw_download_pdf, .puiw_download_slip_pdf`).hide();
       $(`.pwui_ajax_data[data-ref]`).getNiceScroll().remove();
     }
 
@@ -665,7 +674,7 @@
     /* Get HTML Invoice Ajax*/
     function puiw_act4_(id) {
       loading = `<div class="loadingio-spinner-dual-ring-raf87e8fn7f"><div class="ldio-ltr1g772pal"><div></div><div><div></div></div></div></div>`;
-      $(`.pwui_overly, .puiw_back_overly, .puiw_print_overly, .puiw_open_newtab, .puiw_download_pdf`).hide();
+      $(`.pwui_overly, .puiw_back_overly, .puiw_print_overly, .puiw_open_newtab, .puiw_download_pdf, .puiw_download_slip_pdf`).hide();
       $(`.pwui_ajax_data[data-ref='${id}'] .ajax_data`).html(loading);
       $(`.pwui_ajax_data[data-ref='${id}']`).show();
       if (ULTIMATE_INVOICE_CURRENT_AJAX != null) {
@@ -713,13 +722,26 @@
       $(`.pwui_overly, .piuw_toolkit a.secondary`).hide();
       $(`.pwui_ajax_data[data-ref='${id}'] .ajax_data`).html(loading);
       $(`.pwui_ajax_data[data-ref='${id}']`).show();
-      if (ULTIMATE_INVOICE_CURRENT_AJAX != null) {
-        ULTIMATE_INVOICE_CURRENT_AJAX.abort();
-      }
+      if (ULTIMATE_INVOICE_CURRENT_AJAX != null) { ULTIMATE_INVOICE_CURRENT_AJAX.abort(); }
       lparam = parseInt(id);
       $(`.pwui_ajax_data[data-ref='${id}'] .ajax_data`).append(`<iframe style="display:none;" src="${_i18n.home + "/?invoice-pdf=" + lparam}" id="dataajaxloaded_${lparam}"></iframe>`);
       $(`#dataajaxloaded_${lparam}`).on("load", function() {
         $(`.puiw_back_overly, .puiw_open_newtab, .puiw_download_pdf`).fadeIn();
+        $(".loadingio-spinner-dual-ring-raf87e8fn7f").hide();
+        $(this).fadeIn();
+      });
+    }
+    /* Get PDF packing slip */
+    function puiw_act11(id) {
+      loading = `<div class="loadingio-spinner-dual-ring-raf87e8fn7f"><div class="ldio-ltr1g772pal"><div></div><div><div></div></div></div></div>`;
+      $(`.pwui_overly, .piuw_toolkit a.secondary`).hide();
+      $(`.pwui_ajax_data[data-ref='${id}'] .ajax_data`).html(loading);
+      $(`.pwui_ajax_data[data-ref='${id}']`).show();
+      if (ULTIMATE_INVOICE_CURRENT_AJAX != null) { ULTIMATE_INVOICE_CURRENT_AJAX.abort(); }
+      lparam = parseInt(id);
+      $(`.pwui_ajax_data[data-ref='${id}'] .ajax_data`).append(`<iframe style="display:none;" src="${_i18n.home + "/?invoice-slips-pdf=" + lparam}" id="dataajaxloaded_${lparam}"></iframe>`);
+      $(`#dataajaxloaded_${lparam}`).on("load", function() {
+        $(`.puiw_back_overly, .puiw_open_newtab, .puiw_download_slip_pdf`).fadeIn();
         $(".loadingio-spinner-dual-ring-raf87e8fn7f").hide();
         $(this).fadeIn();
       });

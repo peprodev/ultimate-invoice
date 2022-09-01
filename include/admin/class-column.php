@@ -19,9 +19,9 @@ if (!class_exists("PeproUltimateInvoice_Columns")) {
         public function __construct()
         {
             $this->td = "pepro-ultimate-invoice";
-            add_action("admin_enqueue_scripts", array( $this, "admin_enqueue_scripts" ) );
-            add_filter('manage_edit-shop_order_columns', array( $this , 'column_header'), 20);
-            add_action('manage_shop_order_posts_custom_column', array( $this , 'column_content'));
+            add_action("admin_enqueue_scripts",                 array( $this, "admin_enqueue_scripts") );
+            add_filter("manage_edit-shop_order_columns",        array( $this, "column_header"), 20);
+            add_action("manage_shop_order_posts_custom_column", array( $this, "column_content"));
         }
         public function localize_script()
         {
@@ -142,6 +142,7 @@ if (!class_exists("PeproUltimateInvoice_Columns")) {
           $url2 = home_url("?invoice-pdf={$id}");
           $url4 = home_url("?invoice-inventory={$id}");
           $url3 = home_url("?invoice-slips={$id}");
+          $url11 = home_url("?invoice-slips-pdf={$id}");
           $mode = $mode ? "
           <a class='button admn pwui_opts maincog' href='#' data-ref='{$id}' rel='puiw_tooltip' title='"._x("View Invoice Options","wc-orders-popup",$this->td)."'>
             <img src='".PEPROULTIMATEINVOICE_ASSETS_URL."/img/puzzle.png'/>
@@ -154,7 +155,6 @@ if (!class_exists("PeproUltimateInvoice_Columns")) {
           </a>
           " : "";
 
-
           return "$mode
           <div class='pwui_overlyblockui' data-ref='{$id}'></div>
           <div class='pwui_ajax_data' data-ref='{$id}'>
@@ -164,6 +164,7 @@ if (!class_exists("PeproUltimateInvoice_Columns")) {
               <a class='secondary puiw_open_newtab' data-ref='{$id}' title='"._x("Open in new Tab","wc-orders-popup",$this->td)."' rel='puiw_tooltip' href='#'><span class='dashicons dashicons-external'></span></a>
               <a class='secondary puiw_print_overly' data-ref='{$id}' title='"._x("Print Now","wc-orders-popup",$this->td)."' rel='puiw_tooltip' href='#'><span class='dashicons dashicons-media-document'></span></a>
               <a class='secondary puiw_download_pdf' data-ref='{$id}' title='"._x("Download PDF","wc-orders-popup",$this->td)."' rel='puiw_tooltip' href='#'><span class='dashicons dashicons-download'></span></a>
+              <a class='secondary puiw_download_slip_pdf' data-ref='{$id}' title='"._x("Download PDF","wc-orders-popup",$this->td)."' rel='puiw_tooltip' href='#'><span class='dashicons dashicons-download'></span></a>
             </div>
             <div class='ajax_data'></div>
           </div>
@@ -173,14 +174,14 @@ if (!class_exists("PeproUltimateInvoice_Columns")) {
             </div>
             <h2>".sprintf(_x("Invoice #%s Options","wc-orders-popup",$this->td),$id)."</h2>
             <ul class='inner_content' data-ref='{$id}'>
-
-              <li><img style=\"display: inline-block;-webkit-margin-end: 5px;margin-inline-end: 5px;-webkit-filter: invert(.9);filter: invert(.9);\" src='".PEPROULTIMATEINVOICE_ASSETS_URL."/img/document.png'/> <a            data-action='puiw_act4' data-ref='{$id}' href='$url1'> "   . _x("HTML Invoice","wc-orders-popup",$this->td)."</a></li>
-              <li><img style=\"display: inline-block;-webkit-margin-end: 5px;margin-inline-end: 5px;-webkit-filter: invert(.9);filter: invert(.9);\" src='".PEPROULTIMATEINVOICE_ASSETS_URL."/img/pdf.png'/> <a                 data-action='puiw_act5' data-ref='{$id}' href='$url2'> "   . _x("PDF Invoice","wc-orders-popup",$this->td)."</a></li>
-              <li><img style=\"display: inline-block;-webkit-margin-end: 5px;margin-inline-end: 5px;-webkit-filter: invert(.9);filter: invert(.9);\" src='".PEPROULTIMATEINVOICE_ASSETS_URL."/img/document-delivery.png'/> <a   data-action='puiw_act3' data-ref='{$id}' href='$url4'> "   . _x("Inventory report","wc-orders-popup",$this->td)."</a></li>
-              <li><img style=\"display: inline-block;-webkit-margin-end: 5px;margin-inline-end: 5px;-webkit-filter: invert(.9);filter: invert(.9);\" src='".PEPROULTIMATEINVOICE_ASSETS_URL."/img/unpacking.png'/> <a           data-action='puiw_act2' data-ref='{$id}' href='$url3'> "   . _x("Sender/Receiver Packing Slip","wc-orders-popup",$this->td)."</a></li>
-              <li><img style=\"display: inline-block;-webkit-margin-end: 5px;margin-inline-end: 5px;-webkit-filter: invert(.9);filter: invert(.9);\" src='".PEPROULTIMATEINVOICE_ASSETS_URL."/img/mail-account.png'/> <a        data-action='puiw_act6' data-ref='{$id}' href='#'> "   . _x("Mail Invoice to Customer","wc-orders-popup",$this->td)."</a></li>
-              <li><img style=\"display: inline-block;-webkit-margin-end: 5px;margin-inline-end: 5px;-webkit-filter: invert(.9);filter: invert(.9);\" src='".PEPROULTIMATEINVOICE_ASSETS_URL."/img/secure-mail.png'/> <a         data-action='puiw_act9' data-ref='{$id}' href='#'> "  . _x("Mail Invoice to Shop Managers","wc-orders-popup",$this->td)."</a></li>
-              <li><img style=\"display: inline-block;-webkit-margin-end: 5px;margin-inline-end: 5px;-webkit-filter: invert(.9);filter: invert(.9);\" src='".PEPROULTIMATEINVOICE_ASSETS_URL."/img/edit-message.png'/> <a        data-action='puiw_act10' data-ref='{$id}' href='#'> "  . _x("Mail Invoice to Custom List","wc-orders-popup",$this->td)."</a></li>
+              <li><img style=\"display: inline-block;-webkit-margin-end: 5px;margin-inline-end: 5px;-webkit-filter: invert(.9);filter: invert(.9);\" src='".PEPROULTIMATEINVOICE_ASSETS_URL."/img/document.png'/> <a            data-action='puiw_act4'  data-ref='{$id}' href='$url1'> "   . _x("HTML Invoice","wc-orders-popup",$this->td)."</a></li>
+              <li><img style=\"display: inline-block;-webkit-margin-end: 5px;margin-inline-end: 5px;-webkit-filter: invert(.9);filter: invert(.9);\" src='".PEPROULTIMATEINVOICE_ASSETS_URL."/img/pdf.png'/> <a                 data-action='puiw_act5'  data-ref='{$id}' href='$url2'> "   . _x("PDF Invoice","wc-orders-popup",$this->td)."</a></li>
+              <li><img style=\"display: inline-block;-webkit-margin-end: 5px;margin-inline-end: 5px;-webkit-filter: invert(.9);filter: invert(.9);\" src='".PEPROULTIMATEINVOICE_ASSETS_URL."/img/document-delivery.png'/> <a   data-action='puiw_act3'  data-ref='{$id}' href='$url4'> "   . _x("Inventory report","wc-orders-popup",$this->td)."</a></li>
+              <li><img style=\"display: inline-block;-webkit-margin-end: 5px;margin-inline-end: 5px;-webkit-filter: invert(.9);filter: invert(.9);\" src='".PEPROULTIMATEINVOICE_ASSETS_URL."/img/unpacking.png'/> <a           data-action='puiw_act2'  data-ref='{$id}' href='$url3'> "   . _x("Packing Slip","wc-orders-popup",$this->td)."</a></li>
+              <li><img style=\"display: inline-block;-webkit-margin-end: 5px;margin-inline-end: 5px;-webkit-filter: invert(.9);filter: invert(.9);\" src='".PEPROULTIMATEINVOICE_ASSETS_URL."/img/unpacking.png'/> <a           data-action='puiw_act15' data-ref='{$id}' href='$url11'> "  . _x("Packing Slip PDF","wc-orders-popup",$this->td)."</a></li>
+              <li><img style=\"display: inline-block;-webkit-margin-end: 5px;margin-inline-end: 5px;-webkit-filter: invert(.9);filter: invert(.9);\" src='".PEPROULTIMATEINVOICE_ASSETS_URL."/img/mail-account.png'/> <a        data-action='puiw_act6'  data-ref='{$id}' href='#'> "       . _x("Mail Invoice to Customer","wc-orders-popup",$this->td)."</a></li>
+              <li><img style=\"display: inline-block;-webkit-margin-end: 5px;margin-inline-end: 5px;-webkit-filter: invert(.9);filter: invert(.9);\" src='".PEPROULTIMATEINVOICE_ASSETS_URL."/img/secure-mail.png'/> <a         data-action='puiw_act9'  data-ref='{$id}' href='#'> "       . _x("Mail Invoice to Shop Managers","wc-orders-popup",$this->td)."</a></li>
+              <li><img style=\"display: inline-block;-webkit-margin-end: 5px;margin-inline-end: 5px;-webkit-filter: invert(.9);filter: invert(.9);\" src='".PEPROULTIMATEINVOICE_ASSETS_URL."/img/edit-message.png'/> <a        data-action='puiw_act10' data-ref='{$id}' href='#'> "       . _x("Mail Invoice to Custom List","wc-orders-popup",$this->td)."</a></li>
             </ul>
           </div>
           ";

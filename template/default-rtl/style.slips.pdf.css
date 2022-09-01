@@ -1,0 +1,47 @@
+:root {
+	--theme_color: {{{theme_color}}};
+	--theme_color2: {{{theme_color2}}};
+	--theme_color3: {{{theme_color3}}};
+	--theme_fontsize: {{{font_size}}};
+	--theme_fontsizel: {{{font_sizes}}};
+	--theme_fontsizem: {{{font_sizem}}};
+	--watermark_opacity: {{{watermark_opacity}}};
+}
+
+* {
+	-webkit-print-color-adjust: exact;
+	print-color-adjust: exact;
+}
+
+h2 strong{
+	font-weight: 800;
+	font-size: 2rem;
+}
+
+.page.body p{
+	margin: 0.5rem !important;
+	padding: 0rem !important;
+}
+.page.body{
+
+	display: flex;
+	justify-content: space-evenly;
+	font-size: 1.1rem;
+}
+.page.body .strippedbg.sent{
+	float: right;
+}
+.page.body .strippedbg.receive{
+	float: left;
+}
+.page.body .strippedbg {
+	width: 45%;
+	margin: 0;
+	border: 1mm dashed #3ea8f2;
+	border-radius: 3mm / 3mm;
+	background-clip: border-box;
+	padding: 1em;
+}
+.page.body .strippedbg.receive{
+	border: 1mm dashed #cf2004;
+}

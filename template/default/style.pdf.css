@@ -1,3 +1,11 @@
+/**
+ * @Author: amirhp-com <its@amirhp.com>
+ * @Date:   2022/07/12 12:16:16
+ * @Last modified by:   amirhp-com <its@amirhp.com>
+ * @Last modified time: 2022/08/31 17:17:09
+ */
+
+
 :root {
 	--theme_color: {{{theme_color}}};
 	--theme_color2: {{{theme_color2}}};
@@ -69,7 +77,7 @@ tfoot, thead, .content-table td, .content-table td, .bordered , tr.show_order_it
 }
 
 .content-table td.show_product_title_description{
-	text-align: right;
+	text-align: left;
 }
 .title{
 	font-weight: bold;
@@ -171,7 +179,7 @@ table.centered td {
 }
 
 .title {
-	text-align: right;
+	text-align: left;
 }
 
 .grow {
