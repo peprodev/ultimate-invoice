@@ -2,7 +2,7 @@
  * @Author: amirhp-com <its@amirhp.com>
  * @Date:   2022/09/01 18:46:50
  * @Last modified by:   amirhp-com <its@amirhp.com>
- * @Last modified time: 2022/09/03 15:20:47
+ * @Last modified time: 2022/09/03 15:40:27
  */
 
 
@@ -26,11 +26,11 @@
 }
 
 .font-small {
-	font-size: 7pt;
+	font-size: {{{font_sizes}}};
 }
 
 .font-medium {
-	font-size: 8pt;
+	font-size: {{{font_sizem}}};
 }
 .show_product_base_price,
 .show_product_tax,
@@ -38,12 +38,12 @@
 	min-width: 90px;
 }
 table * {
-	font-size: 9px !important;
+	font-size: {{{font_size}}} !important;
 	direction: rtl;
 }
 
 body, table *, td, th {
-	font-size: 9px !important;
+	font-size: {{{font_size}}} !important;
 }
 
 .print-button {

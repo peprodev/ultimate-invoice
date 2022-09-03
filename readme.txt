@@ -3,12 +3,12 @@ Contributors: peprodev, amirhpcom, blackswanlab
 Donate link: https://pepro.dev/donate
 Tags: woocommerce invoice, pdf invoice, persian
 Requires at least: 5.0
-Tested up to: 6.0.1
-Version: 1.8.3
-Stable tag: 1.8.3
+Tested up to: 6.0.2
+Version: 1.8.5
+Stable tag: 1.8.5
 Requires PHP: 7.0
 WC requires at least: 5.0
-WC tested up to: 6.7.0
+WC tested up to: 6.8.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -153,8 +153,9 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 
 == Upgrade Notice ==
 
-= Version 1.8.4 / 2022-09-03 / 1401-06-12 =
+= Version 1.8.5 / 2022-09-03 / 1401-06-12 =
 - Style Enhancement for PDF Packing Slips
+- Fixed font size issue on printing pdf and html
 
 = Version 1.8.2 / 2022-08-15 / 1401-05-24 =
 - Made _puiw_regular, _puiw_sale, _puiw_html hidden from admin area

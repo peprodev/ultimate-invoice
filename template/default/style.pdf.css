@@ -2,7 +2,7 @@
  * @Author: amirhp-com <its@amirhp.com>
  * @Date:   2022/07/12 12:16:16
  * @Last modified by:   amirhp-com <its@amirhp.com>
- * @Last modified time: 2022/08/31 17:17:09
+ * @Last modified time: 2022/09/03 15:43:39
  */
 
 
@@ -30,20 +30,20 @@
 	min-width: 90px;
 }
 .font-small {
-	font-size: 7pt;
+	font-size: {{{font_sizes}}};
 }
 
 .font-medium {
-	font-size: 8pt;
+	font-size: {{{font_sizem}}};
 }
 
 table * {
-	font-size: 9px !important;
+	font-size: {{{font_size}}} !important;
 	direction: ltr;
 }
 
 body, table *, td, th {
-	font-size: 9px !important;
+	font-size: {{{font_size}}} !important;
 }
 td table.display_meta * {
 	margin: 0;
