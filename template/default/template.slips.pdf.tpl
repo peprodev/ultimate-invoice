@@ -21,7 +21,7 @@
       <div class="otherinfo fullwide">
         <div class="whitebg">
           <p><strong>Order ID: {{{invoice_id_en}}}</strong> | Weight: {{{invoice_total_weight}}} | Qty: {{{invoice_total_qty}}}</p>
-          <p>Order date: {{{order_date_created}}}<span class="show_shipping_method"> | Shipping date: {{{order_date_shipped}}}</span> | Shipping method: {{{order_shipping_method}}}</p>
+          <p>Order date: {{{order_date_created}}}<span class="show_shipping_date"> | Shipping date: {{{order_date_shipped}}}</span> | Shipping method: {{{order_shipping_method}}}</p>
         </div>
       </div>
     </div>

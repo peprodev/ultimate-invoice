@@ -4,8 +4,8 @@ Donate link: https://pepro.dev/donate
 Tags: woocommerce invoice, pdf invoice, persian
 Requires at least: 5.0
 Tested up to: 6.0.2
-Version: 1.8.5
-Stable tag: 1.8.5
+Version: 1.8.6
+Stable tag: 1.8.6
 Requires PHP: 7.0
 WC requires at least: 5.0
 WC tested up to: 6.8.2
@@ -153,6 +153,9 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 
 == Upgrade Notice ==
 
+= Version 1.8.6 / 2022-09-03 / 1401-06-12 =
+- Fixed Show/hide Shipping Date on Packing slips
+
 = Version 1.8.5 / 2022-09-03 / 1401-06-12 =
 - Style Enhancement for PDF Packing Slips
 - Fixed font size issue on printing pdf and html
@@ -163,36 +166,14 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 = Version 1.8.1 / 2022-08-03 / 1401-05-12 =
 - Fixed discount percentage calculating
 
-= Version 1.8.0 🔥 / 2022-07-14 / 1401-04-23 =
-- Added 4 ways of showing Coupons on total
-- Added 7 ways of showing Line item's price
-- Added 3 ways of showing Line item's tax
-- Added 3 ways of calculating Line item's discount
-- Added 3 ways of showing Line item's discount (Amount/Percentage)
-- Added 3 line item meta, editable and viewable by admins (_puiw_regular, _puiw_sale, _puiw_html)
-- Fixed some of Invoice templates styles
-- Fixed checkout error caused by out-of-stock line items
-- Fixed swatch dropdown showed wrong color-scheme
-- Changed some options layout
-- Changed order metabox layout
-- Changed setting panel font, layout, responsiveness
-- Changed checkboxes to iOS-like toggles
-- Changed WC_Order behavior to save current-live line items sale/regular prices
-- DEV: added public function *PeproUltimateInvoice_Template->get_show_tax_display*
-- DEV: added public function *PeproUltimateInvoice_Template->get_show_coupons_code_at_totals*
-- DEV: added public function *PeproUltimateInvoice_Template->get_show_coupons_description_at_totals*
-- DEV: added public function *PeproUltimateInvoice_Template->get_show_coupons_discount_at_totals*
-- DEV: added public function *PeproUltimateInvoice_Template->get_show_coupons_amount_at_totals*
-- DEV: added public function *PeproUltimateInvoice_Template->get_show_discount_calc*
-- DEV: added public function *PeproUltimateInvoice_Template->get_show_discount_display*
-
 == Changelog ==
 
-= Version 1.8.4 / 2022-09-03 / 1401-06-12 =
-- Style Enhancement for PDF Packing Slips
+= Version 1.8.6 / 2022-09-03 / 1401-06-12 =
+- Fixed Show/hide Shipping Date on Packing slips
 
-= Version 1.8.3 / 2022-09-01 / 1401-06-10 =
-- added PDF Packing Slips
+= Version 1.8.5 / 2022-09-03 / 1401-06-12 =
+- Style Enhancement for PDF Packing Slips
+- Fixed font size issue on printing pdf and html
 
 = Version 1.8.2 / 2022-08-15 / 1401-05-24 =
 - Made _puiw_regular, _puiw_sale, _puiw_html hidden from admin area

@@ -22,7 +22,7 @@
       <div class="otherinfo fullwide">
         <div class="whitebg">
           <p><strong>شناسه سفارش: {{{invoice_id_en}}}</strong> | وزن کل: {{{invoice_total_weight}}} | تعداد کل: {{{invoice_total_qty}}}</p>
-          <p>تاریخ و ساعت سفارش: {{{order_date_created}}}<span class="show_shipping_method"> | تاریخ و ساعت تحویل: {{{order_date_shipped}}}</span> | روش حمل و نقل: {{{order_shipping_method}}}</p>
+          <p>تاریخ و ساعت سفارش: {{{order_date_created}}}<span class="show_shipping_date"> | تاریخ و ساعت تحویل: {{{order_date_shipped}}}</span> | روش حمل و نقل: {{{order_shipping_method}}}</p>
         </div>
       </div>
 
