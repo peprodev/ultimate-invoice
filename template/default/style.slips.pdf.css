@@ -1,3 +1,9 @@
+/**
+ * @Author: amirhp-com <its@amirhp.com>
+ * @Date:   2022/09/01 19:41:16
+ * @Last modified by:   amirhp-com <its@amirhp.com>
+ * @Last modified time: 2022/09/03 15:26:37
+ */
 :root {
 	--theme_color: {{{theme_color}}};
 	--theme_color2: {{{theme_color2}}};
@@ -13,27 +19,53 @@
 	print-color-adjust: exact;
 }
 
-h2 strong{
+body,
+p,
+span,
+table *,
+td,
+th {
+	direction: ltr;
+	font-size: {{{font_size}}} !important;
+}
+
+h2 strong {
 	font-weight: 800;
 	font-size: 2rem;
 }
 
-.page.body p{
+.page.body p {
 	margin: 0.5rem !important;
-	padding: 0rem !important;
+	padding: 0 !important;
 }
-.page.body{
 
+.flex-body {
 	display: flex;
 	justify-content: space-evenly;
 	font-size: 1.1rem;
 }
-.page.body .strippedbg.sent{
+
+.fullwide {
+	width: 100%;
+	margin: 1rem 0 0;
+	border: 1mm solid #3ea8f2;
+	border-radius: 3mm / 3mm;
+	background-clip: border-box;
+	padding: 0.5rem;
+}
+
+.fullwide {
+	text-align: center;
+}
+
+.page.body .strippedbg.sent {
 	float: left;
 }
-.page.body .strippedbg.receive{
+
+.page.body .strippedbg.receive {
 	float: right;
 }
+
 .page.body .strippedbg {
 	width: 45%;
 	margin: 0;
@@ -42,6 +74,7 @@ h2 strong{
 	background-clip: border-box;
 	padding: 1em;
 }
-.page.body .strippedbg.receive{
+
+.page.body .strippedbg.receive {
 	border: 1mm dashed #cf2004;
 }

@@ -11,7 +11,7 @@ Developer URI: https://amirhp.com
 Plugin URI: https://peprodev.com/pepro-woocommerce-ultimate-invoice/
 Requires at least: 5.0
 Tested up to: 6.0.1
-Version: 1.8.3
+Version: 1.8.4
 Stable tag: 1.8.3
 Requires PHP: 7.0
 WC requires at least: 5.0
@@ -22,7 +22,7 @@ Copyright: (c) 2022 Pepro Dev. Group, All rights reserved.
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
-# @Last modified time: 2022/09/01 20:59:16
+# @Last modified time: 2022/09/03 14:34:31
 
 namespace peproulitmateinvoice;
 use voku\CssToInlineStyles\CssToInlineStyles;
@@ -76,7 +76,7 @@ if (!class_exists("PeproUltimateInvoice")) {
 
             self::$_instance            = $this;
             $this->td                   = "pepro-ultimate-invoice";
-            $this->version              = "1.8.3";
+            $this->version              = "1.8.4";
             $this->db_slug              = $this->td;
             $this->plugin_file          = __FILE__;
             $this->plugin_dir           = plugin_dir_path(__FILE__);
