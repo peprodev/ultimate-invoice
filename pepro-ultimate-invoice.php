@@ -11,8 +11,8 @@ Developer URI: https://amirhp.com
 Plugin URI: https://peprodev.com/pepro-woocommerce-ultimate-invoice/
 Requires at least: 5.0
 Tested up to: 6.0.2
-Version: 1.8.6
-Stable tag: 1.8.6
+Version: 1.8.7
+Stable tag: 1.8.7
 Requires PHP: 7.0
 WC requires at least: 5.0
 WC tested up to: 6.8.2

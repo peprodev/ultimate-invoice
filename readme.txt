@@ -4,8 +4,8 @@ Donate link: https://pepro.dev/donate
 Tags: woocommerce invoice, pdf invoice, persian
 Requires at least: 5.0
 Tested up to: 6.0.2
-Version: 1.8.6
-Stable tag: 1.8.6
+Version: 1.8.7
+Stable tag: 1.8.7
 Requires PHP: 7.0
 WC requires at least: 5.0
 WC tested up to: 6.8.2
@@ -153,6 +153,9 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 
 == Upgrade Notice ==
 
+= Version 1.8.7 / 2022-09-11 / 1401-06-20 =
+- Swap Packing Slips labels
+
 = Version 1.8.6 / 2022-09-03 / 1401-06-12 =
 - Fixed Show/hide Shipping Date on Packing slips
 
@@ -167,6 +170,9 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 - Fixed discount percentage calculating
 
 == Changelog ==
+
+= Version 1.8.7 / 2022-09-11 / 1401-06-20 =
+- Swap Packing Slips labels
 
 = Version 1.8.6 / 2022-09-03 / 1401-06-12 =
 - Fixed Show/hide Shipping Date on Packing slips

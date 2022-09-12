@@ -59,11 +59,11 @@ h2 strong {
 }
 
 .page.body .strippedbg.sent {
-	float: left;
+	float: right;
 }
 
 .page.body .strippedbg.receive {
-	float: right;
+	float: left;
 }
 
 .page.body .strippedbg {
