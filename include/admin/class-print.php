@@ -1,5 +1,5 @@
 <?php
-# @Last modified time: 2022/09/03 15:04:48
+# @Last modified time: 2022/10/13 03:04:28
 namespace peproulitmateinvoice;
 use voku\CssToInlineStyles\CssToInlineStyles;
 
@@ -1021,13 +1021,13 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
               $datetime = pu_jdate("Y-m-d_H-i-s", (int) $datenow, "", "local", "en");
             }
             $name = "Invoice-$order_id_formatted-$datetime";
-            $name = apply_filters("puiw_get_export_pdf_name", $name , $order_id_formatted, $order_id, $datenow);
+            $name = apply_filters("puiw_get_export_pdf_name", $name, $order_id_formatted, $order_id, $datenow);
             if ("S" == $MODE){
               $rand       = md5(time());
               $namedir    = PEPROULTIMATEINVOICE_DIR . "/pdf_temp";
               $namedotext = "Invoice-$order_id_formatted.$datetime.pdf";
-              $namedir    = apply_filters( "puiw_get_default_mail_pdf_temp_path", $namedir);
-              $namedotext = apply_filters( "puiw_get_default_mail_pdf_temp_name", $namedotext);
+              $namedir    = apply_filters( "puiw_get_default_mail_pdf_temp_path", $namedir, $order_id);
+              $namedotext = apply_filters( "puiw_get_default_mail_pdf_temp_name", $namedotext, $order_id);
               wp_mkdir_p($namedir);
               $tmpname = "$namedir/$namedotext";
               $er      = $mpdf->Output($tmpname, "F");

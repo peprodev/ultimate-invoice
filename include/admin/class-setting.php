@@ -1,5 +1,5 @@
 <?php
-# @Last modified time: 2022/07/14 21:35:34
+# @Last modified time: 2022/10/13 02:41:31
 
 defined("ABSPATH") or die("Pepro Ultimate Invoice :: Unauthorized Access!");
 
@@ -309,7 +309,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                   'puiw_show_discount_display' => array(
                     'name'    => _x("Line item Discount Display", "wc-setting", $this->td),
                     'type'    => 'radio',
-                    'default' => 'precentage',
+                    'default' => 'precnt',
                     'options' => array(
                         "value"  => _x("Show discount value", "wc-setting", $this->td),
                         "precnt" => _x("Show discount precentage", "wc-setting", $this->td),

@@ -1,5 +1,5 @@
 <?php
-# @Last modified time: 2022/02/11 03:22:54
+# @Last modified time: 2022/10/13 02:41:28
 
 namespace peproulitmateinvoice;
 
@@ -1932,7 +1932,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @since 1.8.0
      * @license https://pepro.dev/license Pepro.dev License
      */
-    public function get_show_discount_display($default="precentage")
+    public function get_show_discount_display($default="precnt")
     {
       $discount_display = get_option("puiw_show_discount_display",$default);
       $discount_display = empty($discount_display) ? $default : $discount_display;

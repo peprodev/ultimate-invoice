@@ -11,7 +11,7 @@ Developer URI: https://amirhp.com
 Plugin URI: https://peprodev.com/pepro-woocommerce-ultimate-invoice/
 Requires at least: 5.0
 Tested up to: 6.0.2
-Version: 1.8.7
+Version: 1.8.8
 Stable tag: 1.8.7
 Requires PHP: 7.0
 WC requires at least: 5.0
@@ -22,7 +22,7 @@ Copyright: (c) 2022 Pepro Dev. Group, All rights reserved.
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
-# @Last modified time: 2022/09/03 16:16:22
+# @Last modified time: 2022/10/13 02:43:11
 
 namespace peproulitmateinvoice;
 use voku\CssToInlineStyles\CssToInlineStyles;
@@ -61,7 +61,6 @@ if (!class_exists("PeproUltimateInvoice")) {
         protected $db_table = null;
         protected $manage_links = array();
         protected $meta_links = array();
-
         /**
          * construct plugin and set initiation hook and declare consts
          *
@@ -76,7 +75,7 @@ if (!class_exists("PeproUltimateInvoice")) {
 
             self::$_instance            = $this;
             $this->td                   = "pepro-ultimate-invoice";
-            $this->version              = "1.8.4";
+            $this->version              = "1.8.8";
             $this->db_slug              = $this->td;
             $this->plugin_file          = __FILE__;
             $this->plugin_dir           = plugin_dir_path(__FILE__);
@@ -621,6 +620,15 @@ if (!class_exists("PeproUltimateInvoice")) {
               update_option("puiw_last_import_version", $this->version);
             }
 
+        }
+        public function make_pdf_file($order_id=0)
+        {
+          $order = wc_get_order($order_id);
+          if (!$order_id || !$order) return false;
+          $pdf_temp = $this->print->create_pdf((int) $order_id, false, "S", false);
+          $pdf_file = PEPROULTIMATEINVOICE_DIR . "/pdf_temp/$pdf_temp";
+          if(file_exists($pdf_file)) return $pdf_file;
+          return false;
         }
         public function prices_as_order_line_item_meta( $item, $cart_item_key, $values, $order )
         {

@@ -4,8 +4,8 @@ Donate link: https://pepro.dev/donate
 Tags: woocommerce invoice, pdf invoice, persian
 Requires at least: 5.0
 Tested up to: 6.0.2
-Version: 1.8.7
-Stable tag: 1.8.7
+Version: 1.8.8
+Stable tag: 1.8.8
 Requires PHP: 7.0
 WC requires at least: 5.0
 WC tested up to: 6.8.2
@@ -153,23 +153,17 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 
 == Upgrade Notice ==
 
-= Version 1.8.7 / 2022-09-11 / 1401-06-20 =
-- Swap Packing Slips labels
-
-= Version 1.8.6 / 2022-09-03 / 1401-06-12 =
-- Fixed Show/hide Shipping Date on Packing slips
-
-= Version 1.8.5 / 2022-09-03 / 1401-06-12 =
-- Style Enhancement for PDF Packing Slips
-- Fixed font size issue on printing pdf and html
-
-= Version 1.8.2 / 2022-08-15 / 1401-05-24 =
-- Made _puiw_regular, _puiw_sale, _puiw_html hidden from admin area
-
-= Version 1.8.1 / 2022-08-03 / 1401-05-12 =
-- Fixed discount percentage calculating
+= Version 1.8.8 / 2022-10-13 / 1401-07-21 =
+- DEV: added public function $PeproUltimateInvoice->make_pdf_file($order_id)
+- Compatibility with TelegramBot (send PDF invoices on Chat/Group/Channel)
+- To Bug TelegramBot plugin contact support@pepro.dev
 
 == Changelog ==
+
+= Version 1.8.8 / 2022-10-13 / 1401-07-21 =
+- DEV: added public function $PeproUltimateInvoice->make_pdf_file($order_id)
+- Compatibility with TelegramBot (send PDF invoices on Chat/Group/Channel)
+- To Bug TelegramBot plugin contact support@pepro.dev
 
 = Version 1.8.7 / 2022-09-11 / 1401-06-20 =
 - Swap Packing Slips labels
