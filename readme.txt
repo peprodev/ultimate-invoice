@@ -4,8 +4,8 @@ Donate link: https://pepro.dev/donate
 Tags: woocommerce invoice, pdf invoice, persian
 Requires at least: 5.0
 Tested up to: 6.0.2
-Version: 1.8.8
-Stable tag: 1.8.8
+Version: 1.9.0
+Stable tag: 1.9.0
 Requires PHP: 7.0
 WC requires at least: 5.0
 WC tested up to: 6.8.2
@@ -153,17 +153,28 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 
 == Upgrade Notice ==
 
+= Version 1.9.0 / 2022-10-13 / 1401-07-21 =
+- Watermark for PDFs added with Alpha and BlendMode Options
+- Default Invoice Templates footer changed
+- DEV: edited hook *puiw_printinvoice_pdf_footer*
+- DEV: added hook *puiw_generate_pdf_page_size*
+- DEV: added hook *puiw_generate_pdf_watermark_img*
+- DEV: added hook *puiw_generate_pdf_watermark_alph*
+- DEV: added hook *puiw_generate_pdf_watermark_size*
+- DEV: added hook *puiw_generate_pdf_watermark_posin*
+- DEV: added hook *puiw_generate_pdf_watermark_show*
+
 = Version 1.8.8 / 2022-10-13 / 1401-07-21 =
 - DEV: added public function $PeproUltimateInvoice->make_pdf_file($order_id)
 - Compatibility with TelegramBot (send PDF invoices on Chat/Group/Channel)
-- To Bug TelegramBot plugin contact support@pepro.dev
+- To Buy TelegramBot plugin contact support@pepro.dev
 
 == Changelog ==
 
 = Version 1.8.8 / 2022-10-13 / 1401-07-21 =
 - DEV: added public function $PeproUltimateInvoice->make_pdf_file($order_id)
 - Compatibility with TelegramBot (send PDF invoices on Chat/Group/Channel)
-- To Bug TelegramBot plugin contact support@pepro.dev
+- To Buy TelegramBot plugin contact support@pepro.dev
 
 = Version 1.8.7 / 2022-09-11 / 1401-06-20 =
 - Swap Packing Slips labels

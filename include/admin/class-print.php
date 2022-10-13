@@ -1,5 +1,5 @@
 <?php
-# @Last modified time: 2022/10/13 03:04:28
+# @Last modified time: 2022/10/13 23:14:47
 namespace peproulitmateinvoice;
 use voku\CssToInlineStyles\CssToInlineStyles;
 
@@ -29,24 +29,18 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
             $this->_woosb_show_bundled_hierarchy = $this->fn->get_woosb_show_bundled_hierarchy();
             $this->_woosb_show_bundled_prefix    = $this->fn->get_woosb_bundled_subtitle_prefix(_x("Bundled in:", "wc-setting", $this->td));
             $this->_woosb_show_bundles_prefix    = $this->fn->get_woosb_bundles_subtitle_prefix(_x("Bundled products:", "wc-setting", $this->td));
-
             add_filter( "puiw_order_items", array($this, "puiw_sort_order_items"), 2, 2);
-
             if ($this->_woosb_show_bundles == "no"){
               add_filter( "puiw_order_items", array($this, "woosb_puiw_hide_bundles_parent"), 10, 2);
             }
-
             if ($this->_woosb_show_bundled_products == "no"){
               add_filter( "puiw_order_items", array($this, "woosb_puiw_hide_bundled_childs"), 10, 2);
             }
-
             add_action( "woocommerce_before_order_itemmeta", array( $this, "woosb_before_order_item_meta" ), 10, 1 );
             add_filter( "puiw_invoice_item_extra_classes",   array($this, "puiw__item_extra_classes"), 10, 6);
             add_filter( "puiw_get_custom_css_style",         array($this, "custom_css_per_invoice"), 10, 2);
             add_filter( "puiw_get_pdf_css_style",            array($this, "custom_css_per_invoice"), 10, 2);
             add_filter( "puiw_get_inventory_css_style",      array($this, "custom_css_per_invoice"), 10, 2);
-
-
         }
         public function puiw_get_default_dynamic_params($opts, $order)
         {
@@ -134,6 +128,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
               "invoice_start"                          => $this->fn->get_invoice_start(),
               "signature"                              => $this->fn->get_signature(),
               "watermark"                              => $this->fn->get_watermark(),
+              "watermark_blend"                        => $this->fn->get_watermark_blend(),
               "watermark_opacity"                      => $this->fn->get_watermark_opacity(),
               "watermark_opacity_10"                   => $this->fn->get_watermark_opacity()/100,
               "invoices_footer"                        => $this->fn->get_invoices_footer(),
@@ -880,26 +875,25 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           global $PeproUltimateInvoice;
           // add_filter("woocommerce_price_format", function () {return '%2$s %1$s';}, 10000, 2); // you should change it from wc setting
           require_once PEPROULTIMATEINVOICE_DIR . '/include/vendor/autoload.php';
-          $class = "pepro-one-page-purchase---invoice-simple";
-          $class .= is_rtl() ? "rtl" : "";
-          $dire = is_rtl() ? 'rtl' : 'ltr';
-          $texe = is_rtl() ? 'right' : 'left';
-          $order = wc_get_order($order_id);
-          $defaultConfig = (new \Mpdf\Config\ConfigVariables())->getDefaults();
-          $fontDirs = $defaultConfig['fontDir'];
-          $defaultFontConfig = (new \Mpdf\Config\FontVariables())->getDefaults();
-          $fontData = $defaultFontConfig['fontdata'];
+          $class                  = "pepro-one-page-purchase---invoice-simple";
+          $class                 .= is_rtl() ? "rtl" : "";
+          $dire                   = is_rtl() ? 'rtl' : 'ltr';
+          $texe                   = is_rtl() ? 'right' : 'left';
+          $defaultConfig          = (new \Mpdf\Config\ConfigVariables())->getDefaults();
+          $fontDirs               = $defaultConfig['fontDir'];
+          $defaultFontConfig      = (new \Mpdf\Config\FontVariables())->getDefaults();
+          $fontData               = $defaultFontConfig['fontdata'];
 
-          $template = $this->fn->get_template();
-          $templateDirpath = apply_filters( "puiw_get_template_dir_path", $template, $order);
+          $template               = $this->fn->get_template();
+          $templateDirpath        = apply_filters( "puiw_get_template_dir_path", $template, $order);
 
-          $contents = file_get_contents("$templateDirpath/default.cfg");
+          $contents               = file_get_contents("$templateDirpath/default.cfg");
 
-          $template_pdf_setting = $this->parseTemplate($contents);
+          $template_pdf_setting   = $this->parseTemplate($contents);
           /* if we had an error, don't let script stop !*/
           $get_allow_pdf_customer = $this->fn->get_allow_pdf_customer();
-          $get_pdf_size = $this->fn->get_pdf_size();
-          $get_pdf_orientation = $this->fn->get_pdf_orientation();
+          $get_pdf_size           = $this->fn->get_pdf_size();
+          $get_pdf_orientation    = $this->fn->get_pdf_orientation();
 
           $_fontData = $fontData + [
             'dejavu' => [
@@ -948,70 +942,90 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
 
 
           if ("L" == $get_pdf_orientation){$get_pdf_size = "$get_pdf_size-L";}
+          // https://mpdf.github.io/paging/page-size-orientation.html
+          $get_pdf_size = apply_filters("puiw_generate_pdf_page_size", $get_pdf_size, $order_id, $order, "PDF");
+
+          $daynamic_params = $this->get_default_dynamic_params($order_id, $order);
           @ini_set('display_errors', 0);
           error_reporting(0);
-          $mpdf = new \Mpdf\Mpdf(array(
-            'fontDir'                => array_merge($fontDirs, [plugin_dir_path(__FILE__)]),
-            'fontdata'               => $_fontData,
-            'default_font'           => $this->fn->get_pdf_font(),
-            'format'                 => $get_pdf_size, // A4-L
-            'mode'                   => 'utf-8',
-            'margin_right'           => $template_pdf_setting["pdf_margin_right"],
-            'margin_left'            => $template_pdf_setting["pdf_margin_left"],
-            'margin_top'             => $template_pdf_setting["pdf_margin_top"],
-            'margin_bottom'          => $template_pdf_setting["pdf_margin_bottom"],
-            'margin_header'          => $template_pdf_setting["pdf_margin_header"],
-            'margin_footer'          => $template_pdf_setting["pdf_margin_footer"],
-            'debug'                  => false,
-            'allow_output_buffering' => true,
-            'showImageErrors'        => false,
-            'mirrorMargins'          => 0,
-            'autoLangToFont'         => true,
-            'defaultPageNumStyle'    => 'arabic-indic',
+          try {
+            $mpdf = new \Mpdf\Mpdf(array(
+              "fontDir"                => array_merge($fontDirs, [plugin_dir_path(__FILE__)]),
+              "mode"                   => "utf-8",
+              "fontdata"               => $_fontData,
+              "default_font"           => $this->fn->get_pdf_font(),
+              "format"                 => $get_pdf_size, // A4-L
+              "margin_right"           => $template_pdf_setting["pdf_margin_right"],
+              "margin_left"            => $template_pdf_setting["pdf_margin_left"],
+              "margin_top"             => $template_pdf_setting["pdf_margin_top"],
+              "margin_bottom"          => $template_pdf_setting["pdf_margin_bottom"],
+              "margin_header"          => $template_pdf_setting["pdf_margin_header"],
+              "margin_footer"          => $template_pdf_setting["pdf_margin_footer"],
+              "debug"                  => false,
+              "allow_output_buffering" => true,
+              "showImageErrors"        => false,
+              "mirrorMargins"          => false,
+              "autoPageBreak"          => false,
+              "setAutoBottomMargin"    => false,
+              "watermarkImgBehind"     => false,
+              "watermarkImgAlphaBlend" => $daynamic_params["watermark_blend"],
+              "autoLangToFont"         => true,
+              "defaultPageNumStyle"    => "arabic-indic",
             ));
-            $opts = apply_filters( "puiw_generate_pdf_name_orderid_format", array(
-              "invoice_prefix"=> $this->fn->get_invoice_prefix(),
-              "invoice_suffix"=> $this->fn->get_invoice_suffix(),
-              "invoice_start"=> $this->fn->get_invoice_start(),
+
+            $opts = apply_filters("puiw_generate_pdf_name_orderid_format", array(
+              "invoice_prefix" => $this->fn->get_invoice_prefix(),
+              "invoice_suffix" => $this->fn->get_invoice_suffix(),
+              "invoice_start"  => $this->fn->get_invoice_start(),
             ));
             $order_id_formatted = $opts["invoice_prefix"] . ($opts["invoice_start"]+$order_id) . $opts["invoice_suffix"] ?: "0000000000000000";
-            $pdf_title          = sprintf(_x("Invoice #%s on %s", "invoice-template", $PeproUltimateInvoice->td), $order_id_formatted, get_bloginfo('title'));
-            $pdf_title          = apply_filters( "puiw_generate_pdf_title_of_pdf",$pdf_title);
+            $pdf_title          = sprintf(_x("Invoice #%s on %s", "invoice-template", $PeproUltimateInvoice->td), "<strong>{$order_id_formatted}</strong>", get_bloginfo('title'));
+            $pdf_title          = apply_filters("puiw_generate_pdf_title_of_pdf",$pdf_title);
             $datenow            = current_time('timestamp');
             $mpdf->SetDirectionality($dire);
-            $mpdf->SetTitle($pdf_title);
-            $mpdf->SetSubject($pdf_title);
+            $mpdf->SetTitle(strip_tags($pdf_title));
+            $mpdf->SetSubject(strip_tags($pdf_title));
             $mpdf->SetAuthor($PeproUltimateInvoice->title_d);
             $mpdf->SetCreator($PeproUltimateInvoice->title_tw);
+            if (!empty($daynamic_params["watermark"])) {
+              // @see https://mpdf.github.io/reference/mpdf-functions/setwatermarkimage.html
+              $wtrmrk_img      = apply_filters("puiw_generate_pdf_watermark_img", $daynamic_params["watermark"], $order_id, $order, "PDF");
+              $wtrmrk_alpha    = apply_filters("puiw_generate_pdf_watermark_alpha", (float) $daynamic_params["watermark_opacity_10"], $order_id, $order, "PDF");
+              $wtrmrk_size     = apply_filters("puiw_generate_pdf_watermark_size", "D", $order_id, $order, "PDF");
+              $wtrmrk_position = apply_filters("puiw_generate_pdf_watermark_position", "P", $order_id, $order, "PDF");
+              $mpdf->SetWatermarkImage($wtrmrk_img, $wtrmrk_alpha, $wtrmrk_size, $wtrmrk_position);
+              $mpdf->showWatermarkImage = apply_filters("puiw_generate_pdf_watermark_show", true, $order_id, $order, "PDF");
+            }
+
             if (!$order) {
               $errrxt = _x('Error! Invoice does not exist.', 'invoice-template', $PeproUltimateInvoice->td);
               $err_html .= "<body dir='$dire'><h2 style='text-align:center;'>$errrxt</h2><p style='text-align:center;' dir='$dire'>" .
-                sprintf(_x('Created by %s<br>( %s )', 'invoice-template', $PeproUltimateInvoice->td), $PeproUltimateInvoice->title_t,"<a href='https://pepro.dev/'>".$PeproUltimateInvoice->title_d.'</a>') .
-                "</p><br><span><hr style='width: 80%;'><p style='text-align:center;' dir='$dire'>" .
-                  sprintf(_x('%sBack to Dashboard%s', 'invoice-template', $PeproUltimateInvoice->td), "<a href='".get_permalink(get_option('woocommerce_myaccount_page_id'))."'>", '</a>'). " / " .
-                  sprintf(_x('%sBack to Orders%s', 'invoice-template', $PeproUltimateInvoice->td), "<a href='".wc_get_endpoint_url('orders', '', get_permalink(get_option('woocommerce_myaccount_page_id')))."'>", '</a>').
-                  "</span></p></body>";
-                  $mpdf->WriteHTML($err_html);
+              sprintf(_x('Created by %s<br>( %s )', 'invoice-template', $PeproUltimateInvoice->td), $PeproUltimateInvoice->title_t,"<a href='https://pepro.dev/'>".$PeproUltimateInvoice->title_d.'</a>') .
+              "</p><br><span><hr style='width: 80%;'><p style='text-align:center;' dir='$dire'>" .
+              sprintf(_x('%sBack to Dashboard%s', 'invoice-template', $PeproUltimateInvoice->td), "<a href='".get_permalink(get_option('woocommerce_myaccount_page_id'))."'>", '</a>'). " / " .
+              sprintf(_x('%sBack to Orders%s', 'invoice-template', $PeproUltimateInvoice->td), "<a href='".wc_get_endpoint_url('orders', '', get_permalink(get_option('woocommerce_myaccount_page_id')))."'>", '</a>').
+              "</span></p></body>";
+              $mpdf->WriteHTML($err_html);
             }
             else{
+
+              $datec = date_i18n("Y-m-d H:i", $datenow);
+              if ($this->fn->get_date_shamsi() == "yes") $datec = pu_jdate("Y-m-d H:i", (int) $datenow, "", "local", "en");
+
               $stylesheet      = $this->get_pdf_style($order_id,$order);
               $PDF_EXTRA_STYLE = $this->create_html($order_id, "PDF_EXTRA_STYLE","","",$skipAuth);
               $stylesheet      = $PDF_EXTRA_STYLE . $stylesheet;
               $html_invoice    = $this->create_html($order_id, "PDF","","",$skipAuth);
               $html_header     = $this->create_html($order_id, "PDF", "header","",$skipAuth);
               $html_footer     = $this->create_html($order_id, "PDF", "footer","",$skipAuth);
-              $datec           = date_i18n("Y-m-d H:i", $datenow);
-              if ($this->fn->get_date_shamsi() == "yes") {
-                $datec = pu_jdate("Y-m-d H:i", (int) $datenow, "", "local", "en");
-              }
-              $footerhtml0 = "<div class='footerauto' style='text-align:center;' dir='ltr'>";
-              $footerhtml1 = "<strong>" . sprintf(_x('%s -- Page {PAGENO} / {nbpg}', 'invoice-template', $PeproUltimateInvoice->td), $pdf_title)."</strong><br>";
-              $footerhtml2 = sprintf(_x('Created by %s at %s', 'invoice-template', $PeproUltimateInvoice->td),$PeproUltimateInvoice->title_t,$datec);
-              $footerhtml3 = "</div>";
-              $footerhtml  = apply_filters( "puiw_printinvoice_pdf_footer", "{$footerhtml1}{$footerhtml2}", $footerhtml1, $footerhtml2, $order, $order_id);
-              $footerhtml  = "{$footerhtml0}{$footerhtml}{$footerhtml3}";
+              $footerhtml      = "<div class='footerauto' style='text-align: center; padding: 1rem;' dir='$dire'><table width='100%'><tr>
+                <td style=\"padding: 1rem; text-align: center; width: 33%;\">صفحه {PAGENO} / {nbpg}</td>
+                <td style=\"padding: 1rem; text-align: center; width: 33%;\">{$pdf_title}</td>
+                <td style=\"padding: 1rem; text-align: center; width: 33%;\">{$PeproUltimateInvoice->title_t} (https://pepro.dev)</td>
+              <tr></table></div>";
+              $footerhtml = apply_filters("puiw_printinvoice_pdf_footer", $footerhtml, $order, $order_id);
               $mpdf->SetHTMLHeader( $html_header );
-              $mpdf->SetHTMLFooter( $html_footer.$footerhtml);
+              $mpdf->SetHTMLFooter( $html_footer . $footerhtml);
               $mpdf->WriteHTML($stylesheet, \Mpdf\HTMLParserMode::HEADER_CSS);
               $mpdf->WriteHTML($html_invoice, \Mpdf\HTMLParserMode::HTML_BODY);
             }
@@ -1030,10 +1044,14 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
               $namedotext = apply_filters( "puiw_get_default_mail_pdf_temp_name", $namedotext, $order_id);
               wp_mkdir_p($namedir);
               $tmpname = "$namedir/$namedotext";
-              $er      = $mpdf->Output($tmpname, "F");
+              $mpdf->Output($tmpname, "F");
               return $namedotext;
             }
             $mpdf->Output($name . ($force_download ? ".pdf" : ""),($force_download ? "D" : "I"));
+          } catch (\Exception $e) {
+            error_log("puiw debugging ~> ".print_r($e, 1));
+          }
+
         }
         public function create_slips_pdf($order_id=0, $force_download = false, $MODE="I", $showerror=true)
         {
@@ -1791,9 +1809,6 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
                 $input
             );
         }
-
-
-
         /**
          * hook to alter css styles
          *

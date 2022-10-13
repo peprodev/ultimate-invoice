@@ -1,5 +1,5 @@
 <?php
-# @Last modified time: 2022/10/13 02:41:31
+# @Last modified time: 2022/10/13 22:34:05
 
 defined("ABSPATH") or die("Pepro Ultimate Invoice :: Unauthorized Access!");
 
@@ -648,6 +648,28 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                     'id'                => 'puiw_watermark_opacity',
                     'default'           => '80',
                     'custom_attributes' => array( 'dir'  => 'ltr', 'step' => '1', 'min'  => '1', 'max'  => '100',
+                    )
+                  ),
+                  'puiw_watermark_blend' => array(
+                    'id'                => 'puiw_watermark_blend',
+                    'name'              => _x("PDF Watermark blend mode", "wc-setting", $this->td),
+                    'type'              => "select",
+                    'placeholder'       => sprintf(__("Enter %s here", $this->td), _x("Watermark opacity", "wc-setting", $this->td)),
+                    'desc_tip'          => _x("Specify the blend mode for overlying watermark images", "wc-setting", $this->td),
+                    'default'           => "Normal",
+                    "options" => array(
+                      "Normal"     => _x("Normal","wc-setting",$this->td),
+                      "Multiply"   => _x("Multiply","wc-setting",$this->td),
+                      "Screen"     => _x("Screen","wc-setting",$this->td),
+                      "Overlay"    => _x("Overlay","wc-setting",$this->td),
+                      "Darken"     => _x("Darken","wc-setting",$this->td),
+                      "Lighten"    => _x("Lighten","wc-setting",$this->td),
+                      "ColorDodge" => _x("ColorDodge","wc-setting",$this->td),
+                      "ColorBurn"  => _x("ColorBurn","wc-setting",$this->td),
+                      "HardLight"  => _x("HardLight","wc-setting",$this->td),
+                      "SoftLight"  => _x("SoftLight","wc-setting",$this->td),
+                      "Difference" => _x("Difference","wc-setting",$this->td),
+                      "Exclusion"  => _x("Exclusion","wc-setting",$this->td),
                     )
                   ),
                   'puiw_invoices_footer' => array(

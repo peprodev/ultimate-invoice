@@ -2,10 +2,8 @@
  * @Author: amirhp-com <its@amirhp.com>
  * @Date:   2022/09/01 18:46:50
  * @Last modified by:   amirhp-com <its@amirhp.com>
- * @Last modified time: 2022/09/03 15:40:27
+ * @Last modified time: 2022/10/13 23:13:44
  */
-
-
 :root {
 	--theme_color: {{{theme_color}}};
 	--theme_color2: {{{theme_color2}}};
@@ -21,7 +19,7 @@
 	print-color-adjust: exact;
 }
 
-#headertitles{
+#headertitles {
 	border: none !important;
 }
 
@@ -32,25 +30,34 @@
 .font-medium {
 	font-size: {{{font_sizem}}};
 }
+
+.content-table {
+	border-collapse: collapse;
+}
+.content-table tr{
+	page-break-after: avoid;
+}
+
 .show_product_base_price,
 .show_product_tax,
 .show_product_total_price {
 	min-width: 90px;
 }
-table * {
-	font-size: {{{font_size}}} !important;
-	direction: rtl;
-}
 
 body, table *, td, th {
-	font-size: {{{font_size}}} !important;
+	direction: rtl;
+	font-size: {{{font_size}}}!important;
 }
 
 .print-button {
 	display: none;
 }
 
-tfoot, thead, .content-table td, .content-table td, .bordered , tr.show_order_items th{
+.bordered,
+.content-table td,
+.content-table td,
+tfoot, thead, tr.show_order_items th {
+	border-collapse: collapse;
 	border: 1 solid white !important;
 }
 
@@ -59,30 +66,34 @@ tfoot, thead, .content-table td, .content-table td, .bordered , tr.show_order_it
 	padding: 0.12cm;
 }
 
-#topheadinfo>tr>td{
-	border: 1px solid {{{theme_color}}} !important;
+#topheadinfo > tr > td {
+	border: 1px solid{{{theme_color}}} !important;
 }
 
-.content-table td, th{
+.content-table td, .content-table th {
 	text-align: center;
 	padding: 0.1cm;
 	font-weight: normal;
 	word-break: break-word;
 }
-.content-table td.show_product_title_description{
+
+.content-table td.show_product_title_description {
 	text-align: right;
 }
-.title{
+
+.title {
 	font-weight: bold;
 }
 
 td table.display_meta * {
 	margin: 0;
 }
-td table.display_meta{
+
+td table.display_meta {
 	border-collapse: collapse;
 	width: auto;
 }
+
 .header-item-wrapper {
 	height: 75px;
 	vertical-align: middle;
@@ -95,50 +106,46 @@ td table.display_meta{
 }
 
 .bg2 {
-	background: {{{theme_color2}}} !important;
+	background: {{{theme_color2}}}!important;
 }
 
 .bg4 {
-	background: {{{theme_color}}} !important;
+	background: {{{theme_color}}}!important;
 }
 
-.bg3,.footersignatureauto tr,{
-	background: {{{theme_color2}}} !important;
+.bg3, .footersignatureauto tr {
+	background: {{{theme_color2}}}!important;
 }
 
-.show_custom_footer{
+.show_custom_footer {
 	text-align: center;
 	padding: 0.2cm;
-	background: {{{theme_color2}}} !important;
+	background: {{{theme_color2}}}!important;
 }
 
-.footersignatureauto{
+.footersignatureauto {
 	margin: 0 !important;
 }
 
-.headtr,.footerauto, .bgONE{
-	background: {{{theme_color}}} !important;
+.bgONE, .footerauto, .headtr {
+	background: {{{theme_color}}}!important;
 }
 
-table.content-table tbody tr:nth-child(2n+1), table.content-table tbody tr.odd {
+table.content-table tbody tr.odd,
+table.content-table tbody tr:nth-child(2n+1) {
 	background: #eee !important;
 }
 
-table.content-table tfoot tr:nth-child(2n+1), table.content-table tfoot tr.odd,
-table.content-table tfoot tr:nth-child(2n), table.content-table tfoot tr.even {
-	background: {{{theme_color}}} !important;
+table.content-table tfoot tr.even,
+table.content-table tfoot tr.odd,
+table.content-table tfoot tr:nth-child(2n),
+table.content-table tfoot tr:nth-child(2n+1) {
+	background: {{{theme_color}}}!important;
 }
 
-table.content-table tbody tr:nth-child(2n),
-table.content-table tbody tr.even{
-	background: {{{theme_color2}}} !important;
-}
-
-.headseln {
-}
-
-.content-table {
-	border-collapse: collapse;
+table.content-table tbody tr.even,
+table.content-table tbody tr:nth-child(2n) {
+	background: {{{theme_color2}}}!important;
 }
 
 .header-table {
@@ -198,8 +205,8 @@ table.centered td {
 	display: block;
 }
 
-.show_order_notes td{
-	padding: .2cm;
+.show_order_notes td {
+	padding: 0.2cm;
 	vertical-align: top;
 }
 
@@ -211,4 +218,7 @@ img[src=""] {
 	display: none;
 }
 
-tfoot td:last-of-type * { text-align: right; vertical-align: top; }
+tfoot td:last-of-type * {
+	text-align: right;
+	vertical-align: top;
+}

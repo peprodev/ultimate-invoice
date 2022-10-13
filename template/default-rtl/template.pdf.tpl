@@ -1,12 +1,13 @@
 <div class="page body">
-  <table id="topheadinfo" class="header-table" style="width: 100%;">
+  <table id="topheadinfo" class="header-table" style="width: 100%; height: 100%;">
     <tr class="bg3">
       <td style="border-bottom: 1px solid {{{theme_color}}} !important; vertical-align: middle; padding-bottom: 4px;">
         <table>
           <tr>
             <td style="text-align: center; vertical-align: middle; text-rotate: 90;">{{{trnslt__seller}}}</td>
           </tr>
-        </table> </td>
+        </table>
+      </td>
       <td style="border-bottom: 1px solid {{{theme_color}}} !important; vertical-align: middle; padding: 0 4px 4px">
         <div class="bordered grow header-item-data">
           <table style="height: 100%;" class="centered">
@@ -119,7 +120,6 @@
   </table>
   <table id="products_list" style="margin-top: 0.1cm;" class="content-table">
     <thead>
-      <!-- <div class="show_order_items"> <tr style="height: .1cm;"><td style="display: none !important; height: .1cm;" colspan="{{{invoice_final_row_colspan}}}"></td></tr> </div> -->
       <div class="show_order_items">
         <tr class="show_order_items bgONE">
           <th class="show_product_n" style="width: 1cm !important;">ردیف</th>
@@ -153,9 +153,9 @@
       </tr>
     </tfoot>
   </table>
-      <table id="show_order_notes" style="{{{show_order_notes_hc}}}">
-        <tr class="show_order_notes bg4" style="{{{show_order_notes_hc}}}">
-          {{{invoice_notes}}}
-        </tr>
-      </table>
+  <table id="show_order_notes" style="{{{show_order_notes_hc}}}">
+    <tr class="show_order_notes bg4" style="{{{show_order_notes_hc}}}">
+      {{{invoice_notes}}}
+    </tr>
+  </table>
 </div>

@@ -1,5 +1,5 @@
 <?php
-# @Last modified time: 2022/10/13 02:41:28
+# @Last modified time: 2022/10/13 22:34:35
 
 namespace peproulitmateinvoice;
 
@@ -1231,6 +1231,22 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
       $watermark_opacity = get_option("puiw_watermark_opacity",$default);
       $watermark_opacity = empty($watermark_opacity) ? $default : $watermark_opacity;
       return apply_filters("puiw_get_watermark_opacity", $watermark_opacity, $default);
+    }
+    /**
+     * PDF Watermark blend mode
+     *
+     * @method PeproUltimateInvoice_Template->get_watermark_blend()
+     * @param string $default default blend mode
+     * @return string blend mode
+     * @version 1.0.0
+     * @since 1.9.0
+     * @license https://pepro.dev/license Pepro.dev License
+     */
+    public function get_watermark_blend($default="Normal")
+    {
+      $watermark_blend = get_option("puiw_watermark_blend",$default);
+      $watermark_blend = empty($watermark_blend) ? $default : $watermark_blend;
+      return apply_filters("puiw_get_watermark_blend", $watermark_blend, $default);
     }
     /**
      * get invoices footer html

@@ -11,7 +11,7 @@ Developer URI: https://amirhp.com
 Plugin URI: https://peprodev.com/pepro-woocommerce-ultimate-invoice/
 Requires at least: 5.0
 Tested up to: 6.0.2
-Version: 1.8.8
+Version: 1.9.0
 Stable tag: 1.8.7
 Requires PHP: 7.0
 WC requires at least: 5.0
@@ -22,7 +22,7 @@ Copyright: (c) 2022 Pepro Dev. Group, All rights reserved.
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
-# @Last modified time: 2022/10/13 02:43:11
+# @Last modified time: 2022/10/13 23:13:56
 
 namespace peproulitmateinvoice;
 use voku\CssToInlineStyles\CssToInlineStyles;
@@ -75,7 +75,7 @@ if (!class_exists("PeproUltimateInvoice")) {
 
             self::$_instance            = $this;
             $this->td                   = "pepro-ultimate-invoice";
-            $this->version              = "1.8.8";
+            $this->version              = "1.9.0";
             $this->db_slug              = $this->td;
             $this->plugin_file          = __FILE__;
             $this->plugin_dir           = plugin_dir_path(__FILE__);
@@ -165,7 +165,6 @@ if (!class_exists("PeproUltimateInvoice")) {
               }
 
               // change colors and template if invoice is pre-invoice
-              add_filter("puiw_printinvoice_pdf_footer", array( $this, "puiw_printinvoice_pdf_footer"), 10, 5);
               add_filter("puiw_get_default_dynamic_params", array( $this, "puiw_get_default_dynamic_params"), 10, 2);
               add_filter('query_vars', function ($vars) {
                   $vars[] = "tp";
@@ -776,27 +775,6 @@ if (!class_exists("PeproUltimateInvoice")) {
                 }
             }
             echo "</div>";
-        }
-        /**
-         * change footer and remove site name, order id and other details if order is pre-invoice
-         *
-         * @method puiw_printinvoice_pdf_footer
-         * @param string $footer previous footer string
-         * @param string $f1 part one, invoice name
-         * @param string $f2 part two, page number
-         * @param WC_Order $order
-         * @param int $order_id
-         * @return string new footer html data
-         * @version 1.0.0
-         * @since 1.1.0
-         * @license https://pepro.dev/license Pepro.dev License
-         */
-        public function puiw_printinvoice_pdf_footer($footer, $f1, $f2, $order, $order_id)
-        {
-            if ("prebuy-invoice" == $order->get_status()) {
-                $footer = "$f2 | " . __("Page {PAGENO} / {nbpg}", $this->td);
-            }
-            return $footer;
         }
         /**
          * alter invoice template and colors if pre-invoice is status of order
@@ -1692,10 +1670,10 @@ if (!class_exists("PeproUltimateInvoice")) {
                 "puiw_preinvoice_theme_color2"                => "#fff59d",
                 "puiw_preinvoice_theme_color3"                => "#fff8b5",
                 "puiw_invoice_title"                          => _x("Invoice %s", "wc-setting", $this->td),
-                "puiw_font_size"                              => "12",
+                "puiw_font_size"                              => "11",
                 "puiw_invoice_prefix"                         => "INV-",
                 "puiw_invoice_suffix"                         => "",
-                "puiw_invoice_start"                          => "1000",
+                "puiw_invoice_start"                          => "0",
                 "puiw_show_signatures"                        => "",
                 "puiw_signature"                              => "",
                 "puiw_watermark"                              => "",

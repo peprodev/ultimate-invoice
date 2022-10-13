@@ -1,8 +1,3 @@
-<!--
-@Last modified time: 2022/01/26 21:30:04
--->
-
-
 <table class="show_signature footersignatureauto" if="show_signature">
   <tr if="show_signature" class="show_signature">
     <td if="show_signature" class="show_signature" colspan="6" style="vertical-align: top; text-align:center;">
