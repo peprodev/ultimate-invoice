@@ -1,5 +1,5 @@
 <?php
-# @Last modified time: 2022/10/13 23:14:47
+# @Last modified time: 2022/10/15 12:58:50
 namespace peproulitmateinvoice;
 use voku\CssToInlineStyles\CssToInlineStyles;
 
@@ -887,6 +887,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           $template               = $this->fn->get_template();
           $templateDirpath        = apply_filters( "puiw_get_template_dir_path", $template, $order);
 
+
           $contents               = file_get_contents("$templateDirpath/default.cfg");
 
           $template_pdf_setting   = $this->parseTemplate($contents);
@@ -946,8 +947,8 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           $get_pdf_size = apply_filters("puiw_generate_pdf_page_size", $get_pdf_size, $order_id, $order, "PDF");
 
           $daynamic_params = $this->get_default_dynamic_params($order_id, $order);
-          @ini_set('display_errors', 0);
-          error_reporting(0);
+          // @ini_set('display_errors', 0);
+          // error_reporting(0);
           try {
             $mpdf = new \Mpdf\Mpdf(array(
               "fontDir"                => array_merge($fontDirs, [plugin_dir_path(__FILE__)]),
@@ -987,15 +988,15 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
             $mpdf->SetSubject(strip_tags($pdf_title));
             $mpdf->SetAuthor($PeproUltimateInvoice->title_d);
             $mpdf->SetCreator($PeproUltimateInvoice->title_tw);
-            if (!empty($daynamic_params["watermark"])) {
-              // @see https://mpdf.github.io/reference/mpdf-functions/setwatermarkimage.html
-              $wtrmrk_img      = apply_filters("puiw_generate_pdf_watermark_img", $daynamic_params["watermark"], $order_id, $order, "PDF");
-              $wtrmrk_alpha    = apply_filters("puiw_generate_pdf_watermark_alpha", (float) $daynamic_params["watermark_opacity_10"], $order_id, $order, "PDF");
-              $wtrmrk_size     = apply_filters("puiw_generate_pdf_watermark_size", "D", $order_id, $order, "PDF");
-              $wtrmrk_position = apply_filters("puiw_generate_pdf_watermark_position", "P", $order_id, $order, "PDF");
-              $mpdf->SetWatermarkImage($wtrmrk_img, $wtrmrk_alpha, $wtrmrk_size, $wtrmrk_position);
-              $mpdf->showWatermarkImage = apply_filters("puiw_generate_pdf_watermark_show", true, $order_id, $order, "PDF");
-            }
+            // if (!empty($daynamic_params["watermark"])) {
+            //   // @see https://mpdf.github.io/reference/mpdf-functions/setwatermarkimage.html
+            //   $wtrmrk_img      = apply_filters("puiw_generate_pdf_watermark_img", $daynamic_params["watermark"], $order_id, $order, "PDF");
+            //   $wtrmrk_alpha    = apply_filters("puiw_generate_pdf_watermark_alpha", (float) $daynamic_params["watermark_opacity_10"], $order_id, $order, "PDF");
+            //   $wtrmrk_size     = apply_filters("puiw_generate_pdf_watermark_size", "D", $order_id, $order, "PDF");
+            //   $wtrmrk_position = apply_filters("puiw_generate_pdf_watermark_position", "P", $order_id, $order, "PDF");
+            //   $mpdf->SetWatermarkImage($wtrmrk_img, $wtrmrk_alpha, $wtrmrk_size, $wtrmrk_position);
+            //   $mpdf->showWatermarkImage = apply_filters("puiw_generate_pdf_watermark_show", true, $order_id, $order, "PDF");
+            // }
 
             if (!$order) {
               $errrxt = _x('Error! Invoice does not exist.', 'invoice-template', $PeproUltimateInvoice->td);
@@ -1019,11 +1020,12 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
               $html_header     = $this->create_html($order_id, "PDF", "header","",$skipAuth);
               $html_footer     = $this->create_html($order_id, "PDF", "footer","",$skipAuth);
               $footerhtml      = "<div class='footerauto' style='text-align: center; padding: 1rem;' dir='$dire'><table width='100%'><tr>
-                <td style=\"padding: 1rem; text-align: center; width: 33%;\">صفحه {PAGENO} / {nbpg}</td>
+                <td style=\"padding: 1rem; text-align: center; width: 33%;\">"._x("Page","invoice-footer",$this->td)." {PAGENO} / {nbpg}</td>
                 <td style=\"padding: 1rem; text-align: center; width: 33%;\">{$pdf_title}</td>
                 <td style=\"padding: 1rem; text-align: center; width: 33%;\">{$PeproUltimateInvoice->title_t} (https://pepro.dev)</td>
               <tr></table></div>";
-              $footerhtml = apply_filters("puiw_printinvoice_pdf_footer", $footerhtml, $order, $order_id);
+              $footerhtml = apply_filters_deprecated("puiw_printinvoice_pdf_footer", [$footerhtml, "", "", $order, $order_id], "1.9.0", "puiw_printinvoice_pdf_footer_new");
+              $footerhtml = apply_filters("puiw_printinvoice_pdf_footer_new", $footerhtml, $order, $order_id);
               $mpdf->SetHTMLHeader( $html_header );
               $mpdf->SetHTMLFooter( $html_footer . $footerhtml);
               $mpdf->WriteHTML($stylesheet, \Mpdf\HTMLParserMode::HEADER_CSS);

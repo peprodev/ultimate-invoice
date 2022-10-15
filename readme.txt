@@ -153,6 +153,9 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 
 == Upgrade Notice ==
 
+= Version 1.9.1 / 2022-10-15 / 1401-07-23 =
+- PDF Invoice Footer translated
+
 = Version 1.9.0 / 2022-10-13 / 1401-07-21 =
 - Watermark for PDFs added with Alpha and BlendMode Options
 - Default Invoice Templates footer changed
@@ -170,6 +173,20 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 - To Buy TelegramBot plugin contact support@pepro.dev
 
 == Changelog ==
+
+= Version 1.9.1 / 2022-10-15 / 1401-07-23 =
+- PDF Invoice Footer translated
+
+= Version 1.9.0 / 2022-10-13 / 1401-07-21 =
+- Watermark for PDFs added with Alpha and BlendMode Options
+- Default Invoice Templates footer changed
+- DEV: edited hook *puiw_printinvoice_pdf_footer*
+- DEV: added hook *puiw_generate_pdf_page_size*
+- DEV: added hook *puiw_generate_pdf_watermark_img*
+- DEV: added hook *puiw_generate_pdf_watermark_alph*
+- DEV: added hook *puiw_generate_pdf_watermark_size*
+- DEV: added hook *puiw_generate_pdf_watermark_posin*
+- DEV: added hook *puiw_generate_pdf_watermark_show*
 
 = Version 1.8.8 / 2022-10-13 / 1401-07-21 =
 - DEV: added public function $PeproUltimateInvoice->make_pdf_file($order_id)
