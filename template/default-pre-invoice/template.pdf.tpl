@@ -98,8 +98,6 @@
     </thead>
     <tbody>
       {{{invoice_products_list}}}
-    </tbody>
-    <tfoot>
       <div class="show_order_items show_order_total">
         <tr class="">
           <td colspan="{{{invoice_final_prices_pre_colspan}}}">جمع کل</td>
@@ -111,7 +109,7 @@
       <tr class="show_custom_footer" style="{{{show_custom_footer_hc}}}"><div style="{{{show_custom_footer_dn}}}">
         <td class="show_custom_footer" style="vertical-align: middle; {{{show_custom_footer_dn}}}" colspan="{{{invoice_final_row_colspan}}}">{{{invoices_footer}}}</td></div>
       </tr>
-    </tfoot>
+    </tbody>
   </table>
   <table id="show_order_notes" style="{{{show_order_notes_hc}}}">
     <tr class="show_order_notes bg4" style="{{{show_order_notes_hc}}}">

@@ -1,5 +1,5 @@
 <?php
-# @Last modified time: 2022/10/15 12:58:50
+# @Last modified time: 2022/10/15 13:44:52
 namespace peproulitmateinvoice;
 use voku\CssToInlineStyles\CssToInlineStyles;
 
@@ -988,16 +988,15 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
             $mpdf->SetSubject(strip_tags($pdf_title));
             $mpdf->SetAuthor($PeproUltimateInvoice->title_d);
             $mpdf->SetCreator($PeproUltimateInvoice->title_tw);
-            // if (!empty($daynamic_params["watermark"])) {
-            //   // @see https://mpdf.github.io/reference/mpdf-functions/setwatermarkimage.html
-            //   $wtrmrk_img      = apply_filters("puiw_generate_pdf_watermark_img", $daynamic_params["watermark"], $order_id, $order, "PDF");
-            //   $wtrmrk_alpha    = apply_filters("puiw_generate_pdf_watermark_alpha", (float) $daynamic_params["watermark_opacity_10"], $order_id, $order, "PDF");
-            //   $wtrmrk_size     = apply_filters("puiw_generate_pdf_watermark_size", "D", $order_id, $order, "PDF");
-            //   $wtrmrk_position = apply_filters("puiw_generate_pdf_watermark_position", "P", $order_id, $order, "PDF");
-            //   $mpdf->SetWatermarkImage($wtrmrk_img, $wtrmrk_alpha, $wtrmrk_size, $wtrmrk_position);
-            //   $mpdf->showWatermarkImage = apply_filters("puiw_generate_pdf_watermark_show", true, $order_id, $order, "PDF");
-            // }
-
+            if (!empty($daynamic_params["watermark"])) {
+              // @see https://mpdf.github.io/reference/mpdf-functions/setwatermarkimage.html
+              $wtrmrk_img      = apply_filters("puiw_generate_pdf_watermark_img", $daynamic_params["watermark"], $order_id, $order, "PDF");
+              $wtrmrk_alpha    = apply_filters("puiw_generate_pdf_watermark_alpha", (float) $daynamic_params["watermark_opacity_10"], $order_id, $order, "PDF");
+              $wtrmrk_size     = apply_filters("puiw_generate_pdf_watermark_size", "D", $order_id, $order, "PDF");
+              $wtrmrk_position = apply_filters("puiw_generate_pdf_watermark_position", "P", $order_id, $order, "PDF");
+              $mpdf->SetWatermarkImage($wtrmrk_img, $wtrmrk_alpha, $wtrmrk_size, $wtrmrk_position);
+              $mpdf->showWatermarkImage = apply_filters("puiw_generate_pdf_watermark_show", true, $order_id, $order, "PDF");
+            }
             if (!$order) {
               $errrxt = _x('Error! Invoice does not exist.', 'invoice-template', $PeproUltimateInvoice->td);
               $err_html .= "<body dir='$dire'><h2 style='text-align:center;'>$errrxt</h2><p style='text-align:center;' dir='$dire'>" .
