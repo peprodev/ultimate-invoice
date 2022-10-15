@@ -22,7 +22,7 @@ Copyright: (c) 2022 Pepro Dev. Group, All rights reserved.
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
-# @Last modified time: 2022/10/15 13:45:01
+# @Last modified time: 2022/10/15 13:48:05
 
 namespace peproulitmateinvoice;
 use voku\CssToInlineStyles\CssToInlineStyles;
