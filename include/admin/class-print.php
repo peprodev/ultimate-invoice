@@ -192,7 +192,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           $use_billing = $opts["show_shipping_address"];
 
           $opts["invoice_id"]                 = apply_filters("puiw_printinvoice_getinvoice_id",                $opts["invoice_prefix"] . ($opts["invoice_start"]+$order->get_id()) . $opts["invoice_suffix"], $opts, $order);
-          $opts["invoice_id_en"]              = apply_filters("puiw_printinvoice_getinvoice_id_en",             $opts["invoice_prefix"] . ($opts["invoice_start"]+$order->get_id()) . $opts["invoice_suffix"] ?: "0000000000000000", $opts, $order);
+          $opts["invoice_id_en"]              = apply_filters("puiw_printinvoice_getinvoice_id_en",             $opts["invoice_prefix"] . ($opts["invoice_start"]+$order->get_id()) . $opts["invoice_suffix"], $opts, $order);
           $opts["invoice_id_nm"]              = apply_filters("puiw_printinvoice_getinvoice_id_raw",            $order->get_id(), $opts, $order);
           $opts["invoice_title"]              = apply_filters("puiw_printinvoice_getinvoice_title",             sprintf($this->fn->get_invoice_title(__("Invoice %s", $this->td)), $opts["invoice_id"]), $opts, $order);
           $opts["order_payment_method"]       = apply_filters("puiw_printinvoice_getinvoice_payment_method",    $order->get_payment_method_title(), $opts, $order);
@@ -203,9 +203,9 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           $opts["customer_lname"]             = apply_filters("puiw_printinvoice_getcustomer_lastname",         ($use_billing == "billing") ? $order->get_billing_last_name() :   $order->get_shipping_last_name(), $opts, $order, $use_billing);
           $opts["customer_fullname"]          = apply_filters("puiw_printinvoice_getcustomer_fullname",         ($use_billing == "billing") ? "{$order->get_billing_first_name()} {$order->get_billing_last_name()}" : "{$order->get_shipping_first_name()} {$order->get_shipping_last_name()}", $opts, $order, $use_billing);
           $opts["customer_company"]           = apply_filters("puiw_printinvoice_getcustomer_company",          ($use_billing == "billing") ? $order->get_billing_company() :     $order->get_shipping_company(), $opts, $order, $use_billing);
-          $opts["customer_country"]           = apply_filters("puiw_printinvoice_getcustomer_country",          ($use_billing == "billing") ? ($order->get_billing_country() ?: "") : ($order->get_shipping_country() ?: ""), $opts, $order, $use_billing);
-          $opts["customer_state"]             = apply_filters("puiw_printinvoice_getcustomer_state",            ($use_billing == "billing") ? ($order->get_billing_state() ?: "") : ($order->get_shipping_state() ?: ""), $opts, $order, $use_billing);
-          $opts["customer_city"]              = apply_filters("puiw_printinvoice_getcustomer_city",             ($use_billing == "billing") ? ($order->get_billing_city() ?: "") : ($order->get_shipping_city() ?: ""), $opts, $order, $use_billing);
+          $opts["customer_country"]           = apply_filters("puiw_printinvoice_getcustomer_country",          ($use_billing == "billing") ? ($order->get_billing_country() ? $order->get_billing_country() : "") : ($order->get_shipping_country() ? $order->get_shipping_country() : ""), $opts, $order, $use_billing);
+          $opts["customer_state"]             = apply_filters("puiw_printinvoice_getcustomer_state",            ($use_billing == "billing") ? ($order->get_billing_state() ? $order->get_billing_state() : "") : ($order->get_shipping_state() ? $order->get_shipping_state() : ""), $opts, $order, $use_billing);
+          $opts["customer_city"]              = apply_filters("puiw_printinvoice_getcustomer_city",             ($use_billing == "billing") ? ($order->get_billing_city() ? $order->get_billing_city() : "") : ($order->get_shipping_city() ? $order->get_shipping_city() : ""), $opts, $order, $use_billing);
           $opts["customer_address_1"]         = apply_filters("puiw_printinvoice_getcustomer_address_1",        ($use_billing == "billing") ? $order->get_billing_address_1() :   $order->get_shipping_address_1(), $opts, $order, $use_billing);
           $opts["customer_address_2"]         = apply_filters("puiw_printinvoice_getcustomer_address_2",        ($use_billing == "billing") ? $order->get_billing_address_2() :   $order->get_shipping_address_2(), $opts, $order, $use_billing);
           $opts["customer_postcode"]          = apply_filters("puiw_printinvoice_getcustomer_postcode",         ($use_billing == "billing") ? $order->get_billing_postcode() :    $order->get_shipping_postcode(), $opts, $order, $use_billing);
@@ -240,8 +240,8 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
                   $opts["customer_fname"],
                   $opts["customer_lname"],
                   $opts["customer_company"],
-                  $get_base_countries[$opts["customer_country"]] ?: $opts["customer_country"],
-                  $get_base_states[$opts["customer_state"]] ?: $opts["customer_state"],
+                  $get_base_countries[$opts["customer_country"]] ? $get_base_countries[$opts["customer_country"]] : $opts["customer_country"],
+                  $get_base_states[$opts["customer_state"]] ? $get_base_states[$opts["customer_state"]] : $opts["customer_state"],
                   $opts["customer_city"],
                   $opts["customer_address_1"],
                   $opts["customer_address_2"],
@@ -255,7 +255,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           );
           // $opts["customer_address"]        = ($use_billing == "billing") ? $order->get_formatted_billing_address() : $order->get_formatted_shipping_address();
           $opts["invoice_track_id"]           = get_post_meta($order->get_id(), 'puiw_invoice_track_id', true);
-          $opts["invoice_track_id_en"]        = $opts["invoice_track_id"] ?: "0000000000000000";
+          $opts["invoice_track_id_en"]        = $opts["invoice_track_id"] ? $opts["invoice_track_id"] : "0000000000000000";
           $opts["invoice_final_price"]        = $order->get_formatted_order_total();
           $opts["invoice_final_prices"]       = $this->get_order_final_prices($order);
           $opts["invoice_final_prices_pdf"]   = $this->get_order_final_prices_pdf($order);
@@ -629,7 +629,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
               if ($opt["show_product_sku2"] == "yes"){
                 $sku = empty($sku) || !$sku ? "#$product_id" : $sku;
               }
-              $product_weight = $weight_raw ?: 0;
+              $product_weight = $weight_raw ? $weight_raw : 0;
               if ($product_weight) {
                 $total_weight += floatval( $product_weight * $quantity );
                 $opt["invoice_total_weight"] = apply_filters( "puiw_printinvoice_calculate_invoice_total_weight", $this->fn->get_format_weight($total_weight), $total_weight, $product_weight, $quantity, $product, $item, $order);
@@ -947,8 +947,13 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           $get_pdf_size = apply_filters("puiw_generate_pdf_page_size", $get_pdf_size, $order_id, $order, "PDF");
 
           $daynamic_params = $this->get_default_dynamic_params($order_id, $order);
-          // @ini_set('display_errors', 0);
-          // error_reporting(0);
+          
+          error_reporting(0);
+          @ini_set("display_errors", 0);
+          @ini_set("max_execution_time", "300");
+          @ini_set("pcre.backtrack_limit", PHP_INT_MAX);
+          @ini_set('memory_limit', '2048M');
+
           try {
             $mpdf = new \Mpdf\Mpdf(array(
               "fontDir"                => array_merge($fontDirs, [plugin_dir_path(__FILE__)]),
@@ -979,7 +984,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
               "invoice_suffix" => $this->fn->get_invoice_suffix(),
               "invoice_start"  => $this->fn->get_invoice_start(),
             ));
-            $order_id_formatted = $opts["invoice_prefix"] . ($opts["invoice_start"]+$order_id) . $opts["invoice_suffix"] ?: "0000000000000000";
+            $order_id_formatted = $opts["invoice_prefix"] . ($opts["invoice_start"]+$order_id) . $opts["invoice_suffix"] ? $opts["invoice_prefix"] . ($opts["invoice_start"]+$order_id) . $opts["invoice_suffix"] : "0000000000000000";
             $pdf_title          = sprintf(_x("Invoice #%s on %s", "invoice-template", $PeproUltimateInvoice->td), "<strong>{$order_id_formatted}</strong>", get_bloginfo('title'));
             $pdf_title          = apply_filters("puiw_generate_pdf_title_of_pdf",$pdf_title);
             $datenow            = current_time('timestamp');
@@ -1009,9 +1014,6 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
             }
             else{
 
-              $datec = date_i18n("Y-m-d H:i", $datenow);
-              if ($this->fn->get_date_shamsi() == "yes") $datec = pu_jdate("Y-m-d H:i", (int) $datenow, "", "local", "en");
-
               $stylesheet      = $this->get_pdf_style($order_id,$order);
               $PDF_EXTRA_STYLE = $this->create_html($order_id, "PDF_EXTRA_STYLE","","",$skipAuth);
               $stylesheet      = $PDF_EXTRA_STYLE . $stylesheet;
@@ -1031,14 +1033,13 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
               $mpdf->WriteHTML($html_invoice, \Mpdf\HTMLParserMode::HTML_BODY);
             }
 
-            $datetime = date_i18n("Y_m_d_H_i", $datenow);
+            $datetime = date_i18n("Y_m_d_H_i_s", $datenow);
             if ($this->fn->get_date_shamsi() == "yes") {
-              $datetime = pu_jdate("Y-m-d_H-i-s", (int) $datenow, "", "local", "en");
+              $datetime = pu_jdate("Y_m_d_H_i_s", (int) $datenow, "", "local", "en");
             }
             $name = "Invoice-$order_id_formatted-$datetime";
             $name = apply_filters("puiw_get_export_pdf_name", $name, $order_id_formatted, $order_id, $datenow);
             if ("S" == $MODE){
-              $rand       = md5(time());
               $namedir    = PEPROULTIMATEINVOICE_DIR . "/pdf_temp";
               $namedotext = "Invoice-$order_id_formatted.$datetime.pdf";
               $namedir    = apply_filters( "puiw_get_default_mail_pdf_temp_path", $namedir, $order_id);
@@ -1049,8 +1050,10 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
               return $namedotext;
             }
             $mpdf->Output($name . ($force_download ? ".pdf" : ""),($force_download ? "D" : "I"));
-          } catch (\Exception $e) {
-            error_log("puiw debugging ~> ".print_r($e, 1));
+            
+          } catch (\Mpdf\MpdfException $e) {
+            error_log("puiw debugging ~> ".var_export($e, 1));
+            wp_die($e->getMessage());
           }
 
         }
@@ -1152,7 +1155,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
             "invoice_suffix"=> $this->fn->get_invoice_suffix(),
             "invoice_start"=> $this->fn->get_invoice_start(),
           ));
-          $order_id_formatted = $opts["invoice_prefix"] . ($opts["invoice_start"]+$order_id) . $opts["invoice_suffix"] ?: "0000000000000000";
+          $order_id_formatted = $opts["invoice_prefix"] . ($opts["invoice_start"]+$order_id) . $opts["invoice_suffix"] ? $opts["invoice_prefix"] . ($opts["invoice_start"]+$order_id) . $opts["invoice_suffix"] : "0000000000000000";
           $pdf_title          = sprintf(_x("Invoice #%s on %s", "invoice-template", $PeproUltimateInvoice->td), $order_id_formatted, get_bloginfo('title'));
           $pdf_title          = apply_filters( "puiw_generate_pdf_title_of_pdf",$pdf_title);
           $datenow            = current_time('timestamp');
@@ -1319,7 +1322,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
             $discount       = apply_filters( "puiw_invoice_item_get_product_discount", $percentage, $product, $item, $order);
             $sku            = $product->get_sku();
             if ($opt["show_product_sku2"] == "yes"){$sku  = empty($sku) || !$sku ? "#$product_id" : $sku;}
-            $product_weight = $weight_raw ?: 0;
+            $product_weight = $weight_raw ? $weight_raw : 0;
               if ($product_weight) {
                 $total_weight += floatval( $product_weight * $quantity );
                 $opt["invoice_total_weight"] = apply_filters( "puiw_printslips_calculate_invoice_total_weight", $this->fn->get_format_weight($total_weight), $total_weight, $product_weight, $quantity, $product, $item, $order);
@@ -1494,7 +1497,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
               if ($opt["show_product_sku2_inventory"] == "yes"){
                $sku = empty($sku) || !$sku ? "#$product_id" : $sku;
               }
-              $product_weight = $weight_raw ?: 0;
+              $product_weight = $weight_raw ?$weight_raw: 0;
               if ($product_weight) {
                 $total_weight += floatval( $product_weight * $quantity );
                 $opt["invoice_total_weight"] = apply_filters( "puiw_printinventory_calculate_invoice_total_weight", $this->fn->get_format_weight($total_weight), $total_weight, $product_weight, $quantity, $product, $item, $order);
@@ -1674,8 +1677,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
         }
         protected function minify_html($input)
         {
-            if(trim($input) === "") { return $input;
-            }
+            if(trim($input) === "") return $input;
             // Remove extra white-space(s) between HTML attribute(s)
             $input = preg_replace_callback(
                 '#<([^\/\s<>!]+)(?:\s+([^<>]*?)\s*|\s*)(\/?)>#s', function ($matches) {
@@ -1705,7 +1707,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
                 );
             }
 
-            return preg_replace(
+            $minified = preg_replace(
                 array(
                 // t = text
                 // o = tag open
@@ -1738,12 +1740,12 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
                 ),
                 $input
             );
+            return (null !== $minified && !empty($minified)) ? $minified : $input;
         }
         protected function minify_css($input)
         {
-            if(trim($input) === "") { return $input;
-            }
-            return preg_replace(
+            if(trim($input) === "") return $input;
+            $minified = preg_replace(
                 array(
                 // Remove comment(s)
                 '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')|\/\*(?!\!)(?>.*?\*\/)|^\s*|\s*$#s',
@@ -1782,12 +1784,12 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
                 ),
                 $input
             );
+            return (null !== $minified && !empty($minified)) ? $minified : $input;
         }
         protected function minify_js($input)
         {
-            if(trim($input) === "") { return $input;
-            }
-            return preg_replace(
+            if(trim($input) === "") return $input;
+            $minified = preg_replace(
                 array(
                 // Remove comment(s)
                 '#\s*("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')\s*|\s*\/\*(?!\!|@cc_on)(?>[\s\S]*?\*\/)\s*|\s*(?<![\:\=])\/\/.*(?=[\n\r]|$)|^\s*|\s*$#',
@@ -1809,6 +1811,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
                 ),
                 $input
             );
+            return (null !== $minified && !empty($minified)) ? $minified : $input;
         }
         /**
          * hook to alter css styles

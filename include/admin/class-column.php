@@ -2,8 +2,8 @@
 # @Author: Amirhosseinhpv
 # @Date:   2020/09/20 23:08:04
 # @Email:  its@hpv.im
-# @Last modified by:   Amirhosseinhpv
-# @Last modified time: 2021/07/12 17:17:36
+# @Last modified by:   amirhp-com <its@amirhp.com>
+# @Last modified time: 2022/12/08 13:59:39
 # @License: GPLv2
 # @Copyright: Copyright © 2020 Amirhosseinhpv, All rights reserved.
 
@@ -69,19 +69,18 @@ if (!class_exists("PeproUltimateInvoice_Columns")) {
         }
         public function admin_enqueue_scripts()
         {
-          wp_enqueue_script("jquery-confirm",PEPROULTIMATEINVOICE_ASSETS_URL . "/js/jquery-confirm.min.js", array("jquery"));
-          wp_enqueue_style("jquery-confirm",PEPROULTIMATEINVOICE_ASSETS_URL . "/css/jquery-confirm.min.css", array(), '1.0', 'all');
-          wp_register_script( "pepro-ultimate-invoice-multiple-emails", PEPROULTIMATEINVOICE_ASSETS_URL . "/js/multiple-emails" . $this->debugEnabled(".js",".min.js"), array("jquery"));
-          wp_register_style( "pepro-ultimate-invoice-multiple-emails", PEPROULTIMATEINVOICE_ASSETS_URL . "/css/multiple-emails" . $this->debugEnabled(".css",".min.css"), array(), '1.0', 'all');
-          wp_enqueue_style("fontawesome", PEPROULTIMATEINVOICE_ASSETS_URL . "/fontawesome-free/css/all.css", array(), '5.15.3', 'all');
-          wp_register_script("pepro-ultimate-invoice-orders-options", PEPROULTIMATEINVOICE_ASSETS_URL . "/admin/wc_orders" . $this->debugEnabled(".js",".min.js"), array("jquery"),current_time('timestamp'));
-          wp_localize_script( "pepro-ultimate-invoice-orders-options", "_i18n", $this->localize_script());
-          wp_register_script( "pepro-ultimate-invoice-nicescroll", PEPROULTIMATEINVOICE_ASSETS_URL . "/js/jquery.nicescroll.min.js", array("jquery"),'1.0.2');
-          wp_register_style( "pepro-ultimate-invoice-orders-options", PEPROULTIMATEINVOICE_ASSETS_URL . "/admin/wc_orders" . $this->debugEnabled(".css",".min.css"));
-          wp_register_script( "pepro-ultimate-invoice-persian-date", PEPROULTIMATEINVOICE_ASSETS_URL . "/js/persian-date.min.js", array("jquery"),'1.0.2');
-          wp_register_script( "pepro-ultimate-invoice-persian-datepicker", PEPROULTIMATEINVOICE_ASSETS_URL . "/js/persian-datepicker.min.js", array("jquery"),'1.0.2');
-          wp_register_style( "pepro-ultimate-invoice-persian-datepicker", PEPROULTIMATEINVOICE_ASSETS_URL . "/css/persian-datepicker.min.css");
-
+          wp_register_script("jquery-confirm",                            PEPROULTIMATEINVOICE_ASSETS_URL . "/js/jquery-confirm.min.js", array("jquery"));
+          wp_register_style("jquery-confirm",                             PEPROULTIMATEINVOICE_ASSETS_URL . "/css/jquery-confirm.min.css", array(), '1.0', 'all');
+          wp_register_style("fontawesome",                                PEPROULTIMATEINVOICE_ASSETS_URL . "/fontawesome-free/css/all.css", array(), '5.15.3', 'all');
+          wp_register_script("pepro-ultimate-invoice-multiple-emails",    PEPROULTIMATEINVOICE_ASSETS_URL . "/js/multiple-emails" . $this->debugEnabled(".js",".min.js"), array("jquery"));
+          wp_register_style("pepro-ultimate-invoice-multiple-emails",     PEPROULTIMATEINVOICE_ASSETS_URL . "/css/multiple-emails" . $this->debugEnabled(".css",".min.css"), array(), '1.0', 'all');
+          wp_register_script("pepro-ultimate-invoice-orders-options",     PEPROULTIMATEINVOICE_ASSETS_URL . "/admin/wc_orders" . $this->debugEnabled(".js",".min.js"), array("jquery"),current_time('timestamp'));
+          wp_localize_script("pepro-ultimate-invoice-orders-options",     "_i18n", $this->localize_script());
+          wp_register_script("pepro-ultimate-invoice-nicescroll",         PEPROULTIMATEINVOICE_ASSETS_URL . "/js/jquery.nicescroll.min.js", array("jquery"),'1.0.2');
+          wp_register_style("pepro-ultimate-invoice-orders-options",      PEPROULTIMATEINVOICE_ASSETS_URL . "/admin/wc_orders" . $this->debugEnabled(".css",".min.css"));
+          wp_register_script("pepro-ultimate-invoice-persian-date",       PEPROULTIMATEINVOICE_ASSETS_URL . "/js/persian-date.min.js", array("jquery"),'1.0.2');
+          wp_register_script("pepro-ultimate-invoice-persian-datepicker", PEPROULTIMATEINVOICE_ASSETS_URL . "/js/persian-datepicker.min.js", array("jquery"),'1.0.2');
+          wp_register_style("pepro-ultimate-invoice-persian-datepicker",  PEPROULTIMATEINVOICE_ASSETS_URL . "/css/persian-datepicker.min.css");
         }
         /**
          * Adds 'Ultimate Invoice' column header to 'Orders' page immediately after 'Status' column.
@@ -116,6 +115,11 @@ if (!class_exists("PeproUltimateInvoice_Columns")) {
               wp_enqueue_script("wp-color-picker");
               wp_enqueue_script('jquery-ui-core');
               wp_enqueue_script('jquery-ui-selectmenu');
+
+              wp_enqueue_style("fontawesome");
+              wp_enqueue_style("jquery-confirm");
+              wp_enqueue_script('jquery-confirm');
+
               wp_enqueue_style("pepro-ultimate-invoice-persian-datepicker");
               wp_enqueue_style("pepro-ultimate-invoice-multiple-emails");
               wp_enqueue_style("pepro-ultimate-invoice-orders-options");

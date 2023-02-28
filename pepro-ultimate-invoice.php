@@ -10,19 +10,22 @@ Author URI: https://pepro.dev/
 Developer URI: https://amirhp.com
 Plugin URI: https://peprodev.com/pepro-woocommerce-ultimate-invoice/
 Requires at least: 5.0
-Tested up to: 6.0.2
-Version: 1.9.2
-Stable tag: 1.9.2
+Tested up to: 6.1
+Version: 1.9.4
+Stable tag: 1.9.4
 Requires PHP: 7.0
 WC requires at least: 5.0
-WC tested up to: 6.8.2
+WC tested up to: 7.0
 Text Domain: pepro-ultimate-invoice
 Domain Path: /languages
 Copyright: (c) 2022 Pepro Dev. Group, All rights reserved.
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
-# @Last modified time: 2022/10/15 13:48:05
+/*
+ * @Last modified by: amirhp-com <its@amirhp.com>
+ * @Last modified time: 2023/03/01 03:04:50
+ */
 
 namespace peproulitmateinvoice;
 use voku\CssToInlineStyles\CssToInlineStyles;
@@ -50,6 +53,9 @@ if (!class_exists("PeproUltimateInvoice")) {
         public $version;
         public $db_slug;
         public $title;
+        public $url;
+        public $title_tw;
+        public $title_d;
         public $title_w;
         public $title_t;
         public $barcode;
@@ -75,7 +81,7 @@ if (!class_exists("PeproUltimateInvoice")) {
 
             self::$_instance            = $this;
             $this->td                   = "pepro-ultimate-invoice";
-            $this->version              = "1.9.2";
+            $this->version              = "1.9.4";
             $this->db_slug              = $this->td;
             $this->plugin_file          = __FILE__;
             $this->plugin_dir           = plugin_dir_path(__FILE__);
@@ -115,14 +121,14 @@ if (!class_exists("PeproUltimateInvoice")) {
               include_once $this->plugin_dir . 'include/admin/class-jdate.php';
               include_once $this->plugin_dir . 'include/admin/class-wcproduct-panel.php';
 
-              // handle template based funtions
+              // handle template based functions
               $this->tpl   = new \peproulitmateinvoice\PeproUltimateInvoice_Template();
-              // handle print invoice funtions
+              // handle print invoice functions
               $this->print = new \peproulitmateinvoice\PeproUltimateInvoice_Print();
               // handle metaboxes and extras for wc orders
               $this->mta   = new \peproulitmateinvoice\PeproUltimateInvoice_Columns();
 
-              // attach pdf to woocommerce emails automaticlly
+              // attach pdf to woocommerce emails automatically
               if ("yes" == $this->tpl->get_attach_pdf_invoices_to_mail()) {
                   add_filter('woocommerce_email_attachments', array($this,"attach_pdf_to_wC_emails"), 10, 3);
               }
@@ -133,7 +139,7 @@ if (!class_exists("PeproUltimateInvoice")) {
                   add_action("woocommerce_new_order", array($this,"woocommerce_new_order_action"), 10, 1);
               }
 
-              // initiate plguin main instance
+              // initiate plugin main instance
               if (is_admin()) {
                   (new PeproUltimateInvoice_wcPanel())->init();
               }
@@ -577,14 +583,13 @@ if (!class_exists("PeproUltimateInvoice")) {
                     }
                 }
             }
-
-            add_filter("plugin_action_links_{$this->plugin_basename}",        array($this, "plugins_row_links"));
-            add_action("plugin_row_meta",                                     array($this, "plugin_row_meta"), 10, 2);
-            add_action("admin_menu",                                          array($this, "admin_menu"), 1000);
-            add_action("admin_init",                                          array($this, "admin_init"));
-            add_action("wp_ajax_nopriv_puiw_{$this->td}",                     array($this, "handel_ajax_req"));
-            add_action("wp_ajax_puiw_{$this->td}",                            array($this, "handel_ajax_req"));
-            add_action("wp_before_admin_bar_render",                          array($this, "wp_before_admin_bar_render"));
+            add_action("plugin_row_meta"                , array($this, "plugin_row_meta"), 10, 4);
+            add_filter("plugin_action_links"            , array($this, "plugin_action_links"), 10, 2);
+            add_action("admin_menu"                     , array($this, "admin_menu"), 1000);
+            add_action("admin_init"                     , array($this, "admin_init"));
+            add_action("wp_ajax_nopriv_puiw_{$this->td}", array($this, "handel_ajax_req"));
+            add_action("wp_ajax_puiw_{$this->td}"       , array($this, "handel_ajax_req"));
+            add_action("wp_before_admin_bar_render"     , array($this, "wp_before_admin_bar_render"));
 
             if ("yes" == $this->tpl->get_allow_preorder_invoice()) {
                 add_action("woocommerce_proceed_to_checkout",                 array( $this,"woocommerce_after_cart_contents"), 1000);
@@ -619,6 +624,20 @@ if (!class_exists("PeproUltimateInvoice")) {
               update_option("puiw_last_import_version", $this->version);
             }
 
+        }
+        public function plugin_row_meta($links_array, $plugin_file_name, $plugin_data, $status)
+        {
+          if (strpos( $plugin_file_name, basename(__FILE__) ) ) {
+            $links_array[] = "<a href='mailto:support+UltimateInvoice@pepro.dev?subject=Ask for Help [Ultimate Invoice]'>".__("Support", $this->td)."</a>";
+          }
+          return $links_array;
+        }
+        public function plugin_action_links($actions, $plugin_file)
+        {
+          if (plugin_basename(__FILE__) == $plugin_file) {
+            $actions[$this->db_slug] = "<a href='$this->url'>".__("Settings", $this->td)."</a>";
+          }
+          return $actions;
         }
         public function make_pdf_file($order_id=0)
         {
@@ -1513,49 +1532,6 @@ if (!class_exists("PeproUltimateInvoice")) {
             );
         }
         /**
-         * get plugin meta links
-         *
-         * @method  get_meta_links
-         * @return  array list of links
-         * @version 1.0.0
-         * @since   1.0.0
-         * @license https://pepro.dev/license Pepro.dev License
-         */
-        public function get_meta_links()
-        {
-            if (!empty($this->meta_links)) {
-                return $this->meta_links;
-            }
-            $this->meta_links = array(
-                'sett'            => array(
-                    'title'       => __('Setting', $this->td),
-                    'description' => __('Setting', $this->td),
-                    'target'      => '_self',
-                    'url'         => admin_url("admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=general"),
-                ),
-                'support'         => array(
-                  'title'         => __('Support', $this->td),
-                  'description'   => __('Support', $this->td),
-                  'target'        => '_blank',
-                  'url'           => "mailto:support@pepro.dev?subject={$this->title}",
-                ),
-            );
-            return $this->meta_links;
-        }
-        /**
-         * get plugin mamange links
-         *
-         * @method  get_manage_links
-         * @return  array list of links
-         * @version 1.0.0
-         * @since   1.0.0
-         * @license https://pepro.dev/license Pepro.dev License
-         */
-        public function get_manage_links()
-        {
-            return $this->manage_links;
-        }
-        /**
          * run on plugin deactivation
          *
          * @method  deactivation_hook
@@ -1822,13 +1798,10 @@ if (!class_exists("PeproUltimateInvoice")) {
 
             // Docmunentations are shown here
             $hll = "<dev><h4><strong>".__("Shortcode and Hooks for Developers", $this->td)."</strong></h4>
-            <pre class='caqpde' dir='ltr' align='left' lang='en-US'>".implode(
-                apply_filters(
-                    "puiw_documentation",
-                    array(
+            <pre class='caqpde' dir='ltr' align='left' lang='en-US'>".implode("\n",
+                apply_filters("puiw_documentation",array(
                     "<b ".(is_rtl() ? "class='fa'" : "").">"._x("WordPress Shortcode", "setting-general", $this->td)."</b><hr>",
                     '<strong class="tag">[puiw_quick_shop el_id="" el_class=""]</strong>      <i>Outputs Quick Shop page. You can use Visual Composer Widget too.</i>',
-
                     '<br />',
                     "<b ".(is_rtl() ? "class='fa'" : "").">"._x("WordPress Action Hooks", "setting-general", $this->td).'</b>',
                     '<hr>',
@@ -1837,7 +1810,6 @@ if (!class_exists("PeproUltimateInvoice")) {
                     '<strong class="tag" >order_ajax_request_success</strong>            <i>TRIGGERS ON DOCUMENT        --Fires on cart page, when "Get invoice" button successes</i>',
                     '<strong class="tag" >order_ajax_request_success</strong>            <i>TRIGGERS ON DOCUMENT        --Fires on cart page, when "Get invoice" button successes</i>',
                     '<strong class="tag" >order_ajax_request_success</strong>            <i>TRIGGERS ON DOCUMENT        --Fires on cart page, when "Get invoice" button successes</i>',
-
                     '<br />',
                     "<b ".(is_rtl() ? "class='fa'" : "").">"._x("WordPress Filter Hooks", "setting-general", $this->td).'</b>',
                     '<hr>',
@@ -1845,7 +1817,6 @@ if (!class_exists("PeproUltimateInvoice")) {
                     '<strong class="tag" >order_ajax_request_success</strong>            <i>TRIGGERS ON DOCUMENT        --Fires on cart page, when "Get invoice" button successes</i>',
                     '<strong class="tag" >order_ajax_request_success</strong>            <i>TRIGGERS ON DOCUMENT        --Fires on cart page, when "Get invoice" button successes</i>',
                     '<strong class="tag" >order_ajax_request_success</strong>            <i>TRIGGERS ON DOCUMENT        --Fires on cart page, when "Get invoice" button successes</i>',
-
                     '<br />',
                     "<b ".(is_rtl() ? "class='fa'" : "").">"._x("jQuery Triggering Hooks", "setting-general", $this->td).'</b>',
                     '<hr>',
@@ -1856,10 +1827,7 @@ if (!class_exists("PeproUltimateInvoice")) {
                     '<strong class="tag" >ajax_request_failed</strong>                   <i>TRIGGERS ON PEOPCA_MOTHER   --Fires on instant shop page, when "Procceed to chekout" button fails</i>',
                     '<strong class="tag" >update_cart</strong>                           <i>TRIGGERS ON PEOPCA_MOTHER   --Fires on instant shop page, when basket data updates</i>',
                     '<strong class="tag" >startup</strong>                               <i>TRIGGERS ON PEOPCA_MOTHER   --Fires on instant shop page, when page loads</i>',
-                    )
-                ),
-                "\n"
-            )."</pre></dev>";
+                    )))."</pre></dev>";
             echo "$hll</div>";
             $tcona = ob_get_contents();
             ob_end_clean();
@@ -2054,7 +2022,7 @@ if (!class_exists("PeproUltimateInvoice")) {
                     if ($shopmngrs_mail && !empty($shopmngrs_mail) && count($shopmngrs_mail) > 0) {
                         wp_send_json_success(array("emails"=> $shopmngrs_mail));
                     } else {
-                        wp_send_json_error(array("msg"=> sprintf(__("Error fetching shop managers.", $this->td), $email)));
+                        wp_send_json_error(array("msg"=> __("Error fetching shop managers.", $this->td)));
                     }
                     die();
                     break;
@@ -2512,209 +2480,6 @@ if (!class_exists("PeproUltimateInvoice")) {
             }
         }
         /**
-         * read wp option from database
-         *
-         * @method  read_opt
-         * @param   string $mc  setting name
-         * @param   string $def default value
-         * @return  string option value
-         * @version 1.0.0
-         * @since   1.0.0
-         * @license https://pepro.dev/license Pepro.dev License
-         */
-        private function read_opt($mc, $def="")
-        {
-            return get_option($mc) <> "" ? get_option($mc) : $def;
-        }
-        /**
-         * plugins row links
-         *
-         * @method  plugins_row_links
-         * @param   array $links
-         * @version 1.0.0
-         * @since   1.0.0
-         * @license https://pepro.dev/license Pepro.dev License
-         */
-        public function plugins_row_links($links)
-        {
-            foreach ($this->get_manage_links() as $title => $href) {
-                array_unshift($links, "<a href='$href'>$title</a>");
-            }
-            return $links;
-        }
-        /**
-         * plugins meta links
-         *
-         * @method  plugin_row_meta
-         * @param   array  $links
-         * @param   string $file  plugin file
-         * @version 1.0.0
-         * @since   1.0.0
-         * @license https://pepro.dev/license Pepro.dev License
-         */
-        public function plugin_row_meta($links, $file)
-        {
-            if ($this->plugin_basename === $file) {
-                $icon_attr = array(
-                'style' => array(
-                    'font-size: inherit;',
-                    'line-height: inherit;',
-                    'display: inline;',
-                    'vertical-align: text-top;',
-                ),
-                );
-                foreach ($this->get_meta_links() as $id => $link) {
-                    $title = (!empty($link['icon'])) ? self::do_icon($link['icon'], $icon_attr) . ' ' . esc_html($link['title']) : esc_html($link['title']);
-                    $links[ $id ] = '<a href="' . esc_url($link['url']) . '" title="'.esc_attr($link['description']).'" target="'.(empty($link['target']) ? "_blank" : $link['target']).'">' . $title . '</a>';
-                }
-            }
-            unset($links[2]); // hide visit plugin page
-            return $links;
-        }
-        /**
-         * print out html icon for dashicons
-         *
-         * @method  do_icon
-         * @param   string $icon icon name
-         * @param   array  $attr el's attributes
-         * @return  string html icon el
-         * @version 1.0.0
-         * @since   1.0.0
-         * @license https://pepro.dev/license Pepro.dev License
-         */
-        public static function do_icon($icon, $attr = array(), $content = '')
-        {
-            $class = '';
-            if (false === strpos($icon, '/') && 0 !== strpos($icon, 'data:') && 0 !== strpos($icon, 'http')) {
-                // It's an icon class.
-                $class .= ' dashicons ' . $icon;
-            } else {
-                // It's a Base64 encoded string or file URL.
-                $class .= ' vaa-icon-image';
-                $attr   = self::merge_attr(
-                    $attr,
-                    array(
-                    'style' => array( 'background-image: url("' . $icon . '") !important' ),
-                    )
-                );
-            }
-
-            if (! empty($attr['class'])) {
-                $class .= ' ' . (string) $attr['class'];
-            }
-            $attr['class']       = $class;
-            $attr['aria-hidden'] = 'true';
-
-            $attr = self::parse_to_html_attr($attr);
-            return '<span ' . $attr . '>' . $content . '</span>';
-        }
-        /**
-         * make attributes from html tag
-         *
-         * @method  parse_to_html_attr
-         * @param   array $array attributes
-         * @return  string attributes
-         * @version 1.0.0
-         * @since   1.0.0
-         * @license https://pepro.dev/license Pepro.dev License
-         */
-        public static function parse_to_html_attr($array)
-        {
-            $str = '';
-            if (is_array($array) && ! empty($array)) {
-                foreach ($array as $attr => $value) {
-                    if (is_array($value)) {
-                        $value = implode(' ', $value);
-                    }
-                    $array[ $attr ] = esc_attr($attr) . '="' . esc_attr($value) . '"';
-                }
-                $str = implode(' ', $array);
-            }
-            return $str;
-        }
-        /**
-         * print input field for setting
-         *
-         * @method  print_setting_iput
-         * @param   string $SLUG
-         * @param   string $CAPTION
-         * @param   string $extraHtml
-         * @param   string $type
-         * @param   string $extraClass
-         * @return  string input html
-         * @version 1.0.0
-         * @since   1.0.0
-         * @license https://pepro.dev/license Pepro.dev License
-         */
-        private function print_setting_iput($SLUG="", $CAPTION="", $extraHtml="", $type="text", $extraClass="")
-        {
-            $ON = sprintf(_x("Enter %s", "setting-page", $this->td), $CAPTION);
-            echo "<tr>
-            			<th scope='row'>
-            				<label for='$SLUG'>$CAPTION</label>
-            			</th>
-            			<td>
-                    <input name='$SLUG' $extraHtml type='$type' id='$SLUG' placeholder='$CAPTION' title='$ON' value='" . $this->read_opt($SLUG) . "' class='regular-text $extraClass' />
-                  </td>
-    		        </tr>";
-        }
-        /**
-         * print select option field for setting
-         *
-         * @method  print_setting_select
-         * @param   string $SLUG
-         * @param   string $CAPTION
-         * @param   array  $dataArray
-         * @return  string option html
-         * @version 1.0.0
-         * @since   1.0.0
-         * @license https://pepro.dev/license Pepro.dev License
-         */
-        private function print_setting_select($SLUG="", $CAPTION="", $dataArray=array())
-        {
-            $ON = sprintf(_x("Choose %s", "setting-page", $this->td), $CAPTION);
-            $OPTS = "";
-            foreach ($dataArray as $key => $value) {
-                if ($key == "EMPTY") {
-                    $key = "";
-                }
-                $OPTS .= "<option value='$key' ". selected($this->read_opt($SLUG), $key, false) .">$value</option>";
-            }
-            echo "<tr>
-    			<th scope='row'>
-    				<label for='$SLUG'>$CAPTION</label>
-    			</th>
-    			<td><select name='$SLUG' id='$SLUG' title='$ON' class='regular-text'>
-          ".$OPTS."
-          </select>
-          </td>
-    		</tr>";
-        }
-        /**
-         * print wp editor for setting
-         *
-         * @method  print_setting_editor
-         * @param   string $SLUG
-         * @param   string $CAPTION
-         * @param   string $re
-         * @return  string wp editor
-         * @version 1.0.0
-         * @since   1.0.0
-         * @license https://pepro.dev/license Pepro.dev License
-         */
-        private function print_setting_editor($SLUG="", $CAPTION="", $re="")
-        {
-            echo "<tr><th><label for='$SLUG'>$CAPTION</label></th><td>";
-            wp_editor(
-                $this->read_opt($SLUG, ''),
-                strtolower(str_replace(array('-', '_', ' ', '*'), '', $SLUG)),
-                array(
-                'textarea_name' => $SLUG
-                )
-            );
-            echo "<p class='$SLUG'>$re</p></td></tr>";
-        }
-        /**
          * sample callback fn
          *
          * @method  _callback
@@ -2725,43 +2490,6 @@ if (!class_exists("PeproUltimateInvoice")) {
         public function _callback($a)
         {
             return $a;
-        }
-        /**
-         * get user ip address
-         *
-         * @method  getIP
-         * @return  string ip address
-         * @version 1.0.0
-         * @since   1.0.0
-         * @license https://pepro.dev/license Pepro.dev License
-         */
-        private function getIP()
-        {
-            // Get server IP address
-            $server_ip = (isset($_SERVER['SERVER_ADDR'])) ? $_SERVER['SERVER_ADDR'] : '';
-
-            // If website is hosted behind CloudFlare protection.
-            if (isset($_SERVER['HTTP_CF_CONNECTING_IP']) && filter_var($_SERVER['HTTP_CF_CONNECTING_IP'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
-                return $_SERVER['HTTP_CF_CONNECTING_IP'];
-            }
-
-            if (isset($_SERVER['X-Real-IP']) && filter_var($_SERVER['X-Real-IP'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
-                return $_SERVER['X-Real-IP'];
-            }
-
-            if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-                $ip = trim(current(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])));
-
-                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) && $ip != $server_ip) {
-                    return $ip;
-                }
-            }
-
-            if (isset($_SERVER['DEV_MODE'])) {
-                return '175.138.84.5';
-            }
-
-            return $_SERVER['REMOTE_ADDR'];
         }
     }
     /**
