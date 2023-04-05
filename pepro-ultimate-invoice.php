@@ -10,21 +10,21 @@ Author URI: https://pepro.dev/
 Developer URI: https://amirhp.com
 Plugin URI: https://peprodev.com/pepro-woocommerce-ultimate-invoice/
 Requires at least: 5.0
-Tested up to: 6.1
-Version: 1.9.4
-Stable tag: 1.9.4
+Tested up to: 6.2
+Version: 1.9.5
+Stable tag: 1.9.5
 Requires PHP: 7.0
 WC requires at least: 5.0
-WC tested up to: 7.0
+WC tested up to: 7.5
 Text Domain: pepro-ultimate-invoice
 Domain Path: /languages
-Copyright: (c) 2022 Pepro Dev. Group, All rights reserved.
+Copyright: (c) 2023 Pepro Dev. Group, All rights reserved.
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
 /*
  * @Last modified by: amirhp-com <its@amirhp.com>
- * @Last modified time: 2023/03/01 03:04:50
+ * @Last modified time: 2023/04/05 22:04:41
  */
 
 namespace peproulitmateinvoice;
@@ -78,7 +78,6 @@ if (!class_exists("PeproUltimateInvoice")) {
         public function __construct()
         {
             load_plugin_textdomain("pepro-ultimate-invoice", false, dirname(plugin_basename(__FILE__))."/languages/");
-
             self::$_instance            = $this;
             $this->td                   = "pepro-ultimate-invoice";
             $this->version              = "1.9.4";
@@ -96,14 +95,11 @@ if (!class_exists("PeproUltimateInvoice")) {
             $this->title_w              = sprintf(__("%2\$s ver. %1\$s", $this->td), $this->version, $this->title);
             $this->Unauthorized_Access  = "<h2 dir='rtl' align='center'>".__("Unauthorized Access!", $this->td)."</h2>";
             $this->Unauthorized_Access .= "<a href='".home_url()."' class='button button-primary'>".__("Go Back", $this->td)."</a>";
-
-
             // define constants to be accessible out of the plugin class
             defined('PEPROULTIMATEINVOICE_VER') || define('PEPROULTIMATEINVOICE_VER', $this->version);
             defined('PEPROULTIMATEINVOICE_DIR') || define('PEPROULTIMATEINVOICE_DIR', plugin_dir_path(__FILE__));
             defined('PEPROULTIMATEINVOICE_URL') || define('PEPROULTIMATEINVOICE_URL', plugins_url("", __FILE__));
             defined('PEPROULTIMATEINVOICE_ASSETS_URL') || define('PEPROULTIMATEINVOICE_ASSETS_URL', $this->assets_url);
-
             add_action("admin_notices", array( $this, "admin_notices"));
             // register_deactivation_hook( __FILE__, function () { update_option("peprodev_ultimate_invoice_alert_viewed_yet", ""); });
 
@@ -350,6 +346,16 @@ if (!class_exists("PeproUltimateInvoice")) {
             }
             return $wp_mail;
         }
+        public function pwoosms_shortcodes_list($shortcodes)
+        {
+          return "<br><strong>{$this->title}</strong><br><code>{track_id}</code> = " . __("Shipping Track Serial", $this->td) . "<br>" . PHP_EOL . $shortcodes;
+        }
+        public function sms_body_after_replace($content, $order_id, $order, $all_product_ids, $vendor_product_ids)
+        {
+          $track_id = get_post_meta($order_id, '_shipping_puiw_invoice_track_id', true);
+          $content  = str_replace("{track_id}", $track_id, $content);
+          return $content;
+        }
         /**
          * customized die wp function
          *
@@ -402,7 +408,6 @@ if (!class_exists("PeproUltimateInvoice")) {
                 remove_action('woocommerce_order_formatted_line_subtotal', array( $WPCleverWoosb, 'woosb_order_formatted_line_subtotal' ), 10, 2);
                 // remove_all_actions("woocommerce_before_order_itemmeta", 10);
             }
-
             if (isset($_GET["invoice-zip"]) && !empty(trim(sanitize_text_field($_GET["invoice-zip"])))) {
               $pdfs = array();
               $orderidsvalid = array();
@@ -591,6 +596,9 @@ if (!class_exists("PeproUltimateInvoice")) {
             add_action("wp_ajax_puiw_{$this->td}"       , array($this, "handel_ajax_req"));
             add_action("wp_before_admin_bar_render"     , array($this, "wp_before_admin_bar_render"));
 
+            add_filter("pwoosms_shortcodes_list"             , array($this, "pwoosms_shortcodes_list"));
+            add_filter("pwoosms_order_sms_body_after_replace", array($this, "sms_body_after_replace"), 10, 5);
+
             if ("yes" == $this->tpl->get_allow_preorder_invoice()) {
                 add_action("woocommerce_proceed_to_checkout",                 array( $this,"woocommerce_after_cart_contents"), 1000);
             }
@@ -612,6 +620,10 @@ if (!class_exists("PeproUltimateInvoice")) {
             add_filter("woocommerce_admin_shipping_fields",                   array($this, "woocommerce_admin_shipping_fields"));
             add_action("woocommerce_checkout_create_order_line_item",         array($this, "prices_as_order_line_item_meta"), 20, 4 );
 
+
+            // remove previous generated pdf files
+            $saved_pdfs = glob(PEPROULTIMATEINVOICE_DIR . "/pdf_temp/*.pdf");
+            foreach($saved_pdfs as $pdf){if(is_file($pdf)) {unlink($pdf);}}
 
             // add_action( 'woocommerce_admin_order_data_after_shipping_address', array($this,'checkout_field_admin_display_uin'), 10, 1 );
             // add_action( 'woocommerce_admin_order_data_after_billing_address', array($this,'checkout_field_admin_display_uin'), 10, 1 );

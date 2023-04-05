@@ -3,12 +3,12 @@ Contributors: peprodev, amirhpcom, blackswanlab
 Donate link: https://pepro.dev/donate
 Tags: woocommerce invoice, pdf invoice, persian
 Requires at least: 5.0
-Tested up to: 6.1
-Version: 1.9.4
-Stable tag: 1.9.4
+Tested up to: 6.2
+Version: 1.9.5
+Stable tag: 1.9.5
 Requires PHP: 7.0
 WC requires at least: 5.0
-WC tested up to: 7.0
+WC tested up to: 7.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -153,12 +153,16 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 
 == Upgrade Notice ==
 
+= Version 1.9.5 / 2023-04-05 / 1402-01-16 =
+- Remove previous generated pdf files
+- Added Shortcode for Persian WooCommerce SMS (شورتکد برای پیامک ووکامرس فارسی)
+
 = Version 1.9.4 / 2023-03-01 / 1401-12-10 =
 - Enqueue FontAwesome only on Required WC_Admin pages
 - Some Bug Fixes on PRINT_CLASS:get_default_dynamic_params
 - Show WordPress Error when mPDF fails to generate PDF files
-- Allow Creating PDF files with **MORE THAN A MILLION** HTML lines
-- Applied Fixes on HTML Minification to Support 1.000.000+ HTML lines
+- Allow Creating PDF files with **MORE THAN A MILLION** characters
+- Applied Fixes on HTML Minification to Support 1.000.000+ characters
 - \* The PHP function preg_replace() has a maximum string length it will parse (by default this is often about 100000 characters). Over this, PHP silently returns a null value. So long strings of code will be replaced by nothing!
 
 = Version 1.9.3 / 2022-11-07 / 1401-08-16 =
@@ -187,6 +191,18 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 - To Buy TelegramBot plugin contact support@pepro.dev
 
 == Changelog ==
+
+= Version 1.9.5 / 2023-04-05 / 1402-01-16 =
+- Remove previous generated pdf files
+- Added Shortcode for Persian WooCommerce SMS (شورتکد برای پیامک ووکامرس فارسی)
+
+= Version 1.9.4 / 2023-03-01 / 1401-12-10 =
+- Enqueue FontAwesome only on Required WC_Admin pages
+- Some Bug Fixes on PRINT_CLASS:get_default_dynamic_params
+- Show WordPress Error when mPDF fails to generate PDF files
+- Allow Creating PDF files with **MORE THAN A MILLION** characters
+- Applied Fixes on HTML Minification to Support 1.000.000+ characters
+- \* The PHP function preg_replace() has a maximum string length it will parse (by default this is often about 100000 characters). Over this, PHP silently returns a null value. So long strings of code will be replaced by nothing!
 
 = Version 1.9.3 / 2022-11-07 / 1401-08-16 =
 - Fixed Showing error on printing PDF
