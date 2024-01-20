@@ -3,12 +3,12 @@ Contributors: peprodev, amirhpcom, blackswanlab
 Donate link: https://pepro.dev/donate
 Tags: woocommerce invoice, pdf invoice, persian
 Requires at least: 5.0
-Tested up to: 6.2
+Tested up to: 6.4.2
 Version: 1.9.6
 Stable tag: 1.9.6
 Requires PHP: 7.0
 WC requires at least: 5.0
-WC tested up to: 7.5
+WC tested up to: 8.5.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
