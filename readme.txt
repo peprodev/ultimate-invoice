@@ -4,8 +4,8 @@ Donate link: https://pepro.dev/donate
 Tags: woocommerce invoice, pdf invoice, persian
 Requires at least: 5.0
 Tested up to: 6.2
-Version: 1.9.5
-Stable tag: 1.9.5
+Version: 1.9.6
+Stable tag: 1.9.6
 Requires PHP: 7.0
 WC requires at least: 5.0
 WC tested up to: 7.5
@@ -153,6 +153,10 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 
 == Upgrade Notice ==
 
+= Version 1.9.6 / 2024-01-20 / 1402-10-30 =
+- Fixed Error: `Deprecated: DateTime::_construct():`
+- Add compatibility with High-Performance Order Storage
+
 = Version 1.9.5 / 2023-04-05 / 1402-01-16 =
 - Remove previous generated pdf files
 - Added Shortcode for Persian WooCommerce SMS (شورتکد برای پیامک ووکامرس فارسی)
@@ -191,6 +195,11 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 - To Buy TelegramBot plugin contact support@pepro.dev
 
 == Changelog ==
+
+= Version 1.9.6 / 2024-01-20 / 1402-10-30 =
+- Fixed Error: `Deprecated: DateTime::_construct():`
+- Add compatibility with High-Performance Order Storage
+
 
 = Version 1.9.5 / 2023-04-05 / 1402-01-16 =
 - Remove previous generated pdf files

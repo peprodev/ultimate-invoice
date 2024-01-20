@@ -84,7 +84,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
       $timezone_str = get_option('timezone_string') ?: 'UTC';
       $timezone = new \DateTimeZone($timezone_str);
       // The date in the local timezone.
-      $date = new \DateTime(null, $timezone);
+      $date = new \DateTime("now", $timezone);
       $date->setTimestamp($timestamp);
       $date_str = $date->format('Y-m-d H:i:s');
       // Pretend the local date is UTC to get the timestamp

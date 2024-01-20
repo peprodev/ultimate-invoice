@@ -10,21 +10,21 @@ Author URI: https://pepro.dev/
 Developer URI: https://amirhp.com
 Plugin URI: https://peprodev.com/pepro-woocommerce-ultimate-invoice/
 Requires at least: 5.0
-Tested up to: 6.2
-Version: 1.9.5
+Tested up to: 6.4
+Version: 1.9.6
 Stable tag: 1.9.5
 Requires PHP: 7.0
 WC requires at least: 5.0
-WC tested up to: 7.5
+WC tested up to: 8.5.1
 Text Domain: pepro-ultimate-invoice
 Domain Path: /languages
-Copyright: (c) 2023 Pepro Dev. Group, All rights reserved.
+Copyright: (c) 2024 Pepro Dev. Group, All rights reserved.
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
 /*
  * @Last modified by: amirhp-com <its@amirhp.com>
- * @Last modified time: 2023/04/05 22:04:41
+ * @Last modified time: 2024/01/20 11:19:21
  */
 
 namespace peproulitmateinvoice;
@@ -80,7 +80,7 @@ if (!class_exists("PeproUltimateInvoice")) {
             load_plugin_textdomain("pepro-ultimate-invoice", false, dirname(plugin_basename(__FILE__))."/languages/");
             self::$_instance            = $this;
             $this->td                   = "pepro-ultimate-invoice";
-            $this->version              = "1.9.4";
+            $this->version              = "1.9.6";
             $this->db_slug              = $this->td;
             $this->plugin_file          = __FILE__;
             $this->plugin_dir           = plugin_dir_path(__FILE__);
@@ -102,6 +102,15 @@ if (!class_exists("PeproUltimateInvoice")) {
             defined('PEPROULTIMATEINVOICE_ASSETS_URL') || define('PEPROULTIMATEINVOICE_ASSETS_URL', $this->assets_url);
             add_action("admin_notices", array( $this, "admin_notices"));
             // register_deactivation_hook( __FILE__, function () { update_option("peprodev_ultimate_invoice_alert_viewed_yet", ""); });
+
+            /**
+            * add compatibility with High-Performance Order Storage
+            */
+            add_action("before_woocommerce_init", function(){
+              if (class_exists(\Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
+                \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
+              }
+            });
 
             if ($this->_wc_activated()){
               // hook into wp init and load plugin other hooks
