@@ -11,11 +11,11 @@ Developer URI: https://amirhp.com
 Plugin URI: https://peprodev.com/pepro-woocommerce-ultimate-invoice/
 Requires at least: 5.0
 Tested up to: 6.4
-Version: 1.9.6
-Stable tag: 1.9.5
+Version: 1.9.7
+Stable tag: 1.9.7
 Requires PHP: 7.0
 WC requires at least: 5.0
-WC tested up to: 8.5.1
+WC tested up to: 8.5.2
 Text Domain: pepro-ultimate-invoice
 Domain Path: /languages
 Copyright: (c) 2024 Pepro Dev. Group, All rights reserved.
@@ -24,11 +24,12 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
 /*
  * @Last modified by: amirhp-com <its@amirhp.com>
- * @Last modified time: 2024/01/20 11:19:21
+ * @Last modified time: 2024/02/05 01:44:20
  */
 
 namespace peproulitmateinvoice;
 use voku\CssToInlineStyles\CssToInlineStyles;
+use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
 
 /**
  * prevent data leak
@@ -80,7 +81,7 @@ if (!class_exists("PeproUltimateInvoice")) {
             load_plugin_textdomain("pepro-ultimate-invoice", false, dirname(plugin_basename(__FILE__))."/languages/");
             self::$_instance            = $this;
             $this->td                   = "pepro-ultimate-invoice";
-            $this->version              = "1.9.6";
+            $this->version              = "1.9.7";
             $this->db_slug              = $this->td;
             $this->plugin_file          = __FILE__;
             $this->plugin_dir           = plugin_dir_path(__FILE__);
@@ -899,7 +900,10 @@ if (!class_exists("PeproUltimateInvoice")) {
          */
         public function add_meta_boxes()
         {
-            add_meta_box( $this->td, $this->title, array( $this, 'wc_shop_order_metabox' ), 'shop_order', 'side', 'high' );
+          $screen = class_exists( '\Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController' ) && wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled()
+		        ? wc_get_page_screen_id( 'shop-order' )
+		        : 'shop_order';
+          add_meta_box( $this->td, $this->title, array( $this, 'wc_shop_order_metabox' ), $screen, 'side', 'high' );
         }
         /**
          * wc orders screen on save

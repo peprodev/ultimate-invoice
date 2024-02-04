@@ -4,11 +4,11 @@ Donate link: https://pepro.dev/donate
 Tags: woocommerce invoice, pdf invoice, persian
 Requires at least: 5.0
 Tested up to: 6.4.2
-Version: 1.9.6
-Stable tag: 1.9.6
+Version: 1.9.7
+Stable tag: 1.9.7
 Requires PHP: 7.0
 WC requires at least: 5.0
-WC tested up to: 8.5.1
+WC tested up to: 8.5.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -153,48 +153,18 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 
 == Upgrade Notice ==
 
-= Version 1.9.6 / 2024-01-20 / 1402-10-30 =
-- Fixed Error: `Deprecated: DateTime::_construct():`
-- Add compatibility with High-Performance Order Storage
+= Version 1.9.7 / 2024-01-20 / 1402-10-30 =
+- Fix compatibility with High-Performance Order Storage
+- Fix HPOS Orders screen Column not showing
+- Fix HPOS Order screen metabox not showing
 
-= Version 1.9.5 / 2023-04-05 / 1402-01-16 =
-- Remove previous generated pdf files
-- Added Shortcode for Persian WooCommerce SMS (شورتکد برای پیامک ووکامرس فارسی)
-
-= Version 1.9.4 / 2023-03-01 / 1401-12-10 =
-- Enqueue FontAwesome only on Required WC_Admin pages
-- Some Bug Fixes on PRINT_CLASS:get_default_dynamic_params
-- Show WordPress Error when mPDF fails to generate PDF files
-- Allow Creating PDF files with **MORE THAN A MILLION** characters
-- Applied Fixes on HTML Minification to Support 1.000.000+ characters
-- \* The PHP function preg_replace() has a maximum string length it will parse (by default this is often about 100000 characters). Over this, PHP silently returns a null value. So long strings of code will be replaced by nothing!
-
-= Version 1.9.3 / 2022-11-07 / 1401-08-16 =
-- Fixed Showing error on printing PDF
-
-= Version 1.9.2 / 2022-10-15 / 1401-07-23 =
-- PDF Invoice Footer translated
-- Now Order table rows fills PDF-page to the bottom
-- DEV: You should update your custom Invoice Templates to the latest version
-- DEV: Deprecated hook *puiw_printinvoice_pdf_footer* to *puiw_printinvoice_pdf_footer_new* with 3 arg
-
-= Version 1.9.0 / 2022-10-13 / 1401-07-21 =
-- Watermark for PDFs added with Alpha and BlendMode Options
-- Default Invoice Templates footer changed
-- DEV: edited hook *puiw_printinvoice_pdf_footer*
-- DEV: added hook *puiw_generate_pdf_page_size*
-- DEV: added hook *puiw_generate_pdf_watermark_img*
-- DEV: added hook *puiw_generate_pdf_watermark_alph*
-- DEV: added hook *puiw_generate_pdf_watermark_size*
-- DEV: added hook *puiw_generate_pdf_watermark_posin*
-- DEV: added hook *puiw_generate_pdf_watermark_show*
-
-= Version 1.8.8 / 2022-10-13 / 1401-07-21 =
-- DEV: added public function $PeproUltimateInvoice->make_pdf_file($order_id)
-- Compatibility with TelegramBot (send PDF invoices on Chat/Group/Channel)
-- To Buy TelegramBot plugin contact support@pepro.dev
 
 == Changelog ==
+
+= Version 1.9.7 / 2024-01-20 / 1402-10-30 =
+- Fix compatibility with High-Performance Order Storage
+- Fix HPOS Orders screen Column not showing
+- Fix HPOS Order screen metabox not showing
 
 = Version 1.9.6 / 2024-01-20 / 1402-10-30 =
 - Fixed Error: `Deprecated: DateTime::_construct():`
