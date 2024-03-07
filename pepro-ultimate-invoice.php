@@ -10,12 +10,12 @@ Author URI: https://pepro.dev/
 Developer URI: https://amirhp.com
 Plugin URI: https://peprodev.com/pepro-woocommerce-ultimate-invoice/
 Requires at least: 5.0
-Tested up to: 6.4
-Version: 1.9.7
-Stable tag: 1.9.7
+Tested up to: 6.4.3
+Version: 1.9.8
+Stable tag: 1.9.8
 Requires PHP: 7.0
 WC requires at least: 5.0
-WC tested up to: 8.5.2
+WC tested up to: 8.6.1
 Text Domain: pepro-ultimate-invoice
 Domain Path: /languages
 Copyright: (c) 2024 Pepro Dev. Group, All rights reserved.
@@ -24,7 +24,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
 /*
  * @Last modified by: amirhp-com <its@amirhp.com>
- * @Last modified time: 2024/02/05 01:44:20
+ * @Last modified time: 2024/03/07 20:02:38
  */
 
 namespace peproulitmateinvoice;
@@ -81,7 +81,7 @@ if (!class_exists("PeproUltimateInvoice")) {
             load_plugin_textdomain("pepro-ultimate-invoice", false, dirname(plugin_basename(__FILE__))."/languages/");
             self::$_instance            = $this;
             $this->td                   = "pepro-ultimate-invoice";
-            $this->version              = "1.9.7";
+            $this->version              = "1.9.8";
             $this->db_slug              = $this->td;
             $this->plugin_file          = __FILE__;
             $this->plugin_dir           = plugin_dir_path(__FILE__);
@@ -167,7 +167,7 @@ if (!class_exists("PeproUltimateInvoice")) {
                   return str_replace( array( 'mm', 'cm', 'in', 'yd', ), array( __('mm', $this->td), __('cm', $this->td), __('in', $this->td), __('yd', $this->td), ), $weight );
               });
 
-              if (isset($_GET["tab"]) && sanitize_text_field($_GET["tab"]) == sanitize_text_field("pepro_ultimate_invoice")) {
+              if (is_blog_admin() && isset($_GET["tab"]) && sanitize_text_field($_GET["tab"]) == sanitize_text_field("pepro_ultimate_invoice")) {
                   add_filter('woocommerce_admin_disabled', '__return_true');
                   add_filter('woocommerce_marketing_menu_items', '__return_empty_array');
                   add_filter('woocommerce_helper_suppress_admin_notices', '__return_true');
@@ -575,16 +575,16 @@ if (!class_exists("PeproUltimateInvoice")) {
               die($this->print->create_inventory((int) trim(sanitize_text_field($_GET["invoice-inventory"]))));
             }
 
-            if (isset($_GET["ultimate-invoice-reset"])) {
+            if (current_user_can("administrator") && is_blog_admin() && isset($_GET["ultimate-invoice-reset"])) {
               wp_die("Pepro Ultimate Invoice — FORCE RESET TO DEFAULT Settings done!<br />Return count: " . $this->change_default_settings("RESET") , "Force-reset Options", array("link_text"=> __("Back to Settings",$this->td), "link_url" => admin_url( "admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate" ), "text_direction" => "ltr"));
             }
-            if (isset($_GET["ultimate-invoice-set"])) {
+            if (current_user_can("administrator") && is_blog_admin() && isset($_GET["ultimate-invoice-set"])) {
               wp_die("Pepro Ultimate Invoice — RESET TO DEFAULT Settings done!<br />Return count: " . $this->change_default_settings("SET") , "Reset Options", array("link_text"=> __("Back to Settings",$this->td), "link_url" => admin_url( "admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate" ), "text_direction" => "ltr"));
             }
-            if (isset($_GET["ultimate-invoice-clear"])) {
+            if (current_user_can("administrator") && is_blog_admin() && isset($_GET["ultimate-invoice-clear"])) {
               wp_die("Pepro Ultimate Invoice — FORCE CLEAR Settings done!<br />Return count: " . $this->change_default_settings("CLEAR") , "Clear Options", array("link_text"=> __("Back to Settings",$this->td), "link_url" => admin_url( "admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate" ), "text_direction" => "ltr"));
             }
-            if (isset($_GET["ultimate-invoice-get"])) {
+            if (current_user_can("administrator") && is_blog_admin() && isset($_GET["ultimate-invoice-get"])) {
               $string = "<div class='log5'>".highlight_string("<?php".PHP_EOL.$this->change_default_settings("GET"), 1) ."</div><style>.log5{text-align: left; direction: ltr; padding: 1rem; display: block; overflow: auto;z-index: 77777777777 !important;position: relative;background: white;} .log5 code {background: transparent !important;}</style>";
               wp_die($string, "Export as PHP Script", array("link_text"=> __("Back to Settings",$this->td), "link_url" => admin_url( "admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate" ), "text_direction" => "ltr"));
             }

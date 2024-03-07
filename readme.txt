@@ -3,12 +3,12 @@ Contributors: peprodev, amirhpcom, blackswanlab
 Donate link: https://pepro.dev/donate
 Tags: woocommerce invoice, pdf invoice, persian
 Requires at least: 5.0
-Tested up to: 6.4.2
-Version: 1.9.7
-Stable tag: 1.9.7
+Tested up to: 6.4.3
+Version: 1.9.8
+Stable tag: 1.9.8
 Requires PHP: 7.0
 WC requires at least: 5.0
-WC tested up to: 8.5.2
+WC tested up to: 8.6.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -148,10 +148,14 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 11. WooCommerce Orders → Columns → Ultimate Invoice Options → Popup Toolbox
 12. WooCommerce Orders → Columns → Ultimate Invoice Options → Popup Toolbox → Email Invoice to Customer on the fly
 13. WooCommerce Orders → Columns → Ultimate Invoice Options → Popup Toolbox → View Invoice on the fly
-14. Edit Orders → Metaboxes → Ultimate Invoice Options
+14. Edit Orders → Metabox → Ultimate Invoice Options
 
 
 == Upgrade Notice ==
+
+= Version 1.9.8 / 2024-03-07 / 1402-12-17 =
+- Fix two Security Vulnerability - CVSS 3.1
+- Thanks Abdi Pranata for reporting
 
 = Version 1.9.7 / 2024-01-20 / 1402-10-30 =
 - Fix compatibility with High-Performance Order Storage
@@ -160,6 +164,10 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 
 
 == Changelog ==
+
+= Version 1.9.8 / 2024-03-07 / 1402-12-17 =
+- Fix two Security Vulnerability - CVSS 3.1
+- Thanks Abdi Pranata for reporting
 
 = Version 1.9.7 / 2024-01-20 / 1402-10-30 =
 - Fix compatibility with High-Performance Order Storage
