@@ -4,8 +4,8 @@ Donate link: https://pepro.dev/donate
 Tags: woocommerce invoice, pdf invoice, persian
 Requires at least: 5.0
 Tested up to: 6.4.3
-Version: 1.9.8
-Stable tag: 1.9.8
+Version: 1.9.9
+Stable tag: 1.9.9
 Requires PHP: 7.0
 WC requires at least: 5.0
 WC tested up to: 8.6.1
@@ -153,6 +153,9 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 
 == Upgrade Notice ==
 
+= Version 1.9.9 / 2024-03-19 / 1402-12-29 =
+- Security patch 
+
 = Version 1.9.8 / 2024-03-07 / 1402-12-17 =
 - Fix two Security Vulnerability - CVSS 3.1
 - Thanks Abdi Pranata for reporting
@@ -164,6 +167,9 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 
 
 == Changelog ==
+
+= Version 1.9.9 / 2024-03-19 / 1402-12-29 =
+- Security patch 
 
 = Version 1.9.8 / 2024-03-07 / 1402-12-17 =
 - Fix two Security Vulnerability - CVSS 3.1

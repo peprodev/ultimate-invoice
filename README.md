@@ -87,4 +87,4 @@ This plugin lets you to Generate Awesome Invoices for WooCommerce orders and:
 
 ### **Developed by** [Pepro Development Group](https://pepro.dev/) for WooCommerce
 
-*Current Version: 1.9.6* \| *Lead Developer:* [amirhp.com](https://amirhp.com)
+*Current Version: 1.9.9* \| *Lead Developer:* [amirhp.com](https://amirhp.com)
