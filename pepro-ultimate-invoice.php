@@ -10,12 +10,12 @@ Author URI: https://pepro.dev/
 Developer URI: https://amirhp.com
 Plugin URI: https://peprodev.com/pepro-woocommerce-ultimate-invoice/
 Requires at least: 5.0
-Tested up to: 6.4.3
-Version: 1.9.9
-Stable tag: 1.9.9
+Tested up to: 6.5.0
+Version: 2.0.0
+Stable tag: 2.0.0
 Requires PHP: 7.0
 WC requires at least: 5.0
-WC tested up to: 8.6.1
+WC tested up to: 8.7.0
 Text Domain: pepro-ultimate-invoice
 Domain Path: /languages
 Copyright: (c) 2024 Pepro Dev. Group, All rights reserved.
@@ -24,7 +24,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
 /*
  * @Last modified by: amirhp-com <its@amirhp.com>
- * @Last modified time: 2024/03/19 15:10:51
+ * @Last modified time: 2024/04/02 18:29:46
  */
 
 namespace peproulitmateinvoice;
