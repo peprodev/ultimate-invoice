@@ -3,12 +3,12 @@ Contributors: peprodev, amirhpcom, blackswanlab
 Donate link: https://pepro.dev/donate
 Tags: woocommerce invoice, pdf invoice, persian
 Requires at least: 5.0
-Tested up to: 6.5.0
-Version: 2.0.0
-Stable tag: 2.0.0
+Tested up to: 6.5.2
+Version: 2.0.1
+Stable tag: 2.0.1
 Requires PHP: 7.0
 WC requires at least: 5.0
-WC tested up to: 8.7.0
+WC tested up to: 8.8.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -152,6 +152,10 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 
 
 == Upgrade Notice ==
+
+= Version 2.0.1 / 2024-05-02 / 1403-02-13 =
+- WooCommerce 8.8.3 Compatibility
+- Enhanced Security in Migration settings (Thanks to Darius S from patchstack.com)
 
 = Version 2.0.0 / 2024-04-02 / 1403-01-14 =
 - WooCommerce HPOS Compatibility fix

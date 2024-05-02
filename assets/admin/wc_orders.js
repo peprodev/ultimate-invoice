@@ -112,6 +112,10 @@
     var dd = String(today.getDate()).padStart(2, '0');
     var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
     var yyyy = today.getFullYear();
+    var $success_color = "rgba(21, 139, 2, 0.8)";
+    var $error_color   = "rgba(139, 2, 2, 0.8)";
+    var $info_color    = "rgba(2, 133, 139, 0.8)";
+    if (!$("toast").length) {$(document.body).append($("<toast>!</toast>"));}
     var today = `${yyyy}-${mm}-${dd}`;
     if ($.trim(prevdata) == "") {
       prevdata = today;
@@ -392,6 +396,42 @@
         editbtn.click();
       }
       $("#_transaction_id").focus();
+    });
+
+    if ($(".form-field._shipping_puiw_invoice_track_id_field").length) {
+      $(".form-field._shipping_puiw_invoice_track_id_field").append(`<a class="button button-small btn-save-resid" style="position: absolute;bottom: 0;left: 0;"><span class="dashicons dashicons-cloud-saved" style="margin: 4px -4px !important;"></span></a>`)
+    }
+
+    $(document).on("click tap", ".form-field._shipping_puiw_invoice_track_id_field .button.btn-save-resid", function(e){
+      e.preventDefault();
+      var me = $(this);
+      ULTIMATE_INVOICE_CURRENT_AJAX = null;
+      if (ULTIMATE_INVOICE_CURRENT_AJAX != null) { ULTIMATE_INVOICE_CURRENT_AJAX.abort(); }
+      ULTIMATE_INVOICE_CURRENT_AJAX = $.ajax({
+        type: "POST",
+        dataType: "json",
+        url: _i18n.ajax,
+        data: {
+          action: _i18n.td,
+          nonce: _i18n.nonce,
+          wparam: "save-resid",
+          order: $("#post_ID").val(),
+          resid: $("#_shipping_puiw_invoice_track_id").val(),
+        },
+        success: function(e) {
+          if (e.success === true) {
+            show_toast(e.data.msg, $success_color);
+          } else {
+            show_toast(e.data.msg, $error_color);
+          }
+        },
+        error: function(e) {
+          show_toast(_i18n.errorTxt, $error_color);
+          console.error(e);
+        },
+        complete: function(e) {
+        },
+      });
     });
 
     $(document).on("click tap", "#editpuiw_invoice_track_id", function(e) {
@@ -937,5 +977,15 @@
           },
       });
     }
+
+    function show_toast(data="Sample Toast!", bg="", delay=5000, fn=false) {
+      if (!$("toast").length) {$(document.body).append($("<toast>!</toast>"));}else{$("toast").removeClass("active");}
+      setTimeout(function () {
+        $("toast").css("--toast-bg", bg).html(data).stop().addClass("active").delay(delay).queue(function () {
+          $(this).removeClass("active").dequeue().off("click tap"); if(fn){fn();}
+        }).on("click tap", function (e) {e.preventDefault(); $(this).stop().removeClass("active");});
+      }, 200);
+    }
+
   });
 })(jQuery);

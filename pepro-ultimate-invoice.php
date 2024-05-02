@@ -9,13 +9,13 @@ Developer: amirhp.com
 Author URI: https://pepro.dev/
 Developer URI: https://amirhp.com
 Plugin URI: https://peprodev.com/pepro-woocommerce-ultimate-invoice/
+Tested up to: 6.5.2
+WC tested up to: 8.8.3
+Version: 2.0.2
+Stable tag: 2.0.2
 Requires at least: 5.0
-Tested up to: 6.5.0
-Version: 2.0.0
-Stable tag: 2.0.0
 Requires PHP: 7.0
 WC requires at least: 5.0
-WC tested up to: 8.7.0
 Text Domain: pepro-ultimate-invoice
 Domain Path: /languages
 Copyright: (c) 2024 Pepro Dev. Group, All rights reserved.
@@ -24,7 +24,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
 /*
  * @Last modified by: amirhp-com <its@amirhp.com>
- * @Last modified time: 2024/04/02 18:29:46
+ * @Last modified time: 2024/05/02 17:21:05
  */
 
 namespace peproulitmateinvoice;
@@ -44,7 +44,6 @@ if (!class_exists("PeproUltimateInvoice")) {
      */
     class PeproUltimateInvoice
     {
-        private static $_instance = null;
         public $td;
         public $plugin_dir;
         public $plugin_url;
@@ -79,9 +78,8 @@ if (!class_exists("PeproUltimateInvoice")) {
         public function __construct()
         {
             load_plugin_textdomain("pepro-ultimate-invoice", false, dirname(plugin_basename(__FILE__))."/languages/");
-            self::$_instance            = $this;
             $this->td                   = "pepro-ultimate-invoice";
-            $this->version              = "1.9.9";
+            $this->version              = "2.0.2";
             $this->db_slug              = $this->td;
             $this->plugin_file          = __FILE__;
             $this->plugin_dir           = plugin_dir_path(__FILE__);
@@ -362,7 +360,7 @@ if (!class_exists("PeproUltimateInvoice")) {
         }
         public function sms_body_after_replace($content, $order_id, $order, $all_product_ids, $vendor_product_ids)
         {
-          $track_id = get_post_meta($order_id, '_shipping_puiw_invoice_track_id', true);
+          $track_id = get_post_meta($order_id, "_shipping_puiw_invoice_track_id", true);
           $content  = str_replace("{track_id}", $track_id, $content);
           return $content;
         }
@@ -444,7 +442,6 @@ if (!class_exists("PeproUltimateInvoice")) {
 
             // admin methods for bulk actions and setting export/import
             if (is_admin() && !is_ajax() && current_user_can("manage_options")) {
-              
               if (isset($_GET["invoice-zip"]) && !empty(trim(sanitize_text_field($_GET["invoice-zip"])))) {
                 $pdfs = array();
                 $orderidsvalid = array();
@@ -578,21 +575,20 @@ if (!class_exists("PeproUltimateInvoice")) {
                 $printBtn .= "<p style='text-align: center'><a class=\"print-button\" href=\"javascript:;\" onclick=\"window.print();return false;\" >".__("Print",$this->td)."</a></p>";
                 die("<title>".__("Bulk Packing Slip",$this->td)."</title>{$printBtn}{$inventory_temp}");
               }
+            }
 
-              if (isset($_GET["ultimate-invoice-reset"])) {
-                wp_die("Pepro Ultimate Invoice — FORCE RESET TO DEFAULT Settings done!<br />Return count: " . $this->change_default_settings("RESET") , "Force-reset Options", array("link_text"=> __("Back to Settings",$this->td), "link_url" => admin_url( "admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate" ), "text_direction" => "ltr"));
-              }
-              if (isset($_GET["ultimate-invoice-set"])) {
-                wp_die("Pepro Ultimate Invoice — RESET TO DEFAULT Settings done!<br />Return count: " . $this->change_default_settings("SET") , "Reset Options", array("link_text"=> __("Back to Settings",$this->td), "link_url" => admin_url( "admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate" ), "text_direction" => "ltr"));
-              }
-              if (isset($_GET["ultimate-invoice-clear"])) {
-                wp_die("Pepro Ultimate Invoice — FORCE CLEAR Settings done!<br />Return count: " . $this->change_default_settings("CLEAR") , "Clear Options", array("link_text"=> __("Back to Settings",$this->td), "link_url" => admin_url( "admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate" ), "text_direction" => "ltr"));
-              }
-              if (isset($_GET["ultimate-invoice-get"])) {
-                $string = "<div class='log5'>".highlight_string("<?php".PHP_EOL.$this->change_default_settings("GET"), 1) ."</div><style>.log5{text-align: left; direction: ltr; padding: 1rem; display: block; overflow: auto;z-index: 77777777777 !important;position: relative;background: white;} .log5 code {background: transparent !important;}</style>";
-                wp_die($string, "Export as PHP Script", array("link_text"=> __("Back to Settings",$this->td), "link_url" => admin_url( "admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate" ), "text_direction" => "ltr"));
-              }
-
+            if (current_user_can("manage_options") && is_admin() && isset($_GET["nonce"], $_GET["ultimate-invoice-reset"]) && wp_verify_nonce($_GET["nonce"], "pepro-ultimate-invoice") ) {
+              wp_die("Pepro Ultimate Invoice — FORCE RESET TO DEFAULT Settings done!<br />Return count: " . $this->change_default_settings("RESET") , "Force-reset Options", array("link_text"=> __("Back to Settings",$this->td), "link_url" => admin_url( "admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate" ), "text_direction" => "ltr"));
+            }
+            if (current_user_can("manage_options") && is_admin() && isset($_GET["nonce"], $_GET["ultimate-invoice-set"]) && wp_verify_nonce($_GET["nonce"], "pepro-ultimate-invoice") ) {
+              wp_die("Pepro Ultimate Invoice — RESET TO DEFAULT Settings done!<br />Return count: " . $this->change_default_settings("SET") , "Reset Options", array("link_text"=> __("Back to Settings",$this->td), "link_url" => admin_url( "admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate" ), "text_direction" => "ltr"));
+            }
+            if (current_user_can("manage_options") && is_admin() && isset($_GET["nonce"], $_GET["ultimate-invoice-clear"]) && wp_verify_nonce($_GET["nonce"], "pepro-ultimate-invoice") ) {
+              wp_die("Pepro Ultimate Invoice — FORCE CLEAR Settings done!<br />Return count: " . $this->change_default_settings("CLEAR") , "Clear Options", array("link_text"=> __("Back to Settings",$this->td), "link_url" => admin_url( "admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate" ), "text_direction" => "ltr"));
+            }
+            if (current_user_can("manage_options") && is_admin() && isset($_GET["nonce"], $_GET["ultimate-invoice-get"]) && wp_verify_nonce($_GET["nonce"], "pepro-ultimate-invoice") ) {
+              $string = "<div class='log5'>".highlight_string("<?php".PHP_EOL.$this->change_default_settings("GET"), 1) ."</div><style>.log5{text-align: left; direction: ltr; padding: 1rem; display: block; overflow: auto;z-index: 77777777777 !important;position: relative;background: white;} .log5 code {background: transparent !important;}</style>";
+              wp_die($string, "Export as PHP Script", array("link_text"=> __("Back to Settings",$this->td), "link_url" => admin_url( "admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate" ), "text_direction" => "ltr"));
             }
 
             if ("yes" == $this->tpl->get_allow_quick_shop()) {
@@ -613,7 +609,7 @@ if (!class_exists("PeproUltimateInvoice")) {
             add_action("wp_before_admin_bar_render"     , array($this, "wp_before_admin_bar_render"));
 
             add_filter("pwoosms_shortcodes_list"             , array($this, "pwoosms_shortcodes_list"));
-            add_filter("pwoosms_order_sms_body_after_replace", array($this, "sms_body_after_replace"), 10, 5);
+            add_filter("pwoosms_order_sms_body_after_replace", array($this, "sms_body_after_replace"), -1, 5);
 
             if ("yes" == $this->tpl->get_allow_preorder_invoice()) {
                 add_action("woocommerce_proceed_to_checkout",                 array( $this,"woocommerce_after_cart_contents"), 1000);
@@ -1860,9 +1856,9 @@ if (!class_exists("PeproUltimateInvoice")) {
                     '<strong class="tag" >startup</strong>                               <i>TRIGGERS ON PEOPCA_MOTHER   --Fires on instant shop page, when page loads</i>',
                     )))."</pre></dev>";
             echo "$hll</div>";
-            $tcona = ob_get_contents();
+            $html_output = ob_get_contents();
             ob_end_clean();
-            print $tcona;
+            print $html_output;
         }
         /**
          * change admin area footer text
@@ -1894,11 +1890,19 @@ if (!class_exists("PeproUltimateInvoice")) {
         {
             if (wp_doing_ajax() && !empty($_POST['wparam']) && !empty($_POST['nonce'])) {
                 if (!wp_verify_nonce($_POST['nonce'], $this->td)) {
-                    wp_send_json_error(array("message"=>__('Unauthorized Access Denied!', $this->td)));
-                    die();
+                  wp_send_json_error(array("message"=>__('Unauthorized Access Denied!', $this->td)));
                 }
                 global $woocommerce;
                 switch ($_POST['wparam']) {
+                  case 'save-resid':
+                    $order = sanitize_post($_POST['order']);
+                    $resid = sanitize_post($_POST['resid']);
+                    if (empty($order)) wp_send_json_error(array("message"=>__('Incorrect data!', $this->td)));
+                    $order = wc_get_order($order);
+                    $order->update_meta_data("puiw_invoice_track_id", $resid);
+                    $order->save();
+                    wp_send_json_success(["msg"=>__('Saved successfully!', $this->td)]);
+                  break;
                   case "add-cart":
                     $cart_date = sanitize_post($_POST['lparam']);
                     if (is_array($cart_date) && !empty($cart_date)) {
@@ -1913,10 +1917,9 @@ if (!class_exists("PeproUltimateInvoice")) {
                             }
                         }
                         wp_send_json_success(array("message"=>__('Products successfully added to cart!', $this->td),"url"=>wc_get_cart_url()));
-                        die();
+                        
                     } else {
                         wp_send_json_error(array("message"=>__('Incorrect data!', $this->td)));
-                        die();
                     }
                     break;
                   case "place-order":
@@ -1984,7 +1987,7 @@ if (!class_exists("PeproUltimateInvoice")) {
                           "msg" => __('Request success!', $this->td),
                         )
                     );
-                    die();
+                    
                     break;
                   case "send-mail-html":
                     $order_id = (int) trim($_POST['lparam']);
@@ -2046,7 +2049,7 @@ if (!class_exists("PeproUltimateInvoice")) {
                     } else {
                         wp_send_json_error(array("msg"=>__("No valid email found for this order", $this->td)));
                     }
-                    die();
+                    
                     break;
                   case "retrive-admins-emails":
                     $shopmngrs_mail = $this->get_wc_managers();
@@ -2055,13 +2058,13 @@ if (!class_exists("PeproUltimateInvoice")) {
                     } else {
                         wp_send_json_error(array("msg"=> __("Error fetching shop managers.", $this->td)));
                     }
-                    die();
+                    
                     break;
                   case "save-swatches":
                     $lparam = sanitize_textarea_field($_POST['lparam']);
                     update_option("puiw_color_swatches", $lparam);
                     wp_send_json_success(array( "msg" => __('Saved successfully!', $this->td), ));
-                    die();
+                    
                     break;
                   case "import_options":
                     $lparam = $_POST['lparam'];
@@ -2073,7 +2076,7 @@ if (!class_exists("PeproUltimateInvoice")) {
                       $wc_opt_count = $this->change_default_settings("MODIFY", $wc_opt);
                     }
                     wp_send_json_success(array( "msg" => __('Saved successfully!', $this->td), 'opts' => $wc_opt_count, 'data'=> $wc_opt));
-                    die();
+                    
                     break;
                 }
             }
@@ -2148,7 +2151,7 @@ if (!class_exists("PeproUltimateInvoice")) {
             }
             add_action("add_meta_boxes", array( $this,"add_meta_boxes"));
             add_action("admin_enqueue_scripts", array( $this,'admin_enqueue_scripts'));
-            add_action('save_post', array( $this, 'wc_save_shop_order_metabox' ));
+            add_action("save_post", array( $this, "wc_save_shop_order_metabox"), -1);
             add_filter("woocommerce_email_styles", array( $this,"woocommerce_email_styles_edit"));
         }
         /**
@@ -2473,9 +2476,9 @@ if (!class_exists("PeproUltimateInvoice")) {
                   <p style='margin: 0.8rem 1rem;'><img src='".plugins_url("/assets/img/peprodev.svg", __FILE__)."' width='55px' /></p>
                   <div><p>".sprintf(__("Proudly Developed by %s",$this->td), "<strong><a target='_blank' href='https://pepro.dev/'>".__("Pepro Dev. Group",$this->td)."</a></strong>")."</p></div>
                 </div>";
-            $tcona = ob_get_contents();
+            $html_output = ob_get_contents();
             ob_end_clean();
-            return $tcona;
+            return $html_output;
         }
 
         /* ======================== MISC. FNs ======================== */

@@ -1632,9 +1632,9 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
           </tbody>
         </table>
         <?php
-        $tcona = ob_get_contents();
+        $html_output = ob_get_contents();
         ob_end_clean();
-        echo apply_filters( "puiw_section_debug_html", $tcona);
+        echo apply_filters( "puiw_section_debug_html", $html_output);
       }
       public function print_color_schemes()
       {
@@ -1668,9 +1668,9 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
           </p>
         </div>
         <?php
-        $tcona = ob_get_contents();
+        $html_output = ob_get_contents();
         ob_end_clean();
-        echo apply_filters( "puiw_section_color_html", $tcona);
+        echo apply_filters( "puiw_section_color_html", $html_output);
       }
       public function print_migrate_backup()
       {
@@ -1680,22 +1680,22 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
         <br>
         <div class="puiw_color_schemes_wrap">
           <div class="puiw_color_schemes_tool">
-            <a class="button button-secondary" target="_blank" href="<?=admin_url("?ultimate-invoice-get");?>"><?php echo _x("Export PHP","swatches-panel",$this->td);?></a>
+            <a class="button button-secondary" target="_blank" href="<?=add_query_arg(["ultimate-invoice-get"=>"yes", "nonce"=> wp_create_nonce("pepro-ultimate-invoice")], admin_url());?>"><?php echo _x("Export PHP","swatches-panel",$this->td);?></a>
             <a class="button button-secondary backup-export" href="#"><?php echo _x("Export JSON","swatches-panel",$this->td);?></a>
             <a class="button button-secondary backup-import show" href="#"><?php echo _x("Import JSON","swatches-panel",$this->td);?></a>
           </div>
           <h2 class="red"><?php echo _x("Danger Zone!", "wc-setting", $this->td);?></h2>
           <h3><?php echo _x("Do not use any of buttons below without knowing what your are doing!", "wc-setting", $this->td);?></h3>
           <div class="puiw_color_schemes_tool">
-              <a class="button button-secondary btn-confirm" target="_blank" href="<?=admin_url("?ultimate-invoice-reset");?>"><?php echo _x("FORCE RESET TO DEFAULT SETTINGS","swatches-panel",$this->td);?></a>
-              <a class="button button-secondary btn-confirm" target="_blank" href="<?=admin_url("?ultimate-invoice-clear");?>"><?php echo _x("FORCE CLEAR OUT ALL SETTINGS","swatches-panel",$this->td);?></a>
-              <a class="button button-secondary btn-confirm" target="_blank" href="<?=admin_url("?ultimate-invoice-set");?>"><?php echo _x("FILL OUT EMPTY SETTINGS WITH DEFAULT VALUES","swatches-panel",$this->td);?></a>
+              <a class="button button-secondary btn-confirm" target="_blank" href="<?=add_query_arg(["ultimate-invoice-reset"=>"yes", "nonce"=> wp_create_nonce("pepro-ultimate-invoice")], admin_url());?>"><?php echo _x("FORCE RESET TO DEFAULT SETTINGS","swatches-panel",$this->td);?></a>
+              <a class="button button-secondary btn-confirm" target="_blank" href="<?=add_query_arg(["ultimate-invoice-clear"=>"yes", "nonce"=> wp_create_nonce("pepro-ultimate-invoice")], admin_url());?>"><?php echo _x("FORCE CLEAR OUT ALL SETTINGS","swatches-panel",$this->td);?></a>
+              <a class="button button-secondary btn-confirm" target="_blank" href="<?=add_query_arg(["ultimate-invoice-set"=>"yes", "nonce"=> wp_create_nonce("pepro-ultimate-invoice")], admin_url());?>"><?php echo _x("FILL OUT EMPTY SETTINGS WITH DEFAULT VALUES","swatches-panel",$this->td);?></a>
           </div>
         </div>
         <?php
-        $tcona = ob_get_contents();
+        $html_output = ob_get_contents();
         ob_end_clean();
-        echo apply_filters( "puiw_section_color_html", $tcona);
+        echo apply_filters( "puiw_section_migrate_backup_html", $html_output);
       }
       public function save()
       {

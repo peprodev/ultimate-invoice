@@ -847,9 +847,9 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           do_action("puiw_printinvoice_before_return_html", $opt, $opts, $order);
           echo apply_filters("puiw_printinvoice_return_html", $template, $opt, $opts, $order);
           do_action("puiw_printinvoice_after_return_html", $opt, $opts, $order);
-          $tcona = ob_get_contents();
+          $html_output = ob_get_contents();
           ob_end_clean();
-          return $tcona;
+          return $html_output;
         }
         public function calc_precentage($offprice=0, $realprice=0)
         {
@@ -1400,9 +1400,9 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           do_action("puiw_printslips_before_return_html", $opt, $opts, $order);
           echo apply_filters("puiw_printslips_return_html", $template, $opt, $opts, $order);
           do_action("puiw_printslips_after_return_html", $opt, $opts, $order);
-          $tcona = ob_get_contents();
+          $html_output = ob_get_contents();
           ob_end_clean();
-          return $tcona;
+          return $html_output;
         }
         public function create_inventory($order_id=0, $MODE="HTML")
         {
@@ -1577,9 +1577,9 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           do_action("puiw_printinventory_before_return_html", $opt, $opts, $order);
           echo apply_filters("puiw_printinventory_return_html", $template, $opt, $opts, $order);
           do_action("puiw_printinventory_after_return_html", $opt, $opts, $order);
-          $tcona = ob_get_contents();
+          $html_output = ob_get_contents();
           ob_end_clean();
-          return $tcona;
+          return $html_output;
         }
         protected function CheckPDFRequirements($print = false, $forHTML=false)
         {
