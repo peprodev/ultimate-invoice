@@ -31,6 +31,33 @@
 	src: url("../css/96594ad5.woff") format('woff');
 }
 
+toast {
+	display: block;
+	background: var(--toast-bg, rgba(0, 0, 0, .8));
+	color: #fff;
+	text-align: center;
+	bottom: 0;
+	top: auto;
+	width: 100vw;
+	left: 0;
+	padding: 1rem;
+	box-shadow: 0 2px 11px 0 rgba(0, 0,0, 0.5);
+	cursor: pointer;
+	transition: all 0.3s ease-in-out;
+	-webkit-backdrop-filter: blur(10px);
+	        backdrop-filter: blur(10px);
+	-moz-backdrop-filter: blur(10px);
+	transform: translateY(110%);
+	position: fixed;
+	z-index: 9999999999999999 !important;
+}
+toast:empty {
+	display: none;
+}
+toast.active {
+	transform: translateY(0);
+}
+
 #TB_ajaxContent,
 #TB_closeWindow,
 #TB_title,
@@ -434,9 +461,15 @@ input#puiwc_advanced_opts[type=checkbox]:checked:after {
 .button.button-small.btn-save-resid {
 	position: absolute;
 	bottom: 0;
-	left: 0;
+	left: auto;
+	right: 0;
 }
-
+[dir="rtl"] .button.button-small.btn-save-resid {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: auto;
+}
 .form-field._shipping_puiw_invoice_shipdate_field {
 	float: right !important;
 	clear: right !important;
@@ -498,6 +531,7 @@ p._shipping_puiw_invoice_shipdaterow_field {
 	transform: rotate(180deg);
 }
 
+toast,
 .jconfirm-buttons,
 .jconfirm-content,
 .jconfirm-title,

@@ -24,7 +24,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
 /*
  * @Last modified by: amirhp-com <its@amirhp.com>
- * @Last modified time: 2024/05/02 17:21:05
+ * @Last modified time: 2024/05/02 17:31:31
  */
 
 namespace peproulitmateinvoice;
@@ -1899,9 +1899,9 @@ if (!class_exists("PeproUltimateInvoice")) {
                     $resid = sanitize_post($_POST['resid']);
                     if (empty($order)) wp_send_json_error(array("message"=>__('Incorrect data!', $this->td)));
                     $order = wc_get_order($order);
-                    $order->update_meta_data("puiw_invoice_track_id", $resid);
+                    $order->update_meta_data("_shipping_puiw_invoice_track_id", $resid);
                     $order->save();
-                    wp_send_json_success(["msg"=>__('Saved successfully!', $this->td)]);
+                    wp_send_json_success(["msg" => _x("Success", "wc-setting-js", $this->td), "res" => $order->get_meta("_shipping_puiw_invoice_track_id", true)]);
                   break;
                   case "add-cart":
                     $cart_date = sanitize_post($_POST['lparam']);

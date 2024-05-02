@@ -112,10 +112,10 @@
     var dd = String(today.getDate()).padStart(2, '0');
     var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
     var yyyy = today.getFullYear();
-    var $success_color = "rgba(21, 139, 2, 0.8)";
-    var $error_color   = "rgba(139, 2, 2, 0.8)";
-    var $info_color    = "rgba(2, 133, 139, 0.8)";
-    if (!$("toast").length) {$(document.body).append($("<toast>!</toast>"));}
+      var $success_color = "rgba(21, 139, 2, 0.8)";
+      var $error_color   = "rgba(139, 2, 2, 0.8)";
+      var $info_color    = "rgba(2, 133, 139, 0.8)";
+      if (!$("toast").length) {$(document.body).append($("<toast>!</toast>"));}
     var today = `${yyyy}-${mm}-${dd}`;
     if ($.trim(prevdata) == "") {
       prevdata = today;
@@ -407,6 +407,7 @@
       var me = $(this);
       ULTIMATE_INVOICE_CURRENT_AJAX = null;
       if (ULTIMATE_INVOICE_CURRENT_AJAX != null) { ULTIMATE_INVOICE_CURRENT_AJAX.abort(); }
+      show_toast(_i18n.loading, $info_color, 60000);
       ULTIMATE_INVOICE_CURRENT_AJAX = $.ajax({
         type: "POST",
         dataType: "json",
@@ -978,7 +979,7 @@
       });
     }
 
-    function show_toast(data="Sample Toast!", bg="", delay=5000, fn=false) {
+    function show_toast(data="Sample Toast!", bg="", delay=6000, fn=false) {
       if (!$("toast").length) {$(document.body).append($("<toast>!</toast>"));}else{$("toast").removeClass("active");}
       setTimeout(function () {
         $("toast").css("--toast-bg", bg).html(data).stop().addClass("active").delay(delay).queue(function () {

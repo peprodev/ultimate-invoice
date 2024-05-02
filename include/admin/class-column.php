@@ -3,7 +3,7 @@
  * @Author: Amirhossein Hosseinpour <https://amirhp.com>
  * @Date Created: 2020/09/20 23:08:04
  * @Last modified by: amirhp-com <its@amirhp.com>
- * @Last modified time: 2024/04/02 18:26:44
+ * @Last modified time: 2024/05/02 17:30:08
  */
 
 namespace peproulitmateinvoice;
@@ -41,29 +41,30 @@ if (!class_exists("PeproUltimateInvoice_Columns")) {
         "selectbtn"           => _x("Select image", "wc-setting-js", $this->td),
         "plugin_url"          => PEPROULTIMATEINVOICE_URL,
 
-        "rtl"                 => is_rtl() ? 1 : 0,
-        "tr_submit"           => _x("Submit", "js-string", $this->td),
-        "tr_today"            => _x("Today", "js-string", $this->td),
-        "errorTxt"            => _x("Error", "wc-setting-js", $this->td),
-        "cancelTtl"           => _x("Canceled", "wc-setting-js", $this->td),
-        "confirmTxt"          => _x("Confirm", "wc-setting-js", $this->td),
-        "successTtl"          => _x("Success", "wc-setting-js", $this->td),
-        "submitTxt"           => _x("Submit", "wc-setting-js", $this->td),
-        "okTxt"               => _x("Okay", "wc-setting-js", $this->td),
-        "txtYes"              => _x("Yes", "wc-setting-js", $this->td),
-        "txtNop"              => _x("No", "wc-setting-js", $this->td),
-        "cancelbTn"           => _x("Cancel", "wc-setting-js", $this->td),
-        "sendTxt"             => _x("Send to all", "wc-setting-js", $this->td),
-        "closeTxt"            => _x("Close", "wc-setting-js", $this->td),
-        "attach"              => _x("Attach a PDF version to email?", "wc-setting-js", $this->td),
-        "emailCustomerAsk"    => _x("Are you sure you want to email current order's invoice to customer's email address?<br>Customer Email Address: %s", "wc-setting-js", $this->td),
-        "emailCustomlistAsk"  => _x("<p>Enter Email list below by adding addresses following by Enter/Space key.</p><p>You can also bulk import Emails from Excel/CSV or any other formats.</p>", "wc-setting-js", $this->td),
-        "emailShopMngrAsk"    => _x("Are you sure you want to email current order's invoice to shop managers listed below?<br>%s", "wc-setting-js", $this->td),
-        "emailCustomerTitle"  => _x("Email Invoice to Customer", "wc-setting-js", $this->td),
-        "emailShopMngrTitle"  => _x("Email Invoice to Shop managers", "wc-setting-js", $this->td),
-        "emailCustomTitle"    => _x("Email Invoice to Custom List", "wc-setting-js", $this->td),
-        "anErrExprienced"     => _x("An Error Has Occurred", "wc-setting-js", $this->td),
-        "anEmailisrequid"     => _x("Enter at least an email address", "wc-setting-js", $this->td),
+        "rtl"                => is_rtl() ? 1 : 0,
+        "tr_submit"          => _x("Submit", "js-string", $this->td),
+        "tr_today"           => _x("Today", "js-string", $this->td),
+        "errorTxt"           => _x("Error", "wc-setting-js", $this->td),
+        "cancelTtl"          => _x("Canceled", "wc-setting-js", $this->td),
+        "confirmTxt"         => _x("Confirm", "wc-setting-js", $this->td),
+        "loading"            => _x("Loading ...", "wc-setting-js", $this->td),
+        "successTtl"         => _x("Success", "wc-setting-js", $this->td),
+        "submitTxt"          => _x("Submit", "wc-setting-js", $this->td),
+        "okTxt"              => _x("Okay", "wc-setting-js", $this->td),
+        "txtYes"             => _x("Yes", "wc-setting-js", $this->td),
+        "txtNop"             => _x("No", "wc-setting-js", $this->td),
+        "cancelbTn"          => _x("Cancel", "wc-setting-js", $this->td),
+        "sendTxt"            => _x("Send to all", "wc-setting-js", $this->td),
+        "closeTxt"           => _x("Close", "wc-setting-js", $this->td),
+        "attach"             => _x("Attach a PDF version to email?", "wc-setting-js", $this->td),
+        "emailCustomerAsk"   => _x("Are you sure you want to email current order's invoice to customer's email address?<br>Customer Email Address: %s", "wc-setting-js", $this->td),
+        "emailCustomlistAsk" => _x("<p>Enter Email list below by adding addresses following by Enter/Space key.</p><p>You can also bulk import Emails from Excel/CSV or any other formats.</p>", "wc-setting-js", $this->td),
+        "emailShopMngrAsk"   => _x("Are you sure you want to email current order's invoice to shop managers listed below?<br>%s", "wc-setting-js", $this->td),
+        "emailCustomerTitle" => _x("Email Invoice to Customer", "wc-setting-js", $this->td),
+        "emailShopMngrTitle" => _x("Email Invoice to Shop managers", "wc-setting-js", $this->td),
+        "emailCustomTitle"   => _x("Email Invoice to Custom List", "wc-setting-js", $this->td),
+        "anErrExprienced"    => _x("An Error Has Occurred", "wc-setting-js", $this->td),
+        "anEmailisrequid"    => _x("Enter at least an email address", "wc-setting-js", $this->td),
 
       );
     }
