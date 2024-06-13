@@ -3,11 +3,12 @@
  * @Author: Amirhossein Hosseinpour <https://amirhp.com>
  * @Date Created: 2020/09/20 23:08:04
  * @Last modified by: amirhp-com <its@amirhp.com>
- * @Last modified time: 2024/05/02 17:30:08
+ * @Last modified time: 2024/06/13 03:57:26
  */
 
 namespace peproulitmateinvoice;
 use Automattic\WooCommerce\Utilities\OrderUtil;
+use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
 
 defined("ABSPATH") or die("Pepro Ultimate Invoice :: Unauthorized Access!");
 
@@ -18,7 +19,7 @@ if (!class_exists("PeproUltimateInvoice_Columns")) {
       $this->td = "pepro-ultimate-invoice";
       add_action("admin_enqueue_scripts",                 array($this, "admin_enqueue_scripts"));
 
-      if ( class_exists("OrderUtil") && method_exists("OrderUtil", "custom_orders_table_usage_is_enabled") && OrderUtil::custom_orders_table_usage_is_enabled()) {
+      if (OrderUtil::custom_orders_table_usage_is_enabled()) {
         // HPOS usage is enabled.
         add_filter("manage_woocommerce_page_wc-orders_columns", array($this, "column_header"));
         add_action("manage_woocommerce_page_wc-orders_custom_column", array($this, "column_content"), 20, 2);
@@ -139,8 +140,8 @@ if (!class_exists("PeproUltimateInvoice_Columns")) {
         $total    = (float) $order->get_total();
         $email    = $order->get_billing_email();
         $id       = $order->get_id();
-        $coldata  = "<script>CURRENT_ORDER_MAIL['$id'] = '$email';</script>" . $this->popup_html_data($id);
-        echo apply_filters("pepro_ultimate_invoice_orders_column_data", $coldata, $post->ID);
+        $col_data = "<script>CURRENT_ORDER_MAIL['$id'] = '$email';</script>" . $this->popup_html_data($id);
+        echo apply_filters("pepro_ultimate_invoice_orders_column_data", $col_data, $order_id ? $order_id : $post->ID);
       }
     }
     public function popup_html_data($id, $mode = true) {

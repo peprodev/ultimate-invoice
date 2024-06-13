@@ -93,6 +93,10 @@ This plugin lets you to Generate Awesome Invoices for WooCommerce orders and:
 
 ### ***Changelog***
 
+#### Version 2.0.3 / 2024-06-13 / 1403-03-24
+- Fix HPOS error of incompatibility
+
+
 #### Version 2.0.2 / 2024-05-02 / 1403-02-13
 
 - WooCommerce 8.8.3 Compatibility

@@ -9,9 +9,9 @@ Developer: amirhp.com
 Author URI: https://pepro.dev/
 Developer URI: https://amirhp.com
 Plugin URI: https://peprodev.com/pepro-woocommerce-ultimate-invoice/
-Tested up to: 6.5.2
-WC tested up to: 8.8.3
-Version: 2.0.2
+Tested up to: 6.5.4
+WC tested up to: 8.9.2
+Version: 2.0.3
 Stable tag: 2.0.2
 Requires at least: 5.0
 Requires PHP: 7.0
@@ -24,13 +24,13 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
 /*
  * @Last modified by: amirhp-com <its@amirhp.com>
- * @Last modified time: 2024/05/02 17:31:31
+ * @Last modified time: 2024/06/13 04:00:08
  */
 
 namespace peproulitmateinvoice;
 use voku\CssToInlineStyles\CssToInlineStyles;
+use Automattic\WooCommerce\Utilities\OrderUtil;
 use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
-
 /**
  * prevent data leak
  */
@@ -79,7 +79,7 @@ if (!class_exists("PeproUltimateInvoice")) {
         {
             load_plugin_textdomain("pepro-ultimate-invoice", false, dirname(plugin_basename(__FILE__))."/languages/");
             $this->td                   = "pepro-ultimate-invoice";
-            $this->version              = "2.0.2";
+            $this->version              = "2.0.3";
             $this->db_slug              = $this->td;
             $this->plugin_file          = __FILE__;
             $this->plugin_dir           = plugin_dir_path(__FILE__);
@@ -1024,9 +1024,16 @@ if (!class_exists("PeproUltimateInvoice")) {
          */
         public function wc_shop_order_metabox($post)
         {
-            $puiw_billing_uin = get_post_meta($post->ID, 'puiw_billing_uin', true);
-            $_billing_puiw_billing_uin = get_post_meta($post->ID, '_billing_puiw_billing_uin', true);
-            $puiw_invoice_track_id = get_post_meta($post->ID, 'puiw_invoice_track_id', true);
+
+          if (OrderUtil::is_order($post, wc_get_order_types() )) {
+            $order_id = $post->get_id();
+          }else{
+            $order_id = isset($post->ID) ? $post->ID : $post;
+          }
+
+            $puiw_billing_uin = get_post_meta($order_id, 'puiw_billing_uin', true);
+            $_billing_puiw_billing_uin = get_post_meta($order_id, '_billing_puiw_billing_uin', true);
+            $puiw_invoice_track_id = get_post_meta($order_id, 'puiw_invoice_track_id', true);
 
             wp_nonce_field('security_nonce', "{$this->td}_nonce");
 
@@ -1038,7 +1045,7 @@ if (!class_exists("PeproUltimateInvoice")) {
             wp_register_script("pepro-ultimate-invoice-orders-options", "{$this->assets_url}/admin/wc_orders" . $this->debugEnabled(".js", ".min.js"), array("jquery"), current_time('timestamp'));
             wp_localize_script("pepro-ultimate-invoice-orders-options", "_i18n", array_merge($localize_script, array(
                 "calendarType"        => ($this->tpl->get_date_shamsi()=="yes") ? "persian" : "gregorian",
-                "prev_img_url"        => get_post_meta($post->ID, '_shipping_puiw_customer_signature', true),
+                "prev_img_url"        => get_post_meta($order_id, '_shipping_puiw_customer_signature', true),
                 "shipping_procc"      => __("Select The Date Product Shipped", $this->td),
                 "shipping_clear"      => __("Clear", $this->td),
                 "load_themes"         => $this->load_themes(1),
@@ -1078,7 +1085,7 @@ if (!class_exists("PeproUltimateInvoice")) {
 
             wp_enqueue_script("pepro-ultimate-invoice-orders-options");
 
-            $order    = wc_get_order($post->ID);
+            $order    = wc_get_order($order_id);
             $total    = (float) $order->get_total();
             $email    = $order->get_billing_email();
             $id       = $order->get_id();
@@ -2546,5 +2553,5 @@ if (!class_exists("PeproUltimateInvoice")) {
     });
 }
 /*##################################################
-Lead Developer: [amirhosseinhpv](https://hpv.im/)
+Lead Developer: [amirhp-com](https://amirhp.com/)
 ##################################################*/
