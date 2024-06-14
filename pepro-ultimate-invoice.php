@@ -11,8 +11,8 @@ Developer URI: https://amirhp.com
 Plugin URI: https://peprodev.com/pepro-woocommerce-ultimate-invoice/
 Tested up to: 6.5.4
 WC tested up to: 8.9.2
-Version: 2.0.3
-Stable tag: 2.0.2
+Version: 2.0.4
+Stable tag: 2.0.4
 Requires at least: 5.0
 Requires PHP: 7.0
 WC requires at least: 5.0
@@ -24,7 +24,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
 /*
  * @Last modified by: amirhp-com <its@amirhp.com>
- * @Last modified time: 2024/06/13 04:00:08
+ * @Last modified time: 2024/06/14 10:13:35
  */
 
 namespace peproulitmateinvoice;
@@ -1022,10 +1022,9 @@ if (!class_exists("PeproUltimateInvoice")) {
          * @since 1.0.0
          * @license https://pepro.dev/license Pepro.dev License
          */
-        public function wc_shop_order_metabox($post)
-        {
-
-          if (OrderUtil::is_order($post, wc_get_order_types() )) {
+        public function wc_shop_order_metabox($post){
+          
+          if (OrderUtil::is_order($post, wc_get_order_types() )  && is_a($post, "WC_Order") ) {
             $order_id = $post->get_id();
           }else{
             $order_id = isset($post->ID) ? $post->ID : $post;
