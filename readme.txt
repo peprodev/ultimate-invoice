@@ -154,7 +154,8 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 == Upgrade Notice ==
 
 = v2.0.5 (2024-06-23/1403-04-03) =
-- Dev: added `puiw_generate_pdf_Mpdf_options` filter hook
+- Dev: added `puiw_create_pdf_Mpdf_options` filter hook
+- Dev: added `puiw_create_slips_pdf_Mpdf_options` filter hook
 - Dev: added `puiw_parse_pdf_template` filter hook
 
 = v2.0.4 (2024-06-14/1403-03-25) =
@@ -168,7 +169,8 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 For full changelog please view [Github Repo.](https://github.com/peprodev/ultimate-invoice)
 
 = v2.0.5 (2024-06-23/1403-04-03) =
-- Dev: added `puiw_generate_pdf_Mpdf_options` filter hook
+- Dev: added `puiw_create_pdf_Mpdf_options` filter hook
+- Dev: added `puiw_create_slips_pdf_Mpdf_options` filter hook
 - Dev: added `puiw_parse_pdf_template` filter hook
 
 = v2.0.4 (2024-06-14/1403-03-25) =

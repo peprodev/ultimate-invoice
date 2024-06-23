@@ -966,7 +966,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           @ini_set('memory_limit', '2048M');
 
           try {
-            $mpdf = new \Mpdf\Mpdf(array(
+            $mpdf = new \Mpdf\Mpdf(apply_filters("puiw_create_pdf_Mpdf_options", array(
               "fontDir"                => array_merge($fontDirs, [plugin_dir_path(__FILE__)]),
               "mode"                   => "utf-8",
               "fontdata"               => $_fontData,
@@ -988,7 +988,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
               "watermarkImgAlphaBlend" => $daynamic_params["watermark_blend"],
               "autoLangToFont"         => true,
               "defaultPageNumStyle"    => "arabic-indic",
-            ));
+            ), $order, $template_pdf_setting, $opts));
 
             $opts = apply_filters("puiw_generate_pdf_name_orderid_format", array(
               "invoice_prefix" => $this->fn->get_invoice_prefix(),
@@ -1142,7 +1142,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           @ini_set('display_errors', 0);
           error_reporting(0);
 
-          $mpdf = new \Mpdf\Mpdf(apply_filters("puiw_generate_pdf_Mpdf_options", array(
+          $mpdf = new \Mpdf\Mpdf(apply_filters("puiw_create_slips_pdf_Mpdf_options", array(
             'fontDir'                => array_merge($fontDirs, [plugin_dir_path(__FILE__)]),
             'fontdata'               => $_fontData,
             'default_font'           => $this->fn->get_pdf_font(),
