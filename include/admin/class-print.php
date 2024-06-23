@@ -10,6 +10,16 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
     {
         protected $td;
         protected $fn;
+        protected $parent;
+        protected $hide_bundles_parent;
+        protected $hide_bundles_child;
+        protected $_woosb_show_bundles;
+        protected $_woosb_show_bundles_subtitle;
+        protected $_woosb_show_bundled_products;
+        protected $_woosb_show_bundled_subtitle;
+        protected $_woosb_show_bundled_hierarchy;
+        protected $_woosb_show_bundled_prefix;
+        protected $_woosb_show_bundles_prefix;
         public function __construct()
         {
             $this->td = "pepro-ultimate-invoice";
@@ -381,7 +391,8 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
 
             $user = wp_get_current_user();
             $user_id = get_current_user_id();
-
+            $order = wc_get_order( $order );
+            if (!$order) return false;
             // force allow admins
             if ( in_array( "administrator", (array) $user->roles )  || in_array( "shop_manager", (array) $user->roles ) ){ return true; }
             // prevent users to see others' invoices
@@ -1131,7 +1142,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           @ini_set('display_errors', 0);
           error_reporting(0);
 
-          $mpdf = new \Mpdf\Mpdf(array(
+          $mpdf = new \Mpdf\Mpdf(apply_filters("puiw_generate_pdf_Mpdf_options", array(
             'fontDir'                => array_merge($fontDirs, [plugin_dir_path(__FILE__)]),
             'fontdata'               => $_fontData,
             'default_font'           => $this->fn->get_pdf_font(),
@@ -1148,8 +1159,8 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
             'showImageErrors'        => false,
             'mirrorMargins'          => 0,
             'autoLangToFont'         => true,
-            'defaultPageNumStyle'    => 'arabic-indic',
-          ));
+            '4defaultPageNumStyle'    => 'arabic-indic',
+          ), $order, $template_pdf_setting, $opts));
           $opts = apply_filters( "puiw_generate_pdf_name_orderid_format", array(
             "invoice_prefix"=> $this->fn->get_invoice_prefix(),
             "invoice_suffix"=> $this->fn->get_invoice_suffix(),
@@ -2150,7 +2161,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
             $uu = explode(":",$tt);
             $styleExifDAta[strtolower($uu[0])] = substr($uu[1],1);
           }
-          return $styleExifDAta;
+          return apply_filters("puiw_parse_pdf_template", $styleExifDAta, $contents);
         }
     }
 }
