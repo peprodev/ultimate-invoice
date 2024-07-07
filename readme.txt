@@ -163,6 +163,10 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 
 For full changelog please view [Github Repo.](https://github.com/peprodev/ultimate-invoice)
 
+= v2.0.4 (2024-06-14/1403-03-25) =
+- Fixed `Uncaught Error: Call to undefined method WP Post:get_id()`
+
+
 = v2.0.3 (2024-06-13/1403-03-24) =
 - Fix HPOS error of incompatibility
 
