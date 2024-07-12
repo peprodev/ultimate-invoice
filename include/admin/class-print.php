@@ -2150,16 +2150,13 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
          * @since 1.0.0
          * @license https://pepro.dev/license Pepro.dev License
          */
-        private function parseTemplate($contents)
-        {
-          preg_match('!/\*[^*]*\*+([^/][^*]*\*+)*/!', $contents, $themeinfo);
-          $ss = str_ireplace(array("\n"), "|", $themeinfo[0]);
-          $ss = substr($ss,4,-3);
-          $ss = str_ireplace(array("\n","\r\n","\r"), "", $ss);
+        private function parseTemplate($contents) {
           $styleExifDAta = array();
-          foreach (explode("|",$ss) as $tt) {
-            $uu = explode(":",$tt);
-            $styleExifDAta[strtolower($uu[0])] = substr($uu[1],1);
+          foreach (explode("\n", $contents) as $line) {
+            $data = explode(":", $line);
+            if (count($data) == 2) {
+              $styleExifDAta[strtolower(trim($data[0]))] = trim($data[1]);
+            }
           }
           return apply_filters("puiw_parse_pdf_template", $styleExifDAta, $contents);
         }
