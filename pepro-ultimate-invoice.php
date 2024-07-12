@@ -11,8 +11,8 @@ Developer URI: https://amirhp.com
 Plugin URI: https://peprodev.com/pepro-woocommerce-ultimate-invoice/
 Tested up to: 6.5.4
 WC tested up to: 8.9.2
-Version: 2.0.5
-Stable tag: 2.0.4
+Version: 2.0.6
+Stable tag: 2.0.6
 Requires at least: 5.0
 Requires PHP: 7.0
 WC requires at least: 5.0
@@ -22,7 +22,7 @@ Copyright: (c) 2024 Pepro Dev. Group, All rights reserved.
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * @Last modified by: amirhp-com <its@amirhp.com>
- * @Last modified time: 2024/06/23 18:23:18
+ * @Last modified time: 2024/07/13 01:15:23
  */
 
 namespace peproulitmateinvoice;
@@ -77,7 +77,7 @@ if (!class_exists("PeproUltimateInvoice")) {
     public function __construct() {
       load_plugin_textdomain("pepro-ultimate-invoice", false, dirname(plugin_basename(__FILE__)) . "/languages/");
       $this->td                   = "pepro-ultimate-invoice";
-      $this->version              = "2.0.5";
+      $this->version              = "2.0.6";
       $this->db_slug              = $this->td;
       $this->plugin_file          = __FILE__;
       $this->plugin_dir           = plugin_dir_path(__FILE__);
@@ -954,14 +954,12 @@ if (!class_exists("PeproUltimateInvoice")) {
      * @license https://pepro.dev/license Pepro.dev License
      */
     private function parseTemplate($contents) {
-      preg_match('!/\*[^*]*\*+([^/][^*]*\*+)*/!', $contents, $themeinfo);
-      $ss = str_ireplace(array("\n"), "|", $themeinfo[0]);
-      $ss = substr($ss, 4, -3);
-      $ss = str_ireplace(array("\n", "\r\n", "\r"), "", $ss);
       $styleExifDAta = array();
-      foreach (explode("|", $ss) as $tt) {
-        $uu = explode(":", $tt);
-        $styleExifDAta[strtolower($uu[0])] = substr($uu[1], 1);
+      foreach (explode("\n", $contents) as $line) {
+        $data = explode(":", $line);
+        if (count($data) == 2) {
+          $styleExifDAta[strtolower(trim($data[0]))] = trim($data[1]);
+        }
       }
       return apply_filters("puiw_parse_pdf_template", $styleExifDAta, $contents);
     }
