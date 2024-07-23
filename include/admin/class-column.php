@@ -3,7 +3,7 @@
  * @Author: Amirhossein Hosseinpour <https://amirhp.com>
  * @Date Created: 2020/09/20 23:08:04
  * @Last modified by: amirhp-com <its@amirhp.com>
- * @Last modified time: 2024/06/13 03:57:26
+ * @Last modified time: 2024/07/24 00:41:39
  */
 
 namespace peproulitmateinvoice;
@@ -17,9 +17,9 @@ if (!class_exists("PeproUltimateInvoice_Columns")) {
     private $td;
     public function __construct() {
       $this->td = "pepro-ultimate-invoice";
-      add_action("admin_enqueue_scripts",                 array($this, "admin_enqueue_scripts"));
+      add_action("admin_enqueue_scripts", array($this, "admin_enqueue_scripts"));
 
-      if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+      if ( class_exists("\Automattic\WooCommerce\Utilities\OrderUtil") && OrderUtil::custom_orders_table_usage_is_enabled()) {
         // HPOS usage is enabled.
         add_filter("manage_woocommerce_page_wc-orders_columns", array($this, "column_header"));
         add_action("manage_woocommerce_page_wc-orders_custom_column", array($this, "column_content"), 20, 2);

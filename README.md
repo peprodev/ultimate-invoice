@@ -95,6 +95,10 @@ This plugin lets you to Generate Awesome Invoices for WooCommerce orders and:
 
 
 
+#### Version 2.0.6 / 2024-07-24 / 1403-05-02
+- Fixed undefined invoice template index name
+- Fix HPOS Incompatibility
+
 #### Version 2.0.5 / 2024-06-23 / 1403-04-03
 - Dev: added `puiw_create_pdf_Mpdf_options` filter hook
 - Dev: added `puiw_create_slips_pdf_Mpdf_options` filter hook

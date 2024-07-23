@@ -2146,7 +2146,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
          * @method parseTemplate
          * @param string $contents css content
          * @return array header info
-         * @version 1.0.0
+         * @version 2.0.0
          * @since 1.0.0
          * @license https://pepro.dev/license Pepro.dev License
          */

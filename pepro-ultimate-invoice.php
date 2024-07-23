@@ -9,8 +9,8 @@ Developer: amirhp.com
 Author URI: https://pepro.dev/
 Developer URI: https://amirhp.com
 Plugin URI: https://peprodev.com/pepro-woocommerce-ultimate-invoice/
-Tested up to: 6.5.4
-WC tested up to: 8.9.2
+Tested up to: 6.6.1
+WC tested up to: 9.1.0
 Version: 2.0.6
 Stable tag: 2.0.6
 Requires at least: 5.0
@@ -22,7 +22,7 @@ Copyright: (c) 2024 Pepro Dev. Group, All rights reserved.
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * @Last modified by: amirhp-com <its@amirhp.com>
- * @Last modified time: 2024/07/13 01:15:23
+ * @Last modified time: 2024/07/24 00:44:37
  */
 
 namespace peproulitmateinvoice;
@@ -949,7 +949,7 @@ if (!class_exists("PeproUltimateInvoice")) {
      * @method parseTemplate
      * @param string $contents css content
      * @return array header info
-     * @version 1.0.0
+     * @version 2.0.0
      * @since 1.0.0
      * @license https://pepro.dev/license Pepro.dev License
      */
@@ -1015,7 +1015,7 @@ if (!class_exists("PeproUltimateInvoice")) {
      */
     public function wc_shop_order_metabox($post) {
 
-      if (OrderUtil::is_order($post, wc_get_order_types())  && is_a($post, "WC_Order")) {
+      if (class_exists("\Automattic\WooCommerce\Utilities\OrderUtil") && OrderUtil::is_order($post, wc_get_order_types()) && is_a($post, "WC_Order")) {
         $order_id = $post->get_id();
       } else {
         $order_id = isset($post->ID) ? $post->ID : $post;
