@@ -1,14 +1,14 @@
 === PeproDev Ultimate Invoice ===
 Contributors: peprodev, amirhpcom, blackswanlab
 Donate link: https://pepro.dev/donate
-Tags: woocommerce invoice, pdf invoice, persian
+Tags: woocommerce invoice, pdf invoice, persian, WooCommerce
 Requires at least: 5.0
-Tested up to: 6.6.1
-Version: 2.0.6
-Stable tag: 2.0.6
+Tested up to: 6.6.2
+Version: 2.0.7
+Stable tag: 2.0.7
 Requires PHP: 7.0
 WC requires at least: 5.0
-WC tested up to: 9.1.0
+WC tested up to: 9.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -153,6 +153,9 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 
 == Upgrade Notice ==
 
+= v2.0.7 (2024-08-24/1403-06-03) =
+- Fixed Vulnerability reported by LVT-tholv2k
+
 = v2.0.6 (2024-07-24/1403-05-02) =
 - Fixed undefined invoice template index name
 - Fix HPOS Incompatibility
@@ -171,6 +174,9 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 == Changelog ==
 
 For full changelog please view [Github Repo.](https://github.com/peprodev/ultimate-invoice)
+
+= v2.0.7 (2024-08-24/1403-06-03) =
+- Fixed Vulnerability reported by LVT-tholv2k
 
 = v2.0.6 (2024-07-24/1403-05-02) =
 - Fixed undefined invoice template index name
