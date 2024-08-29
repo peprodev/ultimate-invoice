@@ -1060,7 +1060,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
               $mpdf->Output($tmpname, "F");
               return $namedotext;
             }
-            $mpdf->Output($name . ($force_download ? ".pdf" : ""),($force_download ? "D" : "I"));
+            $mpdf->Output($name . ".pdf", ($force_download ? "D" : "I"));
             
           } catch (\Mpdf\MpdfException $e) {
             error_log("puiw debugging ~> ".var_export($e, 1));
@@ -1209,7 +1209,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
             $er      = $mpdf->Output($tmpname, "F");
             return $namedotext;
           }
-          $mpdf->Output($name . ($force_download ? ".pdf" : ""),($force_download ? "D" : "I"));
+          $mpdf->Output($name . ".pdf", ($force_download ? "D" : "I"));
         }
         public function create_slips($order_id=0, $MODE="HTML")
         {
