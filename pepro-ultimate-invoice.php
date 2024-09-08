@@ -9,10 +9,10 @@ Developer: amirhp.com
 Author URI: https://pepro.dev/
 Developer URI: https://amirhp.com
 Plugin URI: https://peprodev.com/pepro-woocommerce-ultimate-invoice/
-Tested up to: 6.6.2
-WC tested up to: 9.2.0
-Version: 2.0.7
-Stable tag: 2.0.7
+Version: 2.0.8
+Stable tag: 2.0.8
+Tested up to: 6.6.1
+WC tested up to: 9.2.3
 Requires at least: 5.0
 Requires PHP: 7.0
 WC requires at least: 5.0
@@ -22,7 +22,7 @@ Copyright: (c) 2024 Pepro Dev. Group, All rights reserved.
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * @Last modified by: amirhp-com <its@amirhp.com>
- * @Last modified time: 2024/08/17 10:55:23
+ * @Last modified time: 2024/09/08 10:16:13
  */
 
 namespace peproulitmateinvoice;
@@ -67,7 +67,7 @@ if (!class_exists("PeproUltimateInvoice")) {
     protected $manage_links = array();
     protected $meta_links = array();
     /**
-     * construct plugin and set initiation hook and declare consts
+     * construct plugin and set initiation hook and declare constants
      *
      * @method  __construct
      * @version 1.0.0
@@ -77,7 +77,7 @@ if (!class_exists("PeproUltimateInvoice")) {
     public function __construct() {
       load_plugin_textdomain("pepro-ultimate-invoice", false, dirname(plugin_basename(__FILE__)) . "/languages/");
       $this->td                   = "pepro-ultimate-invoice";
-      $this->version              = "2.0.7";
+      $this->version              = "2.0.8";
       $this->db_slug              = $this->td;
       $this->plugin_file          = __FILE__;
       $this->plugin_dir           = plugin_dir_path(__FILE__);

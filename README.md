@@ -87,15 +87,25 @@ This plugin lets you to Generate Awesome Invoices for WooCommerce orders and:
 
 ### **Developed by** [Pepro Development Group](https://pepro.dev/) for WooCommerce
 
-*Current Version: 2.0.2* \| *Lead Developer:* [amirhp.com](https://amirhp.com)
+*Current Version: 2.0.8* \| *Lead Developer:* [amirhp.com](https://amirhp.com)
 
 ----------
+
+### How can I report security bugs?
+
+You can report security bugs through the Patchstack Vulnerability Disclosure Program. The Patchstack team help validate, triage and handle any security vulnerabilities. [Report a security vulnerability.](https://patchstack.com/database/vdp/pepro-ultimate-invoice)
+
+----------
+
 
 ### ***Changelog***
 
 
 
-#### Version v2.0.7 / 2024-08-24 / 1403-06-03
+#### Version 2.0.8 / 2024-09-08 / 1403-06-18
+- Fixed PDF invoice files does not have .pdf suffix
+
+#### Version 2.0.7 / 2024-08-24 / 1403-06-03
 - Fixed Vulnerability reported by LVT-tholv2k
 
 #### Version 2.0.6 / 2024-07-24 / 1403-05-02
@@ -234,7 +244,7 @@ This plugin lets you to Generate Awesome Invoices for WooCommerce orders and:
 
 #### Version 1.7.0 / 2022-05-30 / 1401-03-09
 - Compatibility with WP v6 and WC v6.5
-- Fixed Gateway Proccess issue
+- Fixed Gateway Process issue
 - Fixed Barcode Showing issue
 - Fixed Backend CSS issue
 - Fixed HTML Invoice watermark Issue
@@ -308,7 +318,7 @@ This plugin lets you to Generate Awesome Invoices for WooCommerce orders and:
 #### Version 1.3.4
 - Fixed: Changed Default Invoice Access setting to prevent Pre-invoice 403 error
 - Dev: added `puiw_printinvoice_check_user_has_access` filter Hook to alter Invoice Access
-- Dev: Invoice Access function is more relible now
+- Dev: Invoice Access function is more reliable now
 
 #### Version 1.3.2
 - Fixed: Sorting problems

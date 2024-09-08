@@ -4,8 +4,8 @@ Donate link: https://pepro.dev/donate
 Tags: woocommerce invoice, pdf invoice, persian, WooCommerce
 Requires at least: 5.0
 Tested up to: 6.6.2
-Version: 2.0.7
-Stable tag: 2.0.7
+Version: 2.0.8
+Stable tag: 2.0.8
 Requires PHP: 7.0
 WC requires at least: 5.0
 WC tested up to: 9.2.0
@@ -105,8 +105,13 @@ This plugin lets you to Generate Awesome Invoices for WooCommerce orders and:
 
 
 
+### How can I report security bugs?
+
+You can report security bugs through the Patchstack Vulnerability Disclosure Program. The Patchstack team help validate, triage and handle any security vulnerabilities. [Report a security vulnerability.](https://patchstack.com/database/vdp/pepro-ultimate-invoice)
+
 
 ---
+
 #### Made by love in [Pepro Development Center](https://pepro.dev/).
 
 #### *[Pepro Dev](https://pepro.dev/) is a registered trademark of [Pepro Co](https://pepro.co/).*
@@ -122,6 +127,10 @@ This plugin lets you to Generate Awesome Invoices for WooCommerce orders and:
 
 == Frequently Asked Questions ==
 
+= How can I report security bugs? =
+
+You can report security bugs through the Patchstack Vulnerability Disclosure Program. The Patchstack team help validate, triage and handle any security vulnerabilities. [Report a security vulnerability.](https://patchstack.com/database/vdp/pepro-ultimate-invoice)
+
 = How can I show compact total order in PDF invoices? =
 
 Use hook below and add it into your plugin or theme's `function.php`
@@ -130,7 +139,7 @@ add_filter( "puiw_return_pdf_total_prices_as_single_price","__return_true");`
 
 = How can I contribute to this plugin? =
 
-You can help us improve our works by committing your changes to Pepro Dev's Github repository: https://github.com/peprodev/ultimate-invoice
+You can help us improve our works by committing your changes to our Github repository: [github.com/peprodev/ultimate-invoice](https://github.com/peprodev/ultimate-invoice)
 
 
 == Screenshots ==
@@ -153,44 +162,37 @@ You can help us improve our works by committing your changes to Pepro Dev's Gith
 
 == Upgrade Notice ==
 
-= v2.0.7 (2024-08-24/1403-06-03) =
+= v2.0.8 / 2024-09-08 / 1403-06-18 =
+- Fixed PDF invoice files does not have .pdf suffix
+
+= v2.0.7 / 2024-08-24 / 1403-06-03 =
 - Fixed Vulnerability reported by LVT-tholv2k
 
-= v2.0.6 (2024-07-24/1403-05-02) =
+= v2.0.6 / 2024-07-24 / 1403-05-02 =
 - Fixed undefined invoice template index name
 - Fix HPOS Incompatibility
 
-= v2.0.5 (2024-06-23/1403-04-03) =
-- Dev: added `puiw_create_pdf_Mpdf_options` filter hook
-- Dev: added `puiw_create_slips_pdf_Mpdf_options` filter hook
-- Dev: added `puiw_parse_pdf_template` filter hook
-
-= v2.0.4 (2024-06-14/1403-03-25) =
-- Fixed `Uncaught Error: Call to undefined method WP Post:get_id()`
-
-= v2.0.3 (2024-06-13/1403-03-24) =
-- Fix HPOS error of incompatibility
 
 == Changelog ==
 
 For full changelog please view [Github Repo.](https://github.com/peprodev/ultimate-invoice)
 
-= v2.0.7 (2024-08-24/1403-06-03) =
+= v2.0.7 / 2024-08-24 / 1403-06-03 =
 - Fixed Vulnerability reported by LVT-tholv2k
 
-= v2.0.6 (2024-07-24/1403-05-02) =
+= v2.0.6 / 2024-07-24 / 1403-05-02 =
 - Fixed undefined invoice template index name
 - Fix HPOS Incompatibility
 
-= v2.0.5 (2024-06-23/1403-04-03) =
+= v2.0.5 / 2024-06-23 / 1403-04-03 =
 - Dev: added `puiw_create_pdf_Mpdf_options` filter hook
 - Dev: added `puiw_create_slips_pdf_Mpdf_options` filter hook
 - Dev: added `puiw_parse_pdf_template` filter hook
 
-= v2.0.4 (2024-06-14/1403-03-25) =
+= v2.0.4 / 2024-06-14 / 1403-03-25 =
 - Fixed `Uncaught Error: Call to undefined method WP Post:get_id()`
 
-= v2.0.3 (2024-06-13/1403-03-24) =
+= v2.0.3 / 2024-06-13 / 1403-03-24 =
 - Fix HPOS error of incompatibility
 
 = v2.0.2 / 2024-05-02 / 1403-02-13 =
