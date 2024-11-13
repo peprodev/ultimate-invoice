@@ -102,6 +102,10 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 
 
+#### Version 2.0.9 / 2024-11-13 / 1403-08-23
+- WP 6.7 Compatibility
+- Fixed Translation load
+
 #### Version 2.0.8 / 2024-09-08 / 1403-06-18
 - Fixed PDF invoice files does not have .pdf suffix
 
