@@ -236,3 +236,11 @@ span.name {
 	cursor: default;
 	transform: none !important;
 }
+
+.subsubsub {
+	display: flex;
+	gap: 0.5rem;
+	overflow: auto;
+	width: 100%;
+	padding: 0 0 2rem 0;
+}

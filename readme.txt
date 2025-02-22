@@ -3,12 +3,12 @@ Contributors: peprodev, amirhpcom, blackswanlab
 Donate link: https://pepro.dev/donate
 Tags: woocommerce invoice, pdf invoice, persian, WooCommerce
 Requires at least: 5.0
-Tested up to: 6.6.2
-Version: 2.0.9
-Stable tag: 2.0.9
+Tested up to: 6.7
+Version: 2.1.0
+Stable tag: 2.1.0
 Requires PHP: 7.0
 WC requires at least: 5.0
-WC tested up to: 9.2.0
+WC tested up to: 9.6.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -162,24 +162,23 @@ You can help us improve our works by committing your changes to our Github repos
 
 == Upgrade Notice ==
 
+= v2.1.0 / 2025-02-22 / 1403-12-04 =
+- Fixed Security Issue
+- Changed Default Security Options
+
 = v2.0.9 / 2024-11-13 / 1403-08-23 =
 - WP 6.7 Compatibility
 - Fixed Translation load
 
-= v2.0.8 / 2024-09-08 / 1403-06-18 =
-- Fixed PDF invoice files does not have .pdf suffix
-
-= v2.0.7 / 2024-08-24 / 1403-06-03 =
-- Fixed Vulnerability reported by LVT-tholv2k
-
-= v2.0.6 / 2024-07-24 / 1403-05-02 =
-- Fixed undefined invoice template index name
-- Fix HPOS Incompatibility
 
 
 == Changelog ==
 
 For full changelog please view [Github Repo.](https://github.com/peprodev/ultimate-invoice)
+
+= v2.1.0 / 2025-02-22 / 1403-12-04 =
+- Fixed Security Issue
+- Changed Default Security Options
 
 = v2.0.9 / 2024-11-13 / 1403-08-23 =
 - WP 6.7 Compatibility

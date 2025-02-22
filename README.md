@@ -87,7 +87,7 @@ This plugin lets you to Generate Awesome Invoices for WooCommerce orders and:
 
 ### **Developed by** [Pepro Development Group](https://pepro.dev/) for WooCommerce
 
-*Current Version: 2.0.8* \| *Lead Developer:* [amirhp.com](https://amirhp.com)
+*Current Version: 2.1.0* \| *Lead Developer:* [amirhp.com](https://amirhp.com)
 
 ----------
 
@@ -101,6 +101,9 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 ### ***Changelog***
 
 
+#### Version 2.1.0 | 2025-02-22 | 1403-12-04
+- Fixed Security Issue
+- Changed Default Security Options
 
 #### Version 2.0.9 / 2024-11-13 / 1403-08-23
 - WP 6.7 Compatibility
@@ -139,7 +142,7 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 - WooCommerce HPOS Compatibility fix
 
 #### Version 1.9.9 / 2024-03-19 / 1402-12-29
-- Security patch 
+- Security patch
 
 #### Version 1.9.8 / 2024-03-07 / 1402-12-17
 - Fix two Security Vulnerability - CVSS 3.1

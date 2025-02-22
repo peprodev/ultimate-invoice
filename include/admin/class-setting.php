@@ -1178,6 +1178,7 @@ function PeproUltimateInvoice__wc_get_settings_pages($settings)
                   'puiw_allow_guest_users_view_invoices' => array(
                     'name'     => _x("Allow Guest Users view invoices", "wc-setting", $this->td),
                     'type'     => 'checkbox',
+                    'default'  => 'no',
                     'id'       => 'puiw_allow_guest_users_view_invoices',
                     'desc'     => _x("Check to allow or leave unchecked to disallow", "wc-setting", $this->td),
                     'desc_tip' => _x("Allow logged out visitors be able to see invoices by having its URL", "wc-setting", $this->td),
