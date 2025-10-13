@@ -731,7 +731,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           case 'wcorder':
             if ($item->get_subtotal() !== $item->get_total()) {
               $discount_amount  = $item->get_subtotal() - $item->get_total() > 0 ? wc_price(wc_format_decimal($item->get_subtotal() - $item->get_total(), ''), array('currency' => $order->get_currency())) : "";
-              $percentage       = $this->calc_precentage((float)$item->get_subtotal(), (float)$item->get_total());
+              $percentage       = $this->calc_precentage((float) $item->get_total(), (float) $item->get_subtotal());
               $discount_precent = sprintf("%'02.1f%%", $percentage);
             }
             break;
@@ -894,9 +894,17 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
       ob_end_clean();
       return $html_output;
     }
-    public function calc_precentage($offprice = 0, $realprice = 0) {
-      // 100 - (newPrice / wasPrice) * 100
-      return round(100 - (($offprice / $realprice) * 100), 5);
+    public function calc_precentage($newPrice = 0, $wasPrice = 0){
+        $new  = (float) $newPrice;
+        $was  = (float) $wasPrice;
+        if ($was <= 0) {
+            return 0;
+        }
+        $pct = 100 - (($new / $was) * 100);
+        if (!is_finite($pct)) { return 0; }
+        if ($pct < 0) { $pct = 0; }
+        if ($pct > 100) { $pct = 100; }
+        return round($pct, 5);
     }
     public function create_pdf($order_id = 0, $force_download = false, $MODE = "I", $showerror = true) {
       // 'D': download the PDF file
