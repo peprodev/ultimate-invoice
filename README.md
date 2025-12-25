@@ -21,14 +21,6 @@ This plugin lets you to Generate Awesome Invoices for WooCommerce orders and:
 -   Alter plugins via Action/Filter hooks
 -   and .....
 
-
-### Hot Features of Version 1.3.7 🔥 (2021-07-14 | 1400-04-23)
-- Bulk Download Invoices PDF as ZIP Archive
-- Bulk Print Invoices Inventory Reports
-- Bulk Print Invoices Shipping Slips
-- Export/Import Settings as JSON/PHP!
-
-
 -----------------------
 
 ### Made by Developers for Developers
@@ -101,7 +93,7 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 ### ***Changelog***
 
 
-#### Version 2.2.0 | 2025-12-25 | 1404-10-04
+#### Version 2.2.1 | 2025-12-25 | 1404-10-04
 - Added: New Feature to Support Thermal Printer Labels (80mm / پرینتر حرارتی / فیش پرینتر)
 - Added: New Template for Thermal Printer Invoices
 - Added: Download POS Invoices PDF as ZIP Archive

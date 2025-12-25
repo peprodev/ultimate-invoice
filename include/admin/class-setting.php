@@ -1253,6 +1253,25 @@ add_filter("woocommerce_get_settings_pages", function ($pages) {
                 );
                 break;
               case 'pdf':
+                $font_names = array(
+                        "dejavu"      => _x("DejaVuSans (Standard)", "wc-setting", "pepro-ultimate-invoice"),
+                        "danaen"      => _x("Dana (Standard)", "wc-setting", "pepro-ultimate-invoice"),
+                        "iransans"    => _x("IRANSans (Standard)", "wc-setting", "pepro-ultimate-invoice"),
+                        "iranyekanen" => _x("IRANYekan (Standard)", "wc-setting", "pepro-ultimate-invoice"),
+                        "danafa"      => _x("Dana (Farsi-Digits Support)", "wc-setting", "pepro-ultimate-invoice"),
+                        "iransansfa"  => _x("IRANSans (Farsi-Digits Support)", "wc-setting", "pepro-ultimate-invoice"),
+                        "iranyekanfa" => _x("IRANYekan (Farsi-Digits Support)", "wc-setting", "pepro-ultimate-invoice"),
+                );
+                require_once PEPROULTIMATEINVOICE_DIR . '/include/vendor/autoload.php';
+                $defaultFontConfig = (new \Mpdf\Config\FontVariables())->getDefaults();
+                $fontData = $defaultFontConfig['fontdata'] ?? array();
+                if ($fontData && !empty($fontData)) {
+                  foreach ($fontData as $item => $val) {
+                    if (!isset($font_names[$item])) {
+                      $font_names[$item] = $val[array_key_first($val)] . " ( " . _x("Built-in", "wc-setting", "pepro-ultimate-invoice") . (isset($val["useKashida"])?" - Native Arabic Support":"") . " )";
+                    }
+                  }
+                }
                 $section_data = apply_filters(
                   "puiw_setting_section_{$current_section}",
                   array(
@@ -1323,19 +1342,12 @@ add_filter("woocommerce_get_settings_pages", function ($pages) {
                       ),
                     ),
                     'puiw_pdf_font' => array(
-                      'name'     => _x("PDF Font", "wc-setting", "pepro-ultimate-invoice"),
-                      'type'     => 'radio',
-                      'default'  => 'iranyekanfa',
-                      'options'  => array(
-                        "dejavu"      => _x("DejaVuSans (Standard)", "wc-setting", "pepro-ultimate-invoice"),
-                        "danaen"      => _x("Dana (Standard)", "wc-setting", "pepro-ultimate-invoice"),
-                        "iransans"    => _x("IRANSans (Standard)", "wc-setting", "pepro-ultimate-invoice"),
-                        "iranyekanen" => _x("IRANYekan (Standard)", "wc-setting", "pepro-ultimate-invoice"),
-                        "danafa"      => _x("Dana (Farsi-Digits Support)", "wc-setting", "pepro-ultimate-invoice"),
-                        "iransansfa"  => _x("IRANSans (Farsi-Digits Support)", "wc-setting", "pepro-ultimate-invoice"),
-                        "iranyekanfa" => _x("IRANYekan (Farsi-Digits Support)", "wc-setting", "pepro-ultimate-invoice"),
-                      ),
-                      'id'       => 'puiw_pdf_font',
+                      'name'    => _x("PDF Font", "wc-setting", "pepro-ultimate-invoice"),
+                      'type'    => 'select',
+                      'class'   => 'wc-enhanced-select',
+                      'default' => 'iranyekanfa',
+                      'options' => $font_names,
+                      'id'      => 'puiw_pdf_font',
                     ),
                     'puiw_pdf_end' => array(
                       'type' => 'sectionend',

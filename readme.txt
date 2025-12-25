@@ -4,8 +4,8 @@ Donate link: https://pepro.dev/donate
 Tags: woocommerce invoice, pdf invoice, persian, WooCommerce
 Requires at least: 5.0
 Tested up to: 6.9
-Version: 2.1.0
-Stable tag: 2.1.0
+Version: 2.2.1
+Stable tag: 2.2.1
 Requires PHP: 7.0
 WC requires at least: 5.0
 WC tested up to: 10.4
@@ -22,6 +22,13 @@ Create HTML/PDF Invoices of WooCommerce Orders, Attach PDF Invoice to Mail and L
 Create customizable PDF/HTML invoices for WooCommerce, attach to Email, Packing Slips, Shipping Labels, Shipping Tracking, Single-shop feature and ...
 This plugin lets you to Generate Awesome Invoices for WooCommerce orders and:
 
+#### Merry Christmas & Happy New Year 2026! 🎄🎉
+Thank you for using and supporting this free plugin! If you have any questions or need assistance, please ask on the WordPress support forum. We're here to help!
+
+**Update to v2.2.1 to get the new Thermal Invoice feature and many more improvements!**
+
+-----------------------
+
 -   Download PDF invoices
 -   Email Styled Invoices
 -   Attach PDF to WC Emails
@@ -35,7 +42,6 @@ This plugin lets you to Generate Awesome Invoices for WooCommerce orders and:
 -   Alter plugins via Action/Filter hooks
 -   and .....
 
-
 ### Hot Features since Version 1.4 🔥
 - Bulk Download Invoices PDF as ZIP Archive
 - Bulk Print Invoices Inventory Reports
@@ -47,7 +53,6 @@ This plugin lets you to Generate Awesome Invoices for WooCommerce orders and:
 - Added: Fully Compatibility with [WooCommerce Extra Product Options by ThemeComplete](https://codecanyon.net/item/woocommerce-extra-product-options/7908619)
 - Added: Fully Compatibility with *Any Standard* plugins that adds and shows Order item metas
 - Added: Added Integration Section in Settings
-
 
 
 -----------------------
@@ -165,7 +170,7 @@ You can help us improve our works by committing your changes to our Github repos
 = Merry Christmas & Happy New Year 2026! 🎄🎉 =
 Thank you for using and supporting this free plugin! If you have any questions or need assistance, please ask on the WordPress support forum. We're here to help!
 
-= v2.2.0 | 2025-12-25 | 1404-10-04 =
+= v2.2.1 | 2025-12-25 | 1404-10-04 =
 - Added: New Feature to Support Thermal Printer Labels (80mm / پرینتر حرارتی / فیش پرینتر)
 - Added: New Template for Thermal Printer Invoices
 - Added: Download POS Invoices PDF as ZIP Archive
@@ -194,7 +199,7 @@ Thank you for using and supporting this free plugin! If you have any questions o
 
 For full changelog please view [Github Repo.](https://github.com/peprodev/ultimate-invoice)
 
-= v2.2.0 | 2025-12-25 | 1404-10-04 =
+= v2.2.1 | 2025-12-25 | 1404-10-04 =
 - Added: New Feature to Support Thermal Printer Labels (80mm / پرینتر حرارتی / فیش پرینتر)
 - Added: New Template for Thermal Printer Invoices
 - Added: Download POS Invoices PDF as ZIP Archive
