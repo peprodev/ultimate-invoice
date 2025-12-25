@@ -12,22 +12,21 @@ WC tested up to: 10.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-The Most Advanced Invoice Plugin you were looking for!
-Create HTML/PDF Invoices of WooCommerce Orders, Attach PDF Invoice to Mail and Let customers download beautiful-customizable styled invoices.
+Advanced WooCommerce invoice plugin: create customizable HTML/PDF invoices, attach to emails, and let customers download styled invoices easily.
 
 == Description ==
 
-## **Ultimate Invoice plugin for WooCommerce!**
-
-Create customizable PDF/HTML invoices for WooCommerce, attach to Email, Packing Slips, Shipping Labels, Shipping Tracking, Single-shop feature and ...
-This plugin lets you to Generate Awesome Invoices for WooCommerce orders and:
-
-#### Merry Christmas & Happy New Year 2026! 🎄🎉
+### Merry Christmas & Happy New Year 2026! 🎄🎉
 Thank you for using and supporting this free plugin! If you have any questions or need assistance, please ask on the WordPress support forum. We're here to help!
 
 **Update to v2.2.1 to get the new Thermal Invoice feature and many more improvements!**
 
 -----------------------
+
+## **Ultimate Invoice plugin for WooCommerce!**
+
+Create customizable PDF/HTML invoices for WooCommerce, attach to Email, Packing Slips, Shipping Labels, Shipping Tracking, Single-shop feature and ...
+This plugin lets you to Generate Awesome Invoices for WooCommerce orders and:
 
 -   Download PDF invoices
 -   Email Styled Invoices
@@ -167,34 +166,11 @@ You can help us improve our works by committing your changes to our Github repos
 
 == Upgrade Notice ==
 
-= Merry Christmas & Happy New Year 2026! 🎄🎉 =
-Thank you for using and supporting this free plugin! If you have any questions or need assistance, please ask on the WordPress support forum. We're here to help!
-
-= v2.2.1 | 2025-12-25 | 1404-10-04 =
-- Added: New Feature to Support Thermal Printer Labels (80mm / پرینتر حرارتی / فیش پرینتر)
-- Added: New Template for Thermal Printer Invoices
-- Added: Download POS Invoices PDF as ZIP Archive
-- Improvement: WooCommerce HPOS Full Compatibility
-- Improvement: Compatibility with WP 6.9 and WC 10.4
-- Improvement: PDF Zip Archive Comments Formatting
-- Improvement: Order Notes (Customer & Shop Manager) Display in PDF Invoices
-- Improvement: Options/Setting Page UI/UX Improvements
-- Improvement: Default Setting setup for New Installations
-- Improvement: Code Optimization and Refactoring
-- Improvement: Updated mPDF Library to v8.2.7
-- Improvement: Allowed HTML Tags in Address Display method field
-- Improvement: Invoice Templates Content & Display styles
-- Improvement: Added Built-in mPDF fonts for better PDF Styling
-- Fixed: Minor Bug Fixes
-- Fixed: Security Issue CVE-2025-54869
-- Fixed: Shop Manager note not saving issue
-- Fixed: Shipping track number not saving issue
-- Fixed: Division by zero error when calculating discounts (thanks to [@isaeedam](https://profiles.wordpress.org/isaeedam/))
-- Fixed: Bulk Download Invoices PDF as ZIP Archive option not appearing in bulk actions dropdown
-- Fixed: Loading Translation Issues
-- Developers: Added New hook `puiw_create_pdf_fit_height` for controlling PDF fit to height option
-- Developers: Improvement `puiw_printinvoice_check_user_has_access` hook to control access manager checks
-
+= 2.2.1 =
+- *Merry/ Christmas & Happy New Year 2026! 🎄🎉*
+- Thank you for using and supporting this free plugin! If you have any questions or need assistance, please ask on the WordPress support forum. We're here to help!
+- This update adds full thermal printer support, improves WooCommerce HPOS compatibility, and includes important PDF and performance improvements. Recommended for all users.
+For full changelog please view [Github Repo.](https://github.com/peprodev/ultimate-invoice)
 
 == Changelog ==
 
