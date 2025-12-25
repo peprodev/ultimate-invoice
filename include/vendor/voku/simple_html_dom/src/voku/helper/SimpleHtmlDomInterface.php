@@ -11,6 +11,8 @@ namespace voku\helper;
  *                            <p>Get dom node's inner html (alias for "innerHtml").</p>
  * @property string      $innerhtml
  *                            <p>Get dom node's inner html.</p>
+ * @property string      $innerhtmlKeep
+ *                            <p>Get dom node's inner html + keep fix for broken html.</p>
  * @property string      $plaintext
  *                            <p>Get dom node's plain text.</p>
  * @property string      $class
@@ -267,10 +269,11 @@ interface SimpleHtmlDomInterface extends \IteratorAggregate
      * Get dom node's inner html.
      *
      * @param bool $multiDecodeNewHtmlEntity
+     * @param bool $putBrokenReplacedBack
      *
      * @return string
      */
-    public function innerHtml(bool $multiDecodeNewHtmlEntity = false): string;
+    public function innerHtml(bool $multiDecodeNewHtmlEntity = false, bool $putBrokenReplacedBack = true): string;
 
     /**
      * Get dom node's inner html.
@@ -321,9 +324,9 @@ interface SimpleHtmlDomInterface extends \IteratorAggregate
     /**
      * Returns the parent of node.
      *
-     * @return SimpleHtmlDomInterface
+     * @return SimpleHtmlDomInterface|null
      */
-    public function parentNode(): self;
+    public function parentNode(): ?self;
 
     /**
      * Returns the previous sibling of node.

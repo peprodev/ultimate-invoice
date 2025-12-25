@@ -101,6 +101,31 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 ### ***Changelog***
 
 
+#### Version 2.2.0 | 2025-12-25 | 1404-10-04
+- Added: New Feature to Support Thermal Printer Labels (80mm / پرینتر حرارتی / فیش پرینتر)
+- Added: New Template for Thermal Printer Invoices
+- Added: Download POS Invoices PDF as ZIP Archive
+- Improvement: WooCommerce HPOS Full Compatibility
+- Improvement: Compatibility with WP 6.9 and WC 10.4
+- Improvement: PDF Zip Archive Comments Formatting
+- Improvement: Order Notes (Customer & Shop Manager) Display in PDF Invoices
+- Improvement: Options/Setting Page UI/UX Improvements
+- Improvement: Default Setting setup for New Installations
+- Improvement: Code Optimization and Refactoring
+- Improvement: Updated mPDF Library to v8.2.7
+- Improvement: Allowed HTML Tags in Address Display method field
+- Improvement: Invoice Templates Content & Display styles
+- Fixed: Minor Bug Fixes
+- Fixed: Security Issue CVE-2025-54869
+- Fixed: Shop Manager note not saving issue
+- Fixed: Shipping track number not saving issue
+- Fixed: Division by zero error when calculating discounts (thanks to [@isaeedam](https://profiles.wordpress.org/isaeedam/))
+- Fixed: Bulk Download Invoices PDF as ZIP Archive option not appearing in bulk actions dropdown
+- Fixed: Loading Translation Issues
+- Developers: Added New hook `puiw_create_pdf_fit_height` for controlling PDF fit to height option
+- Developers: Improvement `puiw_printinvoice_check_user_has_access` hook to control access manager checks
+
+
 #### Version 2.1.0 | 2025-02-22 | 1403-12-04
 - Fixed Security Issue
 - Changed Default Security Options

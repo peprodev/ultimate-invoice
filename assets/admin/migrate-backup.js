@@ -1,11 +1,8 @@
-/**
- * @Author: Amirhosseinhpv
- * @Date:   2021/07/12 16:58:32
- * @Email:  its@hpv.im
- * @Last modified by:   Amirhosseinhpv
- * @Last modified time: 2021/07/12 22:23:33
- * @License: GPLv2
- * @Copyright: Copyright © Amirhosseinhpv (https://hpv.im), all rights reserved.
+/*
+ * @Author: Amirhossein Hosseinpour <https://amirhp.com>
+ * @Date Created: 2021/07/12 16:58:32
+ * @Last modified by: amirhp-com <its@amirhp.com>
+ * @Last modified time: 2025/12/12 15:17:34
  */
 
 (function ($) {

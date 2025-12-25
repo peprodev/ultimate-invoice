@@ -53,7 +53,7 @@
           <table style="height: 100%;" class="centered">
             <tr>
               <td style="width: 50%;">
-                <span class="label">خریدار:</span> <span>{{{customer_fullname}}}</span> <span>({{{customer_company}}})</span>
+                <span class="label">خریدار:</span> <span>{{{customer_fullname}}}</span> <span>{{{customer_company}}}</span>
               </td>
               <td class="show_customer_email" style="width: 30%;">
                 <span class="show_customer_email label">ایمیل:</span> <span class="show_customer_email">{{{customer_email}}}</span>
@@ -143,7 +143,7 @@
           <td colspan="{{{invoice_final_prices_pre_colspan}}}">جمع کل</td>
           <td>{{{invoice_total_qty}}} عدد</td>
           <td class="show_product_weight" style="{{{show_product_weight_hc}}}"><div style="{{{show_product_weight_dn}}}">{{{invoice_total_weight}}}</div></td>
-          <td colspan="{{{invoice_final_prices_colspan}}}"> <span class="ltr" style="vertical-align: middle;">{{{invoice_final_prices_pdf}}}</span></td>
+          <td colspan="{{{invoice_final_prices_colspan}}}" style="text-align: right;"> <span class="rtl" style="vertical-align: middle;text-align: right;">{{{invoice_final_prices_pdf}}}</span></td>
         </tr>
       </div>
       <tr class="show_custom_footer" style="{{{show_custom_footer_hc}}}"><div style="{{{show_custom_footer_dn}}}">

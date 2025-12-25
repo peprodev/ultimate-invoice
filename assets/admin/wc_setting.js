@@ -1,12 +1,10 @@
-/**
- * @Author: Amirhosseinhpv
- * @Date:   2020/10/20 22:23:23
- * @Email:  its@hpv.im
- * @Last modified by:   amirhp-com
- * @Last modified time: 2022/07/14 22:12:08
- * @License: GPLv2
- * @Copyright: Copyright © 2020 Amirhosseinhpv, All rights reserved.
+/*
+ * @Author: Amirhossein Hosseinpour <https://amirhp.com>
+ * @Date Created: 2020/10/20 22:23:23
+ * @Last modified by: amirhp-com <its@amirhp.com>
+ * @Last modified time: 2025/12/12 15:17:06
  */
+
 (function($) {
   $(document).ready(function() {
 

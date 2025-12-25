@@ -1,0 +1,108 @@
+/**
+ * @Author: amirhp-com <its@amirhp.com>
+ * @Date:   2022/09/01 18:46:50
+ * @Last modified by:   amirhp-com <its@amirhp.com>
+ * @Last modified time: 2022/10/13 23:13:44
+ */
+:root {
+	--theme_color: {{{theme_color}}};
+	--theme_color2: {{{theme_color2}}};
+	--theme_color3: {{{theme_color3}}};
+	--theme_fontsize: {{{font_size}}};
+}
+
+* {
+	-webkit-print-color-adjust: exact;
+	print-color-adjust: exact;
+}
+
+
+body, table *, td, th {
+	direction: rtl;
+	font-size: {{{font_size}}} !important;
+}
+
+td table.display_meta * {
+	margin: 0;
+}
+
+td table.display_meta {
+	border-collapse: collapse;
+	width: auto;
+}
+
+.show_custom_footer {
+	text-align: center;
+	padding: 0.2cm;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+img.barcode {
+	min-height: 40px;
+}
+
+.table{
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: baseline;
+}
+.center{
+	display: flex;
+	vertical-align: middle;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+}
+.rows{
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+table.table-full{
+	background-color: white;
+	margin-top: 0.7rem;
+	width: 100%;
+	position: relative;
+	border-collapse: collapse;
+}
+
+table.table-full td, 
+table.table-full th{
+	padding: 4px;
+	font-size: 10px;
+	text-align: right;
+	border: 1px solid #ccc;
+}
+table.table-full tr:nth-child(even) th,
+table.table-full tr:nth-child(even) td{
+	background: #eee;
+}
+
+table.table-full-2n{
+	background-color: white;
+	margin-top: 0.7rem;
+	width: 100%;
+	position: relative;
+	border-collapse: collapse;
+}
+
+table.table-full-2n td, 
+table.table-full-2n th{
+	padding: 4px;
+	font-size: 10px;
+	text-align: right;
+	border: 1px solid #ccc;
+}
+
+table.table-full-2n tr:nth-child(4n) th,
+table.table-full-2n tr:nth-child(4n) td,
+table.table-full-2n tr:nth-child(4n+1) th,
+table.table-full-2n tr:nth-child(4n+1) td{
+	background: #eee;
+}
+

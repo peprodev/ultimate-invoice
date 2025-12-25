@@ -1,13 +1,9 @@
-/**
- * @Author: Amirhosseinhpv
- * @Date:   2020/10/20 22:23:23
- * @Email:  its@hpv.im
- * @Last modified by:   amirhp-com
- * @Last modified time: 2022/07/14 22:16:54
- * @License: GPLv2
- * @Copyright: Copyright © 2020 Amirhosseinhpv, All rights reserved.
+/*
+ * @Author: Amirhossein Hosseinpour <https://amirhp.com>
+ * @Date Created: 2020/10/20 22:23:23
+ * @Last modified by: amirhp-com <its@amirhp.com>
+ * @Last modified time: 2025/12/25 04:46:01
  */
-
 
 (function($) {
   var ULTIMATE_INVOICE_CURRENT_AJAX = null;
@@ -399,7 +395,11 @@
     });
 
     if ($(".form-field._shipping_puiw_invoice_track_id_field").length) {
-      $(".form-field._shipping_puiw_invoice_track_id_field").append(`<a class="button button-small btn-save-resid" style="position: absolute;bottom: 0;left: 0;"><span class="dashicons dashicons-cloud-saved" style="margin: 4px -4px !important;"></span></a>`)
+      if ($("body").hasClass("rtl")) {
+        $(".form-field._shipping_puiw_invoice_track_id_field").append(`<a class="button button-small btn-save-resid" style="position: absolute;bottom: 0;left: 0;"><span class="dashicons dashicons-cloud-saved" style="margin: 4px -4px !important;"></span></a>`)
+      }else{
+        $(".form-field._shipping_puiw_invoice_track_id_field").append(`<a class="button button-small btn-save-resid" style="position: absolute;bottom: 0;right: 0;"><span class="dashicons dashicons-cloud-saved" style="margin: 4px -4px !important;"></span></a>`)
+      }
     }
 
     $(document).on("click tap", ".form-field._shipping_puiw_invoice_track_id_field .button.btn-save-resid", function(e){
@@ -508,7 +508,7 @@
       e.preventDefault();
       let me = $(this);
       var lparam = me.data("ref");
-      window.open(_i18n.home + "/?invoice-pdf=" + lparam + "&download=1");
+      window.open($(`iframe#dataajaxloaded_${lparam}`).attr("src") + "&download=1");
     });
     $(document).on("click tap", ".puiw_download_slip_pdf", function(e) {
       e.preventDefault();
@@ -766,6 +766,21 @@
       if (ULTIMATE_INVOICE_CURRENT_AJAX != null) { ULTIMATE_INVOICE_CURRENT_AJAX.abort(); }
       lparam = parseInt(id);
       $(`.pwui_ajax_data[data-ref='${id}'] .ajax_data`).append(`<iframe style="display:none;" src="${_i18n.home + "/?invoice-pdf=" + lparam}" id="dataajaxloaded_${lparam}"></iframe>`);
+      $(`#dataajaxloaded_${lparam}`).on("load", function() {
+        $(`.puiw_back_overly, .puiw_open_newtab, .puiw_download_pdf`).fadeIn();
+        $(".loadingio-spinner-dual-ring-raf87e8fn7f").hide();
+        $(this).fadeIn();
+      });
+    }
+    /* Get PDF Invoice */
+    function puiw_act12(id) {
+      loading = `<div class="loadingio-spinner-dual-ring-raf87e8fn7f"><div class="ldio-ltr1g772pal"><div></div><div><div></div></div></div></div>`;
+      $(`.pwui_overly, .piuw_toolkit a.secondary`).hide();
+      $(`.pwui_ajax_data[data-ref='${id}'] .ajax_data`).html(loading);
+      $(`.pwui_ajax_data[data-ref='${id}']`).show();
+      if (ULTIMATE_INVOICE_CURRENT_AJAX != null) { ULTIMATE_INVOICE_CURRENT_AJAX.abort(); }
+      lparam = parseInt(id);
+      $(`.pwui_ajax_data[data-ref='${id}'] .ajax_data`).append(`<iframe style="display:none;" src="${_i18n.home + "/?invoice-pos=" + lparam}" id="dataajaxloaded_${lparam}"></iframe>`);
       $(`#dataajaxloaded_${lparam}`).on("load", function() {
         $(`.puiw_back_overly, .puiw_open_newtab, .puiw_download_pdf`).fadeIn();
         $(".loadingio-spinner-dual-ring-raf87e8fn7f").hide();

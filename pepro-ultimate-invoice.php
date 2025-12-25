@@ -9,10 +9,10 @@ Developer: amirhp.com
 Author URI: https://pepro.dev/
 Developer URI: https://amirhp.com
 Plugin URI: https://peprodev.com/pepro-woocommerce-ultimate-invoice/
-Version: 2.1.0
-Stable tag: 2.1.0
-Tested up to: 6.7
-WC tested up to: 9.6.2
+Version: 2.2.0
+Stable tag: 2.2.0
+Tested up to: 6.9
+WC tested up to: 10.4
 Requires at least: 5.0
 Requires PHP: 7.0
 WC requires at least: 5.0
@@ -22,7 +22,7 @@ Copyright: (c) 2025 Pepro Dev. Group, All rights reserved.
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * @Last modified by: amirhp-com <its@amirhp.com>
- * @Last modified time: 2025/02/22 14:32:23
+ * @Last modified time: 2025/12/25 05:51:40
  */
 
 namespace peproulitmateinvoice;
@@ -43,20 +43,16 @@ if (!class_exists("PeproUltimateInvoice")) {
    * Main class, accessible on initiation with global $PeproUltimateInvoice
    */
   class PeproUltimateInvoice {
-    public $td;
-    public $version = "2.1.0";
+    public $td      = "pepro-ultimate-invoice";
+    public $version = "2.2.0";
+    public $title   = "Ultimate Invoice";
+    public $db_slug = "pepro-ultimate-invoice";
     public $plugin_dir;
     public $plugin_url;
     public $assets_url;
     public $plugin_basename;
     public $plugin_file;
-    public $db_slug;
-    public $title;
     public $url;
-    public $title_tw;
-    public $title_d;
-    public $title_w;
-    public $title_t;
     public $barcode;
     public $tpl;
     public $Unauthorized_Access;
@@ -75,22 +71,22 @@ if (!class_exists("PeproUltimateInvoice")) {
      * @license https://pepro.dev/license Pepro.dev License
      */
     public function __construct() {
-      add_action("after_setup_theme", function(){load_plugin_textdomain("pepro-ultimate-invoice", false, dirname(plugin_basename(__FILE__)) . "/languages/");});
-      $this->td                   = "pepro-ultimate-invoice";
-      $this->db_slug              = $this->td;
-      $this->plugin_file          = __FILE__;
-      $this->plugin_dir           = plugin_dir_path(__FILE__);
-      $this->plugin_url           = plugins_url("", __FILE__);
-      $this->assets_url           = plugins_url("/assets/", __FILE__);
-      $this->plugin_basename      = plugin_basename(__FILE__);
-      $this->url                  = admin_url("admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=general");
-      $this->title                = __("Ultimate Invoice", $this->td);
-      $this->title_t              = __("PeproDev Ultimate Invoice for Woocommerce", $this->td);
-      $this->title_tw             = sprintf(__("%2\$s ver. %1\$s", $this->td), $this->version, $this->title_t);
-      $this->title_d              = __("Pepro Development Group", $this->td);
-      $this->title_w              = sprintf(__("%2\$s ver. %1\$s", $this->td), $this->version, $this->title);
-      $this->Unauthorized_Access  = "<h2 dir='rtl' align='center'>" . __("Unauthorized Access!", $this->td) . "</h2>";
-      $this->Unauthorized_Access .= "<a href='" . home_url() . "' class='button button-primary'>" . __("Go Back", $this->td) . "</a>";
+      add_action("after_setup_theme", function(){
+        // load textdomain for translations
+      });
+      $this->plugin_file     = __FILE__;
+      $this->plugin_dir      = plugin_dir_path(__FILE__);
+      $this->plugin_url      = plugins_url("", __FILE__);
+      $this->assets_url      = plugins_url("/assets/", __FILE__);
+      $this->plugin_basename = plugin_basename(__FILE__);
+      $this->url             = admin_url("admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=general");
+
+      // for those use plugin in local environment
+      add_action("init", function(){ load_plugin_textdomain("pepro-ultimate-invoice", false, dirname(plugin_basename(__FILE__)) . "/languages/"); }, 1);
+      add_action("init", function(){
+        $this->title = __("Ultimate Invoice", "pepro-ultimate-invoice");
+      }, 2);
+
       // define constants to be accessible out of the plugin class
       defined('PEPROULTIMATEINVOICE_VER') || define('PEPROULTIMATEINVOICE_VER', $this->version);
       defined('PEPROULTIMATEINVOICE_DIR') || define('PEPROULTIMATEINVOICE_DIR', plugin_dir_path(__FILE__));
@@ -156,10 +152,10 @@ if (!class_exists("PeproUltimateInvoice")) {
         add_filter("woocommerce_get_order_item_totals", array($this, "woocommerce_order_discount_to_display"), 10, 3);
 
         add_filter('woocommerce_format_weight', function ($weight) {
-          return str_replace(array('kg', 'g', 'lbs', 'oz',), array(__('kg', $this->td), __('g', $this->td), __('lbs', $this->td), __('oz', $this->td),), $weight);
+          return str_replace(array('kg', 'g', 'lbs', 'oz',), array(__('kg', "pepro-ultimate-invoice"), __('g', "pepro-ultimate-invoice"), __('lbs', "pepro-ultimate-invoice"), __('oz', "pepro-ultimate-invoice"),), $weight);
         });
         add_filter('woocommerce_format_dimensions', function ($weight) {
-          return str_replace(array('mm', 'cm', 'in', 'yd',), array(__('mm', $this->td), __('cm', $this->td), __('in', $this->td), __('yd', $this->td),), $weight);
+          return str_replace(array('mm', 'cm', 'in', 'yd',), array(__('mm', "pepro-ultimate-invoice"), __('cm', "pepro-ultimate-invoice"), __('in', "pepro-ultimate-invoice"), __('yd', "pepro-ultimate-invoice"),), $weight);
         });
 
         if (is_blog_admin() && isset($_GET["tab"]) && sanitize_text_field($_GET["tab"]) == sanitize_text_field("pepro_ultimate_invoice")) {
@@ -180,8 +176,7 @@ if (!class_exists("PeproUltimateInvoice")) {
           $vars[] = "tclr";
           return $vars;
         });
-        add_filter('bulk_actions-edit-shop_order', array($this, 'downloads_bulk_actions_edit_product'), 20, 1);
-        add_filter('handle_bulk_actions-edit-shop_order', array($this, 'downloads_handle_bulk_action_edit_shop_order'), 10, 3);
+
       }
     }
     public function admin_notices() {
@@ -191,7 +186,7 @@ if (!class_exists("PeproUltimateInvoice")) {
       }
       if (!$this->_wc_activated()) {
         $installWC = admin_url("plugin-install.php?s=woo&tab=search&type=tag");
-        $alerttext = sprintf(__("%s needs %s to function. Please install and activate it.", $this->td), "<strong>$this->title_t</strong>", "<a href='$installWC' target='_blank'><strong>WooCommerce</strong></a>");
+        $alerttext = sprintf(__("%s needs %s to function. Please install and activate it.", "pepro-ultimate-invoice"), "<strong>PeproDev Ultimate Invoice for Woocommerce</strong>", "<a href='$installWC' target='_blank'><strong>WooCommerce</strong></a>");
         $message = "<div style='padding: 0.3rem 0.5rem;line-height: 1; margin-inline-start: -0.5rem;'><img src='{$this->assets_url}img/peprodev.svg' width='32px' /></div>";
         $message .= "<div>$alerttext</div>";
         $message = apply_filters("peprodevups_alert_after_active", $message);
@@ -199,17 +194,20 @@ if (!class_exists("PeproUltimateInvoice")) {
       if (!empty($message)) printf('<div class="%1$s" style="border-color: #ffa176;"><div class="pepro_alert" style="display: flex;align-items: center;">%2$s</div></div>', esc_attr("notice notice-info is-not-dismissible"), $message);
     }
     public function downloads_bulk_actions_edit_product($actions) {
-      $actions['invoice_zip'] = __("Bulk Download PDF Invoice", $this->td);
-      $actions['invoice_inventory_bulk'] = __("Bulk Print Inventory Report", $this->td);
-      $actions['invoice_slips_bulk'] = __("Bulk Print Packing Slips", $this->td);
+      $actions['invoice_zip'] = __("Bulk Download PDF Invoice", "pepro-ultimate-invoice");
+      $actions['invoice_pos_zip'] = __("Bulk Download POS PDF Invoice", "pepro-ultimate-invoice");
+      $actions['invoice_inventory_bulk'] = __("Bulk Print Inventory Report", "pepro-ultimate-invoice");
+      $actions['invoice_slips_bulk'] = __("Bulk Print Packing Slips", "pepro-ultimate-invoice");
       return $actions;
     }
     public function downloads_handle_bulk_action_edit_shop_order($redirect_to, $action, $post_ids) {
-      global $attach_download_dir,
-        $attach_download_file;
+      global $attach_download_dir, $attach_download_file;
 
       if ($action == 'invoice_zip') {
         $redirect_to = add_query_arg(array('invoice-zip' => implode(',', $post_ids)), $redirect_to);
+      }
+      if ($action == 'invoice_pos_zip') {
+        $redirect_to = add_query_arg(array('invoice-pos-zip' => implode(',', $post_ids)), $redirect_to);
       }
       if ($action == 'invoice_inventory_bulk') {
         $redirect_to = add_query_arg(array('inventory-bulk' => implode(',', $post_ids)), $redirect_to);
@@ -239,9 +237,9 @@ if (!class_exists("PeproUltimateInvoice")) {
         $email = $order->get_billing_email();
         $wp_mail = $this->send_formatted_email($order_id, $email, true);
         if ($wp_mail) {
-          $note .= "<br />" . sprintf(__("Automatic Email sent to customer mail address:<br> %s", $this->td), $email);
+          $note .= "<br />" . sprintf(__("Automatic Email sent to customer mail address:<br> %s", "pepro-ultimate-invoice"), $email);
         } else {
-          $note .= "<br />" . sprintf(__("An error occured sending Automatic Email to customer mail address:<br> %s", $this->td), $email);
+          $note .= "<br />" . sprintf(__("An error occured sending Automatic Email to customer mail address:<br> %s", "pepro-ultimate-invoice"), $email);
         }
       }
       if ("automatic" == $this->tpl->get_send_invoices_via_email_admin()) {
@@ -249,12 +247,12 @@ if (!class_exists("PeproUltimateInvoice")) {
         if (!empty($valid_reciever_shopmngrs)) {
           $wp_mail = $this->send_formatted_email($order_id, $valid_reciever_shopmngrs, true);
           if ($wp_mail) {
-            $note .= "<br />" . sprintf(__("Automatic Email sent to following shop managers:<br> %s", $this->td), (count($valid_reciever_shopmngrs) > 1 ? implode(", ", $valid_reciever_shopmngrs) : $valid_reciever_shopmngrs));
+            $note .= "<br />" . sprintf(__("Automatic Email sent to following shop managers:<br> %s", "pepro-ultimate-invoice"), (count($valid_reciever_shopmngrs) > 1 ? implode(", ", $valid_reciever_shopmngrs) : $valid_reciever_shopmngrs));
           } else {
-            $note .= "<br />" . sprintf(__("An error occured sending Automatic Email to following shop managers:<br> %s", $this->td), (count($valid_reciever_shopmngrs) > 1 ? implode(", ", $valid_reciever_shopmngrs) : $valid_reciever_shopmngrs));
+            $note .= "<br />" . sprintf(__("An error occured sending Automatic Email to following shop managers:<br> %s", "pepro-ultimate-invoice"), (count($valid_reciever_shopmngrs) > 1 ? implode(", ", $valid_reciever_shopmngrs) : $valid_reciever_shopmngrs));
           }
         } else {
-          $note .= "<br />" . __("No Shop Manager selected to send Automatic Email to.", $this->td);
+          $note .= "<br />" . __("No Shop Manager selected to send Automatic Email to.", "pepro-ultimate-invoice");
         }
       }
       if (!empty($note)) {
@@ -284,9 +282,9 @@ if (!class_exists("PeproUltimateInvoice")) {
           $email = $order->get_billing_email();
           $wp_mail = $this->send_formatted_email($order_id, $email, true);
           if ($wp_mail) {
-            $note .= "<br />" . sprintf(__("Automatic Email sent to customer mail address:<br> %s", $this->td), $email);
+            $note .= "<br />" . sprintf(__("Automatic Email sent to customer mail address:<br> %s", "pepro-ultimate-invoice"), $email);
           } else {
-            $note .= "<br />" . sprintf(__("An error occured sending Automatic Email to customer mail address:<br> %s", $this->td), $email);
+            $note .= "<br />" . sprintf(__("An error occured sending Automatic Email to customer mail address:<br> %s", "pepro-ultimate-invoice"), $email);
           }
         }
       }
@@ -297,12 +295,12 @@ if (!class_exists("PeproUltimateInvoice")) {
           if (!empty($valid_reciever_shopmngrs)) {
             $wp_mail = $this->send_formatted_email($order_id, $valid_reciever_shopmngrs, true);
             if ($wp_mail) {
-              $note .= "<br />" . sprintf(__("Automatic Email sent to following shop managers:<br> %s", $this->td), (count($valid_reciever_shopmngrs) > 1 ? implode(", ", $valid_reciever_shopmngrs) : $valid_reciever_shopmngrs));
+              $note .= "<br />" . sprintf(__("Automatic Email sent to following shop managers:<br> %s", "pepro-ultimate-invoice"), (count($valid_reciever_shopmngrs) > 1 ? implode(", ", $valid_reciever_shopmngrs) : $valid_reciever_shopmngrs));
             } else {
-              $note .= "<br />" . sprintf(__("An error occured sending Automatic Email to following shop managers:<br> %s", $this->td), (count($valid_reciever_shopmngrs) > 1 ? implode(", ", $valid_reciever_shopmngrs) : $valid_reciever_shopmngrs));
+              $note .= "<br />" . sprintf(__("An error occured sending Automatic Email to following shop managers:<br> %s", "pepro-ultimate-invoice"), (count($valid_reciever_shopmngrs) > 1 ? implode(", ", $valid_reciever_shopmngrs) : $valid_reciever_shopmngrs));
             }
           } else {
-            $note .= "<br />" . __("No Shop Manager selected to send Automatic Email to.", $this->td);
+            $note .= "<br />" . __("No Shop Manager selected to send Automatic Email to.", "pepro-ultimate-invoice");
           }
         }
       }
@@ -311,7 +309,7 @@ if (!class_exists("PeproUltimateInvoice")) {
       }
     }
     /**
-     * send mail using pepro ultinate invoice core
+     * send mail using pepro ultimate invoice core
      *
      * @method send_formatted_email
      * @param int $order_id
@@ -329,7 +327,7 @@ if (!class_exists("PeproUltimateInvoice")) {
       $cssToInlineStyles->setCleanup(true);
       $cssToInlineStyles->setUseInlineStylesBlock(true);
       $invc = $cssToInlineStyles->convert();
-      $subject = apply_filters("puiw_email_invoice_customer_subject", sprintf($this->tpl->get_email_subject(_x("Order #%s invoice on ", "wc-setting", $this->td) . get_bloginfo('name', 'display')), $order_id));
+      $subject = apply_filters("puiw_email_invoice_customer_subject", sprintf($this->tpl->get_email_subject(_x("Order #%s invoice on ", "wc-setting", "pepro-ultimate-invoice") . get_bloginfo('name', 'display')), $order_id));
       $PDFattachments = false;
       if ($attach) {
         $PDFattachments = true;
@@ -345,10 +343,12 @@ if (!class_exists("PeproUltimateInvoice")) {
       return $wp_mail;
     }
     public function pwoosms_shortcodes_list($shortcodes) {
-      return "<br><strong>{$this->title}</strong><br><code>{track_id}</code> = " . __("Shipping Track Serial", $this->td) . "<br>" . PHP_EOL . $shortcodes;
+      return "<br><strong>{$this->title}</strong><br><code>{track_id}</code> = " . __("Shipping Track Serial", "pepro-ultimate-invoice") . "<br>" . PHP_EOL . $shortcodes;
     }
     public function sms_body_after_replace($content, $order_id, $order, $all_product_ids, $vendor_product_ids) {
-      $track_id = get_post_meta($order_id, "_shipping_puiw_invoice_track_id", true);
+      $order = wc_get_order($order_id);
+      if ($order_id) {$track_id = $order->get_meta("_shipping_puiw_invoice_track_id", true);
+      }else{$track_id = get_post_meta($order_id, "_shipping_puiw_invoice_track_id", true);}
       $content  = str_replace("{track_id}", $track_id, $content);
       return $content;
     }
@@ -403,6 +403,17 @@ if (!class_exists("PeproUltimateInvoice")) {
         // remove_all_actions("woocommerce_before_order_itemmeta", 10);
       }
 
+      if ( class_exists("\Automattic\WooCommerce\Utilities\OrderUtil") && OrderUtil::custom_orders_table_usage_is_enabled()) {
+        // HPOS usage is enabled.
+        add_filter('bulk_actions-woocommerce_page_wc-orders', array($this, 'downloads_bulk_actions_edit_product'), 20, 1);
+        add_filter('handle_bulk_actions-woocommerce_page_wc-orders', array($this, 'downloads_handle_bulk_action_edit_shop_order'), 10, 3);
+      }
+      else {
+        // Traditional CPT-based orders are in use.
+        add_filter('bulk_actions-edit-shop_order', array($this, 'downloads_bulk_actions_edit_product'), 20, 1);
+        add_filter('handle_bulk_actions-edit-shop_order', array($this, 'downloads_handle_bulk_action_edit_shop_order'), 10, 3);
+      }
+
       // public methods to get receipts
       if (isset($_GET["invoice"]) && !empty(trim(sanitize_text_field($_GET["invoice"])))) {
         $order_id = (int) trim(sanitize_text_field($_GET["invoice"]));
@@ -412,8 +423,15 @@ if (!class_exists("PeproUltimateInvoice")) {
       }
       if (isset($_GET["invoice-pdf"]) && !empty(trim(sanitize_text_field($_GET["invoice-pdf"])))) {
         $force_download = isset($_GET["download"]) && !empty(sanitize_text_field($_GET["download"])) ? true : false;
-        die($this->print->create_pdf((int) trim(sanitize_text_field($_GET["invoice-pdf"])), $force_download));
+        die($this->print->create_pdf((int) trim(sanitize_text_field($_GET["invoice-pdf"])), $force_download, "I", false));
       }
+      if (isset($_GET["invoice-pos"]) && !empty(trim(sanitize_text_field($_GET["invoice-pos"])))) {
+        $force_download = isset($_GET["download"]) && !empty(sanitize_text_field($_GET["download"])) ? true : false;
+        $this->setup_thermal_invoice();
+        die($this->print->create_pdf((int) trim(sanitize_text_field($_GET["invoice-pos"])), $force_download, "I", false, true));
+      }
+
+
       if (isset($_GET["invoice-slips"]) && !empty(trim(sanitize_text_field($_GET["invoice-slips"])))) {
         die($this->print->create_slips((int) trim(sanitize_text_field($_GET["invoice-slips"]))));
       }
@@ -427,82 +445,121 @@ if (!class_exists("PeproUltimateInvoice")) {
 
 
       // admin methods for bulk actions and setting export/import
-      if (is_admin() && !is_ajax() && current_user_can("manage_options")) {
+      if (is_admin() && !is_ajax() && current_user_can("manage_options") && is_blog_admin()) {
+        #region invoice zip bulk action
         if (isset($_GET["invoice-zip"]) && !empty(trim(sanitize_text_field($_GET["invoice-zip"])))) {
           $pdfs = array();
-          $orderidsvalid = array();
-          $orderidsname = array();
-          $orderids = (array) explode(",", $_GET["invoice-zip"]);
-          $orderids = array_map("trim", $orderids);
-          $invoicename_parts = apply_filters("puiw_generate_pdf_name_orderid_format", array(
-            "invoice_prefix" => $this->tpl->get_invoice_prefix(),
-            "invoice_suffix" => $this->tpl->get_invoice_suffix(),
-            "invoice_start" => $this->tpl->get_invoice_start(),
-          ));
-
-          foreach ($orderids as $order_id) {
-            $order = wc_get_order($order_id);
-            if ($order) {
-              $orderidsvalid[] = $order_id;
-              $invoice_startpad = $invoicename_parts["invoice_start"] + $order_id;
-              $pdf_temp = $this->print->create_pdf((int)$order_id, false, "S", false);
-              if (file_exists(PEPROULTIMATEINVOICE_DIR . "/pdf_temp/$pdf_temp")) {
-                $pdfs[] = PEPROULTIMATEINVOICE_DIR . "/pdf_temp/$pdf_temp";
+          $order_ids_valid = array();
+          $order_ids_name = array();
+          $order_ids = (array) explode(",", $_GET["invoice-zip"]);
+          $order_ids = array_map("trim", $order_ids); $i=0;
+          foreach ($order_ids as $order_id) {
+            try {
+              $order = wc_get_order($order_id);
+              if ($order) { $i++;
+                $order_ids_valid[] = $order_id;
+                $pdf_temp = $this->print->create_pdf((int)$order_id, false, "S", false);
+                if (file_exists(PEPROULTIMATEINVOICE_DIR . "/pdf_temp/$pdf_temp")) { $pdfs[] = PEPROULTIMATEINVOICE_DIR . "/pdf_temp/$pdf_temp"; }
+                $order_ids_name[] = "FILE {$i}: {$pdf_temp}" . PHP_EOL . "MD5: " . md5_file(PEPROULTIMATEINVOICE_DIR . "/pdf_temp/$pdf_temp") . PHP_EOL . "SHA1: " . sha1_file(PEPROULTIMATEINVOICE_DIR . "/pdf_temp/$pdf_temp") . PHP_EOL;
               }
-              $orderidsname[] = "FILE: $pdf_temp" . PHP_EOL .
-                "MD5: " . md5_file(PEPROULTIMATEINVOICE_DIR . "/pdf_temp/$pdf_temp") . PHP_EOL .
-                "SHA1: " . sha1_file(PEPROULTIMATEINVOICE_DIR . "/pdf_temp/$pdf_temp") . PHP_EOL;
+            } catch (\Throwable $th) {
+              //throw $th;
             }
           }
-
-          $order_id_formatted = implode("-", $orderidsvalid);
-          $datenow = current_time('timestamp');
-          $datetime = date_i18n("Y_m_d_H_i_s", $datenow);
-          $namedir = PEPROULTIMATEINVOICE_DIR . "/zip_temp";
-          if (!file_exists($namedir)) {
-            mkdir($namedir, 0777, true);
-          }
-
-          $namedotext = "InvoicesArchive-$datetime.zip";
-          $zip_file = "{$namedir}/{$namedotext}";
-
+          $date_now = current_time('timestamp');
+          $date_time = date_i18n("Y_m_d_H_i_s", $date_now);
+          $name_dir = PEPROULTIMATEINVOICE_DIR . "/zip_temp";
+          if (!file_exists($name_dir)) @mkdir($name_dir, 0777, true);
+          $name_dot_ext = "InvoicesArchive-$date_time.zip";
+          $zip_file = "{$name_dir}/{$name_dot_ext}";
           file_exists($zip_file) and unlink($zip_file);
-
           $zip = new \ZipArchive;
-
           if ($zip->open($zip_file, $zip::CREATE | $zip::OVERWRITE) === TRUE) {
-            foreach ($pdfs as $file) {
-              $zip->addFile($file, basename($file));
-            }
-            $lineone = "WooCommerce PDF Invoices Zipped Archive File";
-            $linetwo = "Created by Pepro Ultimate Invoice for WooCommerce (ver. {$this->version})";
+            foreach ($pdfs as $file) @$zip->addFile($file, basename($file));
             $comments_lines = array(
-              PHP_EOL . str_pad($lineone, strlen($linetwo) + 8, " ", STR_PAD_BOTH) . PHP_EOL,
-              str_pad($linetwo, strlen($linetwo) + 8, " ", STR_PAD_BOTH) . PHP_EOL,
-              str_pad("https://wordpress.org/plugins/pepro-ultimate-invoice/", strlen($linetwo) + 8, " ", STR_PAD_BOTH) . PHP_EOL,
-              str_pad("Developed by Pepro Dev ( https://pepro.dev/ )", strlen($linetwo) + 8, " ", STR_PAD_BOTH) . PHP_EOL,
-              str_pad("*", strlen($linetwo) + 8, "=", STR_PAD_BOTH) . PHP_EOL,
-              "Date: " . $this->tpl->get_date("now"),
-              "Generated on: {$this->tpl->get_store_name()} ({$this->tpl->get_store_website()})",
-              "Support Email: {$this->tpl->get_store_email()}" . PHP_EOL,
-              str_pad("*", strlen($linetwo) + 8, "=", STR_PAD_BOTH) . PHP_EOL,
+              "== WooCommerce PDF Invoices Zipped Archive File ==",
+              "Created by *Pepro Ultimate Invoice for WooCommerce* v{$this->version}",
+              "Developed by Pepro Dev. Group ( https://pepro.dev/ )",
+              "Read more: https://wordpress.org/plugins/pepro-ultimate-invoice/",
+              "Disclaimer: Pepro Dev. Group is not responsible for the content of files included in this archive." . PHP_EOL . PHP_EOL,
+              "Archive Created Date: " . $this->tpl->get_date("now"),
+              "Archive Generated on: ".str_replace(["https", "http", "://www.", "://"], "", $this->tpl->get_store_website())." ({$this->tpl->get_store_name()})",
+              "Site Admin Email: {$this->tpl->get_store_email()}" . PHP_EOL,
               "This archive should contain following Invoice PDF files:" . PHP_EOL,
-              implode(PHP_EOL, $orderidsname) . PHP_EOL,
+              implode(PHP_EOL, $order_ids_name),
             );
             $zip->setArchiveComment(implode(PHP_EOL, $comments_lines));
             $zip->close();
-          } else {
-            wp_die(sprintf(__("Failed creating zip archive! (code: %s) %s", $this->td), $zip->status, "<br>" . $zip->getStatusString()), __("Error", $this->td), array("back_link" => true));
+          }
+          else {
+            wp_die(sprintf(__("Failed creating zip archive! (code: %s) %s", "pepro-ultimate-invoice"), $zip->status, "<br>" . $zip->getStatusString()), __("Error", "pepro-ultimate-invoice"), array("back_link" => true));
             exit;
           }
-          foreach ($pdfs as $file) {
-            file_exists($file) and unlink($file);
-          }
+          foreach ($pdfs as $file) { is_file($file) and unlink($file); }
           header('Content-type: application/force-download');
-          header("Content-Disposition: attachment; filename=$namedotext");
+          header("Content-Disposition: attachment; filename={$name_dot_ext}");
           readfile($zip_file);
           exit;
         }
+        #endregion
+        #region invoice-pos zip bulk action
+        if (isset($_GET["invoice-pos-zip"]) && !empty(trim(sanitize_text_field($_GET["invoice-pos-zip"])))) {
+          $pdfs = array();
+          $order_ids_valid = array();
+          $order_ids_name = array();
+          $order_ids = (array) explode(",", $_GET["invoice-pos-zip"]);
+          $order_ids = array_map("trim", $order_ids); $i=0;
+          foreach ($order_ids as $order_id) {
+            try {
+              $order = wc_get_order($order_id);
+              if ($order) { $i++;
+                $order_ids_valid[] = $order_id;
+                $this->setup_thermal_invoice();
+                $pdf_temp = $this->print->create_pdf((int)$order_id, false, "S", false, true);
+                if (file_exists(PEPROULTIMATEINVOICE_DIR . "/pdf_temp/$pdf_temp")) { $pdfs[] = PEPROULTIMATEINVOICE_DIR . "/pdf_temp/$pdf_temp"; }
+                $order_ids_name[] = "FILE {$i}: $pdf_temp" . PHP_EOL . "MD5: " . md5_file(PEPROULTIMATEINVOICE_DIR . "/pdf_temp/$pdf_temp") . PHP_EOL . "SHA1: " . sha1_file(PEPROULTIMATEINVOICE_DIR . "/pdf_temp/$pdf_temp") . PHP_EOL;
+              }
+            } catch (\Throwable $th) {
+              //throw $th;
+            }
+          }
+          $date_now = current_time('timestamp');
+          $date_time = date_i18n("Y_m_d_H_i_s", $date_now);
+          $name_dir = PEPROULTIMATEINVOICE_DIR . "/zip_temp";
+          if (!file_exists($name_dir)) @mkdir($name_dir, 0777, true);
+          $name_dot_ext = "InvoicesPOSArchive-$date_time.zip";
+          $zip_file = "{$name_dir}/{$name_dot_ext}";
+          file_exists($zip_file) and unlink($zip_file);
+          $zip = new \ZipArchive;
+          if ($zip->open($zip_file, $zip::CREATE | $zip::OVERWRITE) === TRUE) {
+            foreach ($pdfs as $file) @$zip->addFile($file, basename($file));
+            $comments_lines = array(
+              "== WooCommerce PDF Invoices Zipped Archive File ==",
+              "Created by *Pepro Ultimate Invoice for WooCommerce* v{$this->version}",
+              "Developed by Pepro Dev. Group ( https://pepro.dev/ )",
+              "Read more: https://wordpress.org/plugins/pepro-ultimate-invoice/",
+              "Disclaimer: Pepro Dev. Group is not responsible for the content of files included in this archive." . PHP_EOL . PHP_EOL,
+              "Archive Created Date: " . $this->tpl->get_date("now"),
+              "Archive Generated on: ".str_replace(["https", "http", "://www.", "://"], "", $this->tpl->get_store_website())." ({$this->tpl->get_store_name()})",
+              "Site Admin Email: {$this->tpl->get_store_email()}" . PHP_EOL,
+              "This archive should contain following Invoice PDF files:" . PHP_EOL,
+              implode(PHP_EOL, $order_ids_name),
+            );
+            $zip->setArchiveComment(implode(PHP_EOL, $comments_lines));
+            $zip->close();
+          }
+          else {
+            wp_die(sprintf(__("Failed creating zip archive! (code: %s) %s", "pepro-ultimate-invoice"), $zip->status, "<br>" . $zip->getStatusString()), __("Error", "pepro-ultimate-invoice"), array("back_link" => true));
+            exit;
+          }
+          foreach ($pdfs as $file) { is_file($file) and unlink($file); }
+          header('Content-type: application/force-download');
+          header("Content-Disposition: attachment; filename={$name_dot_ext}");
+          readfile($zip_file);
+          exit;
+        }
+        #endregion
+        #region inventory bulk action
         if (isset($_GET["inventory-bulk"]) && !empty(trim(sanitize_text_field($_GET["inventory-bulk"])))) {
           $orderids = (array) explode(",", $_GET["inventory-bulk"]);
           $orderids = array_map("trim", $orderids);
@@ -532,9 +589,10 @@ if (!class_exists("PeproUltimateInvoice")) {
                     display: none;
                   }
                 }</style>";
-          $printBtn .= "<p style='text-align: center'><a class=\"print-button\" href=\"javascript:;\" onclick=\"window.print();return false;\" >" . __("Print", $this->td) . "</a></p>";
-          die("<title>" . __("Bulk Inventory Report", $this->td) . "</title>{$printBtn}{$inventory_temp}");
+          $printBtn .= "<p style='text-align: center'><a class=\"print-button\" href=\"javascript:;\" onclick=\"window.print();return false;\" >" . __("Print", "pepro-ultimate-invoice") . "</a></p>";
+          die("<title>" . __("Bulk Inventory Report", "pepro-ultimate-invoice") . "</title>{$printBtn}{$inventory_temp}");
         }
+        #region slips bulk action
         if (isset($_GET["slips-bulk"]) && !empty(trim(sanitize_text_field($_GET["slips-bulk"])))) {
           $orderids = (array) explode(",", $_GET["slips-bulk"]);
           $orderids = array_map("trim", $orderids);
@@ -564,23 +622,24 @@ if (!class_exists("PeproUltimateInvoice")) {
                    @media print { .print-button { display: none; }
                   }
                 </style>";
-          $printBtn .= "<p style='text-align: center'><a class=\"print-button\" href=\"javascript:;\" onclick=\"window.print();return false;\" >" . __("Print", $this->td) . "</a></p>";
-          die("<title>" . __("Bulk Packing Slip", $this->td) . "</title>{$printBtn}{$inventory_temp}");
+          $printBtn .= "<p style='text-align: center'><a class=\"print-button\" href=\"javascript:;\" onclick=\"window.print();return false;\" >" . __("Print", "pepro-ultimate-invoice") . "</a></p>";
+          die("<title>" . __("Bulk Packing Slip", "pepro-ultimate-invoice") . "</title>{$printBtn}{$inventory_temp}");
         }
+        #endregion
       }
 
       if (current_user_can("manage_options") && is_admin() && isset($_GET["nonce"], $_GET["ultimate-invoice-reset"]) && wp_verify_nonce($_GET["nonce"], "pepro-ultimate-invoice")) {
-        wp_die("Pepro Ultimate Invoice — FORCE RESET TO DEFAULT Settings done!<br />Return count: " . $this->change_default_settings("RESET"), "Force-reset Options", array("link_text" => __("Back to Settings", $this->td), "link_url" => admin_url("admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate"), "text_direction" => "ltr"));
+        wp_die("Pepro Ultimate Invoice — FORCE RESET TO DEFAULT Settings done!<br />Return count: " . $this->change_default_settings("RESET"), "Force-reset Options", array("link_text" => __("Back to Settings", "pepro-ultimate-invoice"), "link_url" => admin_url("admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate"), "text_direction" => "ltr"));
       }
       if (current_user_can("manage_options") && is_admin() && isset($_GET["nonce"], $_GET["ultimate-invoice-set"]) && wp_verify_nonce($_GET["nonce"], "pepro-ultimate-invoice")) {
-        wp_die("Pepro Ultimate Invoice — RESET TO DEFAULT Settings done!<br />Return count: " . $this->change_default_settings("SET"), "Reset Options", array("link_text" => __("Back to Settings", $this->td), "link_url" => admin_url("admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate"), "text_direction" => "ltr"));
+        wp_die("Pepro Ultimate Invoice — RESET TO DEFAULT Settings done!<br />Return count: " . $this->change_default_settings("SET"), "Reset Options", array("link_text" => __("Back to Settings", "pepro-ultimate-invoice"), "link_url" => admin_url("admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate"), "text_direction" => "ltr"));
       }
       if (current_user_can("manage_options") && is_admin() && isset($_GET["nonce"], $_GET["ultimate-invoice-clear"]) && wp_verify_nonce($_GET["nonce"], "pepro-ultimate-invoice")) {
-        wp_die("Pepro Ultimate Invoice — FORCE CLEAR Settings done!<br />Return count: " . $this->change_default_settings("CLEAR"), "Clear Options", array("link_text" => __("Back to Settings", $this->td), "link_url" => admin_url("admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate"), "text_direction" => "ltr"));
+        wp_die("Pepro Ultimate Invoice — FORCE CLEAR Settings done!<br />Return count: " . $this->change_default_settings("CLEAR"), "Clear Options", array("link_text" => __("Back to Settings", "pepro-ultimate-invoice"), "link_url" => admin_url("admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate"), "text_direction" => "ltr"));
       }
       if (current_user_can("manage_options") && is_admin() && isset($_GET["nonce"], $_GET["ultimate-invoice-get"]) && wp_verify_nonce($_GET["nonce"], "pepro-ultimate-invoice")) {
         $string = "<div class='log5'>" . highlight_string("<?php" . PHP_EOL . $this->change_default_settings("GET"), 1) . "</div><style>.log5{text-align: left; direction: ltr; padding: 1rem; display: block; overflow: auto;z-index: 77777777777 !important;position: relative;background: white;} .log5 code {background: transparent !important;}</style>";
-        wp_die($string, "Export as PHP Script", array("link_text" => __("Back to Settings", $this->td), "link_url" => admin_url("admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate"), "text_direction" => "ltr"));
+        wp_die($string, "Export as PHP Script", array("link_text" => __("Back to Settings", "pepro-ultimate-invoice"), "link_url" => admin_url("admin.php?page=wc-settings&tab=pepro_ultimate_invoice&section=migrate"), "text_direction" => "ltr"));
       }
 
       if ("yes" == $this->tpl->get_allow_quick_shop()) {
@@ -614,6 +673,7 @@ if (!class_exists("PeproUltimateInvoice")) {
       }
 
       add_action('woocommerce_admin_order_data_after_shipping_address', array($this, "after_shipping_shopmngr_provided_note"), 10, 1);
+
       add_action("woocommerce_order_details_after_order_table_items",   array($this, "woocommerce_order_details_after_order_table_items"));
       add_action('woocommerce_checkout_update_order_meta',              array($this, "woocommerce_checkout_update_order_meta"));
       add_action('woocommerce_checkout_update_user_meta',               array($this, "woocommerce_checkout_update_user_meta"), 10, 2);
@@ -644,15 +704,110 @@ if (!class_exists("PeproUltimateInvoice")) {
         update_option("puiw_last_import_version", $this->version);
       }
     }
+    public function calculate_total_discount($order) {
+      $total_discount_from_prices = 0;
+      // Iterate through order items
+      foreach ($order->get_items() as $item) {
+        // Get line item prices
+        $regular_price = (float) $item->get_meta('_line_regular_price', true); // Regular price
+        $item_price = (float) $item->get_total() / (int) $item->get_quantity(); // Item price (total / quantity)
+        // Calculate discount for this item
+        if ($regular_price > $item_price) {
+          $quantity = (int) $item->get_quantity();
+          $item_discount = ($regular_price - $item_price) * $quantity;
+          $total_discount_from_prices += $item_discount;
+        }
+      }
+      // Add coupon discount if any
+      $coupon_discount = $order->get_total_discount(); // Built-in WooCommerce method
+      $total_discount = $total_discount_from_prices + $coupon_discount;
+      return wc_price($total_discount);
+      // return [
+      //   'price_discount' => wc_price($total_discount_from_prices),
+      //   'coupon_discount' => wc_price($coupon_discount),
+      //   'total_discount' => wc_price($total_discount),
+      // ];
+    }
+    /**
+     * @param  array $args
+     * @param  \WC_Order $order
+     * @return void
+     */
+    public function modify_storage_invoice_params($args, $order) {
+      $args["invoice_total"] = $order->get_formatted_order_total();
+      $args["invoice_final_totals"] = $this->get_order_final_prices($order);
+      $date_time = date_i18n("Y/m/d H:i", current_time("timestamp"));
+      $args["thermal_copyright"] = "<p style='text-align:center; font-size: 0.8rem;font-family: Arial;'><bdi dir='ltr'>PeproDev Ultimate Invoice v{$this->version} (www.pepro.dev)<br><small>Generated at {$date_time}</small></bdi></p>";
+      $order_note_a = apply_filters("puiw_printslips_order_note_customer", "<strong>" . __("Note provided by Customer", "pepro-ultimate-invoice") . "</strong><br>" . $this->tpl->get_order_note($order, "a"), $this->tpl->get_order_note($order, "a"), $order, $args);
+      $order_note_b = apply_filters("puiw_printslips_order_note_shopmngr", "<strong>" . __("Note provided by Shop manager", "pepro-ultimate-invoice") . "</strong><br>" . $this->tpl->get_order_note($order, "b"), $this->tpl->get_order_note($order, "b"), $order, $args);
+      $note_customer = !empty(trim((string) $this->tpl->get_order_note($order, "a"))) ? "<tr><div><td colspan='3' style='text-align:start; padding: 0.5rem;'>".$order_note_a."</td></div></tr>" : "";
+      $note_shopmngr = !empty(trim((string) $this->tpl->get_order_note($order, "b"))) ? "<tr><div><td colspan='3' style='text-align:start; padding: 0.5rem;'>".$order_note_b."</td></div></tr>" : "";
+      $args["order_notes_new"] = $note_customer . $note_shopmngr;
+      return $args;
+    }
+    /**
+     * @param  \WC_Order $order
+     * @return void
+     */
+    public function get_order_final_prices($order){
+      ob_start();
+      $ttl = $order->get_order_item_totals();
+      foreach ( $ttl as $key => $total ) {
+        if ("payment_method" == $key) {
+          ?>
+            <tr class="puiw_totalrow transaction_id">
+              <th colspan="2">کد رهگیری پرداخت:</th>
+              <td width="4cm" colspan="1"><?php echo $order->get_transaction_id() ;?></td>
+            </tr>
+          <?php
+        }
+        if ( $key != "order_total" ){
+          ?>
+            <tr class="puiw_totalrow <?php echo $key;?>">
+              <th colspan="2"><?php echo esc_html( $total['label'] ); ?></th>
+              <td width="4cm" colspan="1"><?php echo ( "payment_method" == $key ) ? esc_html( $total['value'] ) : wp_kses_post( $total['value'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+            </tr>
+          <?php
+        }
+      }
+      $html = ob_get_contents();
+      ob_end_clean();
+      return $html;
+    }
+    public function printinvoice_create_html_item_row($optm, $item_id, $item, $product_id, $order) {
+      // Retrieve saved price or use current price
+      $saved_price = (float) $item->get_meta('_saved_price', true);
+      $current_price = (float) $item->get_meta('_line_regular_price', true);
+      // Determine which price to use
+      $price_to_use = $saved_price > 0 ? $saved_price : $current_price;
+      // Get the quantity
+      $quantity = (int) $item->get_quantity();
+      // Calculate net total
+      $net_total = $price_to_use * $quantity;
+      // Save net total
+      $optm['base_price'] = wc_price($net_total);
+      $optm['discount'] = wc_price($net_total - $item->get_total());
+      return $optm;
+    }
+    public function setup_thermal_invoice(){
+      add_filter("puiw_get_default_dynamic_params", array($this, "modify_storage_invoice_params"), 999, 2);
+      add_filter("puiw_printinvoice_create_html_item_row_metas", array($this, "printinvoice_create_html_item_row"), 10, 5);
+      add_filter("puiw_printinvoice_preserve_html_tags", function($arg, $opt, $order){$arg[] = "invoice_title"; $arg[] = "invoice_final_totals"; $arg[] = "thermal_copyright"; $arg[] = "order_notes_new"; return $arg;}, 10, 3);
+      add_filter("puiw_printinvoice_preserve_english_numbers", function($arg, $opt, $order){$arg[] = "invoice_title"; $arg[] = "invoice_final_totals"; $arg[] = "thermal_copyright"; $arg[] = "order_notes_new"; return $arg;}, 10, 3);
+      add_filter("puiw_get_export_pdf_name", function($name, $order_id_formatted, $order_id, $date){ return "sales-pos--$order_id_formatted.pdf"; }, 10, 4);
+      add_filter("puiw_get_templates_list", function ($templates) { $templates[] = plugin_dir_path(__FILE__) . "template/default-pos-rtl/default.cfg"; return $templates; }, 10, 1);
+      add_filter("puiw_get_template", function($template, $default){ return plugin_dir_path(__FILE__) . "template/default-pos-rtl"; }, 10, 2);
+      add_filter("puiw_printinvoice_pdf_footer_new", "__return_empty_string");
+    }
     public function plugin_row_meta($links_array, $plugin_file_name, $plugin_data, $status) {
       if (strpos($plugin_file_name, basename(__FILE__))) {
-        $links_array[] = "<a href='mailto:support+UltimateInvoice@pepro.dev?subject=Ask for Help [Ultimate Invoice]'>" . __("Support", $this->td) . "</a>";
+        $links_array[] = "<a href='mailto:support+UltimateInvoice@pepro.dev?subject=Ask for Help [Ultimate Invoice]'>" . __("Support", "pepro-ultimate-invoice") . "</a>";
       }
       return $links_array;
     }
     public function plugin_action_links($actions, $plugin_file) {
       if (plugin_basename(__FILE__) == $plugin_file) {
-        $actions[$this->db_slug] = "<a href='$this->url'>" . __("Settings", $this->td) . "</a>";
+        $actions[$this->db_slug] = "<a href='$this->url'>" . __("Settings", "pepro-ultimate-invoice") . "</a>";
       }
       return $actions;
     }
@@ -689,10 +844,10 @@ if (!class_exists("PeproUltimateInvoice")) {
       foreach ($coupons as $item) {
         $coupon = new \WC_Coupon($item->get_code());
         if ($coupon) {
-          $coupon_label   = _x("Coupon:", "invoice-template", $this->td);
+          $coupon_label   = _x("Coupon:", "invoice-template", "pepro-ultimate-invoice");
           $coupon_display = [];
           if ($coupons_code) {
-            $coupon_label = sprintf(_x("Coupon (%s):", "invoice-template", $this->td), $coupon->get_code());
+            $coupon_label = sprintf(_x("Coupon (%s):", "invoice-template", "pepro-ultimate-invoice"), $coupon->get_code());
           }
           if ($coupons_amount) {
             $coupon_display[] = ("percent" == $coupon->get_discount_type() ? $coupon->get_amount() . "%" : wc_price($coupon->get_amount(), ['currency' => $order->get_currency()]));
@@ -738,7 +893,7 @@ if (!class_exists("PeproUltimateInvoice")) {
           $default_UIN = get_user_meta(get_current_user_id(), "billing_uin", true);
         }
         $ar['puiw_billing_uin'] = array(
-          'label'   => __('User Unique Identification Number', $this->td),
+          'label'   => __('User Unique Identification Number', "pepro-ultimate-invoice"),
           'default' => $default_UIN,
           'class'   => 'long',
         );
@@ -763,25 +918,24 @@ if (!class_exists("PeproUltimateInvoice")) {
         "class" => "long persianDatepickerRow",
       );
       $ar['puiw_invoice_shipdatefa']  = array(
-        'label'             => __('Shipped Date (Shamsi)', $this->td),
+        'label'             => __('Shipped Date (Shamsi)', "pepro-ultimate-invoice"),
         'class'             => 'long persianDatepicker disabled',
-        'placeholder'       => __('Select Shipped Date', $this->td),
+        'placeholder'       => __('Select Shipped Date', "pepro-ultimate-invoice"),
         'custom_attributes' => array("readonly" => "true"),
       );
       $ar['puiw_invoice_shipdate']    = array(
-        'label'             => __('Shipped Date (Gregorian)', $this->td),
+        'label'             => __('Shipped Date (Gregorian)', "pepro-ultimate-invoice"),
         'class'             => 'long persianDatepicker disabled',
-        'placeholder'       => __('Select Shipped Date', $this->td),
+        'placeholder'       => __('Select Shipped Date', "pepro-ultimate-invoice"),
         'custom_attributes' => array("readonly" => "true"),
       );
       $ar['puiw_invoice_track_id']    = array(
-        'label'       => __('Shipping Track Serial', $this->td),
+        'label'       => __('Shipping Track Serial', "pepro-ultimate-invoice"),
         'class'       => 'long',
-        'placeholder' => __('Enter Shipping Track Serial', $this->td),
-
+        'placeholder' => __('Enter Shipping Track Serial', "pepro-ultimate-invoice"),
       );
       $ar['puiw_customer_signature']  = array(
-        'label' => __('Customer Signature', $this->td),
+        'label' => __('Customer Signature', "pepro-ultimate-invoice"),
         'class' => 'wc-select-uploader',
         'style' => 'display:none',
       );
@@ -802,10 +956,10 @@ if (!class_exists("PeproUltimateInvoice")) {
       echo "<div class='puiw_orders_invoice_btn_container'>";
       if (!empty($allowed_statuses) && in_array("wc-{$order->get_status()}", (array) $allowed_statuses)) {
         if ($this->print->has_access("HTML", $order)) {
-          echo '<a style="margin-inline-end: 1rem;-webkit-margin-end: 1rem;" href="' . home_url("?invoice=" . $order->get_order_number()) . '" class="button">' . _x('View Invoice', "order-page", $this->td) . '</a>';
+          echo '<a style="margin-inline-end: 1rem;-webkit-margin-end: 1rem;" href="' . home_url("?invoice=" . $order->get_order_number()) . '" class="button">' . _x('View Invoice', "order-page", "pepro-ultimate-invoice") . '</a>';
         }
         if ($this->print->has_access("PDF", $order)) {
-          echo '<a href="' . home_url("?invoice-pdf=" . $order->get_order_number()) . '" class="button">' . _x('PDF Invoice', "order-page", $this->td) . '</a>';
+          echo '<a href="' . home_url("?invoice-pdf=" . $order->get_order_number()) . '" class="button">' . _x('PDF Invoice', "order-page", "pepro-ultimate-invoice") . '</a>';
         }
       }
       echo "</div>";
@@ -847,13 +1001,13 @@ if (!class_exists("PeproUltimateInvoice")) {
      */
     public function woocommerce_order_details_after_order_table_items($order) {
       $order_id = $order->get_id();
-      $date = get_post_meta($order_id, "_shipping_puiw_invoice_shipdate", true);
-      $serial = get_post_meta($order_id, "_shipping_puiw_invoice_track_id", true);
+      $date = $order->get_meta("_shipping_puiw_invoice_shipdate", true);
+      $serial = $order->get_meta("_shipping_puiw_invoice_track_id", true);
       if ("yes" == $this->tpl->show_shipped_date()) {
-        echo '<tr><td><strong>' . _x("Shipped Date:", "wc-orders", $this->td) . ' </strong></td><td>' . $this->tpl->get_date($date, "Y/m/d l", true) . '</td></tr>';
+        echo '<tr><td><strong>' . _x("Shipped Date:", "wc-orders", "pepro-ultimate-invoice") . ' </strong></td><td>' . $this->tpl->get_date($date, "Y/m/d l", true) . '</td></tr>';
       }
       if ("yes" == $this->tpl->show_shipping_serial()) {
-        echo '<tr><td><strong>' . _x("Shipping tracking Serial:", "wc-orders", $this->td) . ' </strong></td><td>' . $serial . '</td></tr>';
+        echo '<tr><td><strong>' . _x("Shipping tracking Serial:", "wc-orders", "pepro-ultimate-invoice") . ' </strong></td><td>' . $serial . '</td></tr>';
       }
     }
     /**
@@ -899,42 +1053,17 @@ if (!class_exists("PeproUltimateInvoice")) {
     /**
      * wc orders screen on save
      *
-     * @method wc_save_shop_order_metabox
      * @param int $post_id
      * @version 1.0.0
      * @since 1.0.0
      * @license https://pepro.dev/license Pepro.dev License
      */
-    public function wc_save_shop_order_metabox($post_id) {
-      if (
-        !isset($_POST["{$this->td}_nonce"]) ||
-        !wp_verify_nonce($_POST["{$this->td}_nonce"], 'security_nonce') ||
-        !current_user_can('edit_post') ||
-        (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
-      ) {
-        return;
-      }
-
-
-      if (!isset($_POST['puiw_shopmngr_provided_note'])) {
-        delete_post_meta($post_id, 'puiw_shopmngr_provided_note');
-      } else {
-        update_post_meta($post_id, 'puiw_shopmngr_provided_note', ($_POST['puiw_shopmngr_provided_note']));
-        // update_post_meta( $post_id, 'puiw_shopmngr_provided_note', sanitize_textarea_field( $_POST['puiw_shopmngr_provided_note'] ));
-      }
-
-
-      if (!isset($_POST['_billing_puiw_billing_uin'])) {
-        delete_post_meta($post_id, 'puiw_billing_uin');
-      } else {
-        update_post_meta($post_id, 'puiw_billing_uin', sanitize_text_field($_POST['_billing_puiw_billing_uin']));
-      }
-
-      if (!isset($_POST['_shipping_puiw_invoice_track_id'])) {
-        delete_post_meta($post_id, 'puiw_invoice_track_id');
-      } else {
-        update_post_meta($post_id, 'puiw_invoice_track_id', sanitize_text_field($_POST['_shipping_puiw_invoice_track_id']));
-      }
+    public function wc_save_shop_order_metabox($post_id=0) {
+      $order = wc_get_order( $post_id );
+      $order->update_meta_data('puiw_shopmngr_provided_note', wc_clean($_POST['puiw_shopmngr_provided_note']??""));
+      $order->update_meta_data('puiw_billing_uin', wc_clean($_POST['_billing_puiw_billing_uin']??""));
+      $order->update_meta_data('puiw_invoice_track_id', wc_clean($_POST['_shipping_puiw_invoice_track_id']??""));
+      $order->save();
     }
     /**
      * read css file header and info
@@ -974,7 +1103,7 @@ if (!class_exists("PeproUltimateInvoice")) {
       foreach ($styleFiles as $style) {
         $contents                = file_get_contents($style);
         $styleExifDAta           = $this->parseTemplate($contents);
-        $template                = sprintf(_x('%1$s — by %2$s', "theme-name", $this->td), $styleExifDAta["name"], $styleExifDAta["designer"]);
+        $template                = sprintf(_x('%1$s — by %2$s', "theme-name", "pepro-ultimate-invoice"), $styleExifDAta["name"], $styleExifDAta["designer"]);
         $simple_path             = apply_filters("puiw_load_themes_simple_path", dirname($style), $style);
         $simple_title            = apply_filters("puiw_load_themes_simple_title", $template, $styleExifDAta["name"], $styleExifDAta["designer"], $styleExifDAta);
         $tempaltes[$simple_path] = $simple_title;
@@ -1013,13 +1142,12 @@ if (!class_exists("PeproUltimateInvoice")) {
       } else {
         $order_id = isset($post->ID) ? $post->ID : $post;
       }
-
-      $puiw_billing_uin = get_post_meta($order_id, 'puiw_billing_uin', true);
-      $_billing_puiw_billing_uin = get_post_meta($order_id, '_billing_puiw_billing_uin', true);
-      $puiw_invoice_track_id = get_post_meta($order_id, 'puiw_invoice_track_id', true);
-
+      $order = wc_get_order($order_id);
+      if (!$order) {
+        echo "<p>" . __("Invalid Order!", "pepro-ultimate-invoice") . "</p>";
+        return;
+      }
       wp_nonce_field('security_nonce', "{$this->td}_nonce");
-
       wp_enqueue_script("jquery-confirm", "{$this->assets_url}js/jquery-confirm.min.js", array("jquery"));
       wp_enqueue_style("jquery-confirm", "{$this->assets_url}css/jquery-confirm.min.css", array(), '1.0', 'all');
       wp_enqueue_style("fontawesome", "{$this->assets_url}fontawesome-free/css/all.css", array(), '5.15.3', 'all');
@@ -1028,9 +1156,9 @@ if (!class_exists("PeproUltimateInvoice")) {
       wp_register_script("pepro-ultimate-invoice-orders-options", "{$this->assets_url}/admin/wc_orders" . $this->debugEnabled(".js", ".min.js"), array("jquery"), current_time('timestamp'));
       wp_localize_script("pepro-ultimate-invoice-orders-options", "_i18n", array_merge($localize_script, array(
         "calendarType"        => ($this->tpl->get_date_shamsi() == "yes") ? "persian" : "gregorian",
-        "prev_img_url"        => get_post_meta($order_id, '_shipping_puiw_customer_signature', true),
-        "shipping_procc"      => __("Select The Date Product Shipped", $this->td),
-        "shipping_clear"      => __("Clear", $this->td),
+        "prev_img_url"        => $order->get_meta('_shipping_puiw_customer_signature', true),
+        "shipping_procc"      => __("Select The Date Product Shipped", "pepro-ultimate-invoice"),
+        "shipping_clear"      => __("Clear", "pepro-ultimate-invoice"),
         "load_themes"         => $this->load_themes(1),
         "get_template"        => $this->tpl->get_template(),
         "theme_color"         => get_option("puiw_theme_color"),
@@ -1084,15 +1212,15 @@ if (!class_exists("PeproUltimateInvoice")) {
       echo ""; ?>
       <p>
         <input type="checkbox" value="1" id="puiwc_advanced_opts" />
-        <label for="puiwc_advanced_opts"><?php echo __("Use Advanced Options?", $this->td); ?></label>
+        <label for="puiwc_advanced_opts"><?php echo __("Use Advanced Options?", "pepro-ultimate-invoice"); ?></label>
       </p>
       <div class="advabced_puiwc" style="display: none;">
         <div class="puiw_half">
-          <label style="color: gray;"><?php echo __("Force Use theme", $this->td); ?></label>
+          <label style="color: gray;"><?php echo __("Force Use theme", "pepro-ultimate-invoice"); ?></label>
           <select style="width: 100%;" id="puiw_metabox_theme_select" class='jqui-select' selecteditem='<?php echo $current; ?>'></select>
         </div>
         <div class="puiw_half">
-          <label style="color: gray;"><?php echo __("Primary, Secondary and Tertiary Colors", $this->td); ?></label>
+          <label style="color: gray;"><?php echo __("Primary, Secondary and Tertiary Colors", "pepro-ultimate-invoice"); ?></label>
           <select style="width: 100%;" id="puiw_metabox_swatch_select" class="swatch-select" swatches="<?php echo esc_js(get_option("puiw_color_swatches", "")); ?>"></select>
         </div>
         <div class="puiw-color-pickers">
@@ -1101,7 +1229,7 @@ if (!class_exists("PeproUltimateInvoice")) {
           <input type="text" id="puiw_metabox_theme_color3" value="<?php echo get_option("puiw_theme_color3"); ?>" class="wc-color-picker" />
         </div>
         <div class="puiw_half">
-          <a rel='puiw_tooltip' title='<?php echo _x("Reset Advanced Options to default", "wc-orders-popup", $this->td); ?>' class='pwui_reset_advanced' href='#'><?php echo _x("Reset", "wc-orders-popup", $this->td); ?></a>
+          <a rel='puiw_tooltip' title='<?php echo _x("Reset Advanced Options to default", "wc-orders-popup", "pepro-ultimate-invoice"); ?>' class='pwui_reset_advanced' href='#'><?php echo _x("Reset", "wc-orders-popup", "pepro-ultimate-invoice"); ?></a>
         </div>
       </div>
       <p>
@@ -1109,96 +1237,111 @@ if (!class_exists("PeproUltimateInvoice")) {
       </p>
       <div class="puiw_half_container">
         <div class="puiw_half">
-          <a rel='puiw_tooltip' data-action='puiw_act_href' title='<?php echo _x("View Order HTML Invoice", "wc-orders-popup", $this->td); ?>' class='button button-primary pwui_opts btn-wide' href='<?php echo $url1; ?>' target='_blank' data-ref='<?php echo $id; ?>'><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/document.png'/>" .
-                                                                                                                                                                                                                                                                            _x("HTML Invoice", "wc-orders-popup", $this->td); ?></a>
+          <a rel='puiw_tooltip'
+          data-action='puiw_act_href' title='<?php echo _x("View Order HTML Invoice", "wc-orders-popup", "pepro-ultimate-invoice"); ?>' class='button button-primary pwui_opts btn-wide' href='<?php echo $url1; ?>' target='_blank' data-ref='<?php echo $id; ?>'><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/document.png'/>" .
+          _x("HTML Invoice", "wc-orders-popup", "pepro-ultimate-invoice"); ?></a>
         </div>
         <div class="puiw_half">
-          <a rel='puiw_tooltip' data-action='puiw_act_href' title='<?php echo _x("View Order PDF Invoice", "wc-orders-popup", $this->td); ?>' class='button button-primary pwui_opts btn-wide' href='<?php echo $url2; ?>' target='_blank' data-ref='<?php echo $id; ?>'><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/pdf.png'/>" .
-                                                                                                                                                                                                                                                                            _x("PDF Invoice", "wc-orders-popup", $this->td); ?></a>
+          <a rel='puiw_tooltip'
+          data-action='puiw_act_href' title='<?php echo _x("View Order PDF Invoice", "wc-orders-popup", "pepro-ultimate-invoice"); ?>' class='button button-primary pwui_opts btn-wide' href='<?php echo $url2; ?>' target='_blank' data-ref='<?php echo $id; ?>'><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/pdf.png'/>" .
+          _x("PDF Invoice", "wc-orders-popup", "pepro-ultimate-invoice"); ?></a>
         </div>
         <div class="puiw_half">
-          <a rel='puiw_tooltip' data-action='puiw_act_href' title='<?php echo _x("View Order Inventory report", "wc-orders-popup", $this->td); ?>' class='button button-primary pwui_opts btn-wide' href='<?php echo $url4; ?>' target='_blank' data-ref='<?php echo $id; ?>'><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/document-delivery.png'/>" .
-                                                                                                                                                                                                                                                                                _x("Inventory report", "wc-orders-popup", $this->td); ?></a>
+          <a rel='puiw_tooltip'
+          data-action='puiw_act_href' title='<?php echo _x("View Order Inventory report", "wc-orders-popup", "pepro-ultimate-invoice"); ?>' class='button button-primary pwui_opts btn-wide' href='<?php echo $url4; ?>' target='_blank' data-ref='<?php echo $id; ?>'><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/document-delivery.png'/>" .
+          _x("Inventory report", "wc-orders-popup", "pepro-ultimate-invoice"); ?></a>
         </div>
         <div class="puiw_half">
-          <a rel='puiw_tooltip' data-action='puiw_act_href' title='<?php echo _x("View Packing Slip for shipping", "wc-orders-popup", $this->td); ?>' class='button button-primary pwui_opts btn-wide' href='<?php echo $url3; ?>' target='_blank' data-ref='<?php echo $id; ?>'><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/unpacking.png'/>" .
-                                                                                                                                                                                                                                                                                    _x("Packing Slip", "wc-orders-popup", $this->td); ?></a>
+          <a rel='puiw_tooltip'
+          data-action='puiw_act_href' title='<?php echo _x("View Packing Slip for shipping", "wc-orders-popup", "pepro-ultimate-invoice"); ?>' class='button button-primary pwui_opts btn-wide' href='<?php echo $url3; ?>' target='_blank' data-ref='<?php echo $id; ?>'><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/unpacking.png'/>" .
+          _x("Packing Slip", "wc-orders-popup", "pepro-ultimate-invoice"); ?></a>
         </div>
         <div class="puiw_half">
-          <a rel='puiw_tooltip' data-action='puiw_act_href' title='<?php echo _x("View PDF Packing Slip for shipping", "wc-orders-popup", $this->td); ?>' class='button button-primary pwui_opts btn-wide' href='<?php echo $url11; ?>' target='_blank' data-ref='<?php echo $id; ?>'><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/unpacking.png'/>" .
-                                                                                                                                                                                                                                                                                        _x("PDF Packing Slip", "wc-orders-popup", $this->td); ?></a>
+          <a rel='puiw_tooltip'
+          data-action='puiw_act_href' title='<?php echo _x("View PDF Packing Slip for shipping", "wc-orders-popup", "pepro-ultimate-invoice"); ?>' class='button button-primary pwui_opts btn-wide' href='<?php echo $url11; ?>' target='_blank' data-ref='<?php echo $id; ?>'><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/unpacking.png'/>" .
+          _x("PDF Packing Slip", "wc-orders-popup", "pepro-ultimate-invoice"); ?></a>
         </div>
         <div class="puiw_half">
-          <a rel='puiw_tooltip' data-action='puiw_act6' title='<?php echo _x("Mail Order Invoice to Customer", "wc-orders-popup", $this->td); ?>' class='button button-primary pwui_opts btn-wide' href='<?php echo $url2; ?>' target='_blank' data-ref='<?php echo $id; ?>'><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/mail-account.png'/>" .
-                                                                                                                                                                                                                                                                                _x("Mail Invoice to Customer", "wc-orders-popup", $this->td); ?>
+          <a rel='puiw_tooltip'
+          data-action='puiw_act6' title='<?php echo _x("Mail Order Invoice to Customer", "wc-orders-popup", "pepro-ultimate-invoice"); ?>' class='button button-primary pwui_opts btn-wide' href='<?php echo $url2; ?>' target='_blank' data-ref='<?php echo $id; ?>'><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/mail-account.png'/>" .
+          _x("Mail Invoice to Customer", "wc-orders-popup", "pepro-ultimate-invoice"); ?>
           </a>
         </div>
         <div class="puiw_half">
-          <a rel='puiw_tooltip' data-action='puiw_act9' title='<?php echo _x("Mail Order Invoice to Shop Managers", "wc-orders-popup", $this->td); ?>' class='button button-primary pwui_opts btn-wide' href='<?php echo $url2; ?>' target='_blank' data-ref='<?php echo $id; ?>'><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/secure-mail.png'/>" .
-                                                                                                                                                                                                                                                                                    _x("Mail Invoice to Shop Managers", "wc-orders-popup", $this->td); ?>
+          <a rel='puiw_tooltip'
+          data-action='puiw_act9' title='<?php echo _x("Mail Order Invoice to Shop Managers", "wc-orders-popup", "pepro-ultimate-invoice"); ?>' class='button button-primary pwui_opts btn-wide' href='<?php echo $url2; ?>' target='_blank' data-ref='<?php echo $id; ?>'><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/secure-mail.png'/>" .
+          _x("Mail Invoice to Shop Managers", "wc-orders-popup", "pepro-ultimate-invoice"); ?>
           </a>
         </div>
         <div class="puiw_half">
-          <a rel='puiw_tooltip' data-action='puiw_act10' title='<?php echo _x("Mail Order Invoice to Custom List", "wc-orders-popup", $this->td); ?>' class='button button-primary pwui_opts btn-wide' href='<?php echo $url2; ?>' target='_blank' data-ref='<?php echo $id; ?>'><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/new-message.png'/>" .
-                                                                                                                                                                                                                                                                                    _x("Mail Invoice to Custom List", "wc-orders-popup", $this->td); ?>
+          <a rel='puiw_tooltip'
+          data-action='puiw_act10' title='<?php echo _x("Mail Order Invoice to Custom List", "wc-orders-popup", "pepro-ultimate-invoice"); ?>' class='button button-primary pwui_opts btn-wide' href='<?php echo $url2; ?>' target='_blank' data-ref='<?php echo $id; ?>'><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/new-message.png'/>" .
+          _x("Mail Invoice to Custom List", "wc-orders-popup", "pepro-ultimate-invoice"); ?>
           </a>
         </div>
         <div class="puiw_half">
-          <a rel='puiw_tooltip' title='<?php echo _x("Edit User Unique Identification Number", "wc-orders-popup", $this->td); ?>' class="button button-primary pwui_opts btn-wide type2" href="#" id="editpuiw_billing_uin"><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/writer-male.png'/>" .
-                                                                                                                                                                                                                              _x("Edit User UIN", "wc-orders-popup", $this->td); ?></a>
+          <a rel='puiw_tooltip'
+          title='<?php echo _x("Edit User Unique Identification Number", "wc-orders-popup", "pepro-ultimate-invoice"); ?>' class="button button-primary pwui_opts btn-wide type2" href="#" id="editpuiw_billing_uin"><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/writer-male.png'/>" .
+          _x("Edit User UIN", "wc-orders-popup", "pepro-ultimate-invoice"); ?></a>
         </div>
         <div class="puiw_half">
-          <a rel='puiw_tooltip' title='<?php echo _x("Edit transaction ID", "wc-orders-popup", $this->td); ?>' class="button button-primary pwui_opts btn-wide type2" href="#" id="editpuiw_billing_transaction_id"><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/receipt-and-change.png'/>" .
-                                                                                                                                                                                                                      _x("Edit Transaction ID", "wc-orders-popup", $this->td); ?></a>
+          <a rel='puiw_tooltip'
+          title='<?php echo _x("Edit transaction ID", "wc-orders-popup", "pepro-ultimate-invoice"); ?>' class="button button-primary pwui_opts btn-wide type2" href="#" id="editpuiw_billing_transaction_id"><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/receipt-and-change.png'/>" .
+          _x("Edit Transaction ID", "wc-orders-popup", "pepro-ultimate-invoice"); ?></a>
         </div>
         <div class="puiw_half">
-          <a rel='puiw_tooltip' title='<?php echo _x("Edit shipped date", "wc-orders-popup", $this->td); ?>' class="button button-primary pwui_opts btn-wide type2" href="#" id="editpuiw_invoice_shipdate"><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/delivery.png'/>" .
-                                                                                                                                                                                                              _x("Edit Shipped Date", "wc-orders-popup", $this->td); ?></a>
+          <a rel='puiw_tooltip'
+          title='<?php echo _x("Edit shipped date", "wc-orders-popup", "pepro-ultimate-invoice"); ?>' class="button button-primary pwui_opts btn-wide type2" href="#" id="editpuiw_invoice_shipdate"><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/delivery.png'/>" .
+          _x("Edit Shipped Date", "wc-orders-popup", "pepro-ultimate-invoice"); ?></a>
         </div>
         <div class="puiw_half">
-          <a rel='puiw_tooltip' title='<?php echo _x("Edit shipping track serial", "wc-orders-popup", $this->td); ?>' class="button button-primary pwui_opts btn-wide type2" href="#" id="editpuiw_invoice_track_id"><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/in-transit.png'/>" .
-                                                                                                                                                                                                                        _x("Edit Shipping Track Serial", "wc-orders-popup", $this->td); ?></a>
+          <a rel='puiw_tooltip'
+          title='<?php echo _x("Edit shipping track serial", "wc-orders-popup", "pepro-ultimate-invoice"); ?>' class="button button-primary pwui_opts btn-wide type2" href="#" id="editpuiw_invoice_track_id"><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/in-transit.png'/>" .
+          _x("Edit Shipping Track Serial", "wc-orders-popup", "pepro-ultimate-invoice"); ?></a>
         </div>
         <div class="puiw_half">
-          <a rel='puiw_tooltip' title='<?php echo _x("Edit customer signature image", "wc-orders-popup", $this->td); ?>' class="button button-primary pwui_opts btn-wide type2" href="#" id="editpuiw_invoice_customer_signature"><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/sign-up.png'/>" .
-                                                                                                                                                                                                                                    _x("Edit Customer Signature", "wc-orders-popup", $this->td); ?></a>
+          <a rel='puiw_tooltip'
+          title='<?php echo _x("Edit customer signature image", "wc-orders-popup", "pepro-ultimate-invoice"); ?>' class="button button-primary pwui_opts btn-wide type2" href="#" id="editpuiw_invoice_customer_signature"><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/sign-up.png'/>" .
+          _x("Edit Customer Signature", "wc-orders-popup", "pepro-ultimate-invoice"); ?></a>
         </div>
         <div class="puiw_half">
-          <a rel='puiw_tooltip' title='<?php echo _x("Edit customer provided note", "wc-orders-popup", $this->td); ?>' class="button button-primary pwui_opts btn-wide type2" href="#" id="editpuiw_invoice_customer_note"><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/pencil--v2.png'/>" .
-                                                                                                                                                                                                                              _x("Edit Customer Note", "wc-orders-popup", $this->td); ?></a>
+          <a rel='puiw_tooltip'
+          title='<?php echo _x("Edit customer provided note", "wc-orders-popup", "pepro-ultimate-invoice"); ?>' class="button button-primary pwui_opts btn-wide type2" href="#" id="editpuiw_invoice_customer_note"><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/pencil--v2.png'/>" .
+          _x("Edit Customer Note", "wc-orders-popup", "pepro-ultimate-invoice"); ?></a>
         </div>
         <div class="puiw_half">
-          <a rel='puiw_tooltip' title='<?php echo _x("Edit shop manager provided note", "wc-orders-popup", $this->td); ?>' class="button button-primary pwui_opts btn-wide type2" href="#" id="editpuiw_invoice_shop_manager_note"><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/pencil--v2.png'/>" .
-                                                                                                                                                                                                                                      _x("Edit Shop manager Note", "wc-orders-popup", $this->td); ?></a>
+          <a rel='puiw_tooltip'
+          title='<?php echo _x("Edit shop manager provided note", "wc-orders-popup", "pepro-ultimate-invoice"); ?>'
+          class="button button-primary pwui_opts btn-wide type2" href="#" id="editpuiw_invoice_shop_manager_note"><?php echo "<img src='" . PEPROULTIMATEINVOICE_ASSETS_URL . "/img/pencil--v2.png'/>" .
+          _x("Edit Shop manager Note", "wc-orders-popup", "pepro-ultimate-invoice"); ?></a>
         </div>
       </div>
     <?php
       echo $this->mta->popup_html_data($id, false);
     }
     /**
-     * add shopmngr provided note description after shipping details in wc_order screen
-     *
-     * @method after_shipping_shopmngr_provided_note
-     * @return string
-     * @version 1.0.0
-     * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
-     */
-    public function after_shipping_shopmngr_provided_note($order) {
+    * add shopmngr provided note description after shipping details in wc_order screen
+    *
+    * @method after_shipping_shopmngr_provided_note
+    * @return string
+    * @version 1.0.0
+    * @since 1.0.0
+    * @license https://pepro.dev/license Pepro.dev License
+    */
+    public function after_shipping_shopmngr_provided_note(\WC_Order $order) {
       global $post;
-      $value_raw = get_post_meta($order->get_id(), "puiw_shopmngr_provided_note", true);
+      $value_raw = $order->get_meta("puiw_shopmngr_provided_note", true);
       $value = wp_kses_post(nl2br(wptexturize($value_raw)));
-      echo "
-            <p class=\"form-field form-field-wide puiw_shopmngr_provided_note preview\">
-              <strong style=\"display: block;\">" . __('Shop Manager provided note:', $this->td) . "</strong>
-              $value
-            </p>
-            <p class=\"form-field form-field-wide puiw_shopmngr_provided_note edit\">
-              <label style=\"display:none;\" for=\"puiw_shopmngr_provided_note\">" . __('Shop Manager provided note:', $this->td) . "</label>
-              <textarea style=\"display:none;\" rows=\"3\" cols=\"40\" name=\"puiw_shopmngr_provided_note\" id=\"puiw_shopmngr_provided_note\" placeholder=\"" . __('Enter Shop Manager provided note here', $this->td) . "\">$value_raw</textarea>
-            </p>
-          ";
+      echo "<p class=\"form-field form-field-wide puiw_shopmngr_provided_note preview\">
+          <strong style=\"display: block;\">" . __('Shop Manager provided note:', "pepro-ultimate-invoice") . "</strong>
+          ".$value."
+        </p>
+        <p class=\"form-field form-field-wide puiw_shopmngr_provided_note edit\">
+          <label style=\"display:none;\" for=\"puiw_shopmngr_provided_note\">" . __('Shop Manager provided note:', "pepro-ultimate-invoice") . "</label>
+          <textarea style=\"display:none;\" rows=\"3\" cols=\"40\" name=\"puiw_shopmngr_provided_note\" id=\"puiw_shopmngr_provided_note\" placeholder=\"" . __('Enter Shop Manager provided note here', "pepro-ultimate-invoice") . "\">".$value_raw."</textarea>
+        </p>";
     }
+
     /**
      * save wc checkout metas
      *
@@ -1210,8 +1353,15 @@ if (!class_exists("PeproUltimateInvoice")) {
      */
     public function woocommerce_checkout_update_order_meta($order_id) {
       if (!empty($_POST['puiw_billing_uin'])) {
-        update_post_meta($order_id, 'puiw_billing_uin', sanitize_text_field($_POST['puiw_billing_uin']));
-        update_post_meta($order_id, '_billing_puiw_billing_uin', sanitize_text_field($_POST['puiw_billing_uin']));
+        $order = wc_get_order($order_id);
+        if ($order) {
+          $order->update_meta_data('puiw_billing_uin', sanitize_text_field($_POST['puiw_billing_uin']));
+          $order->update_meta_data('_billing_puiw_billing_uin', sanitize_text_field($_POST['puiw_billing_uin']));
+          $order->save();
+        }else{
+          update_post_meta($order_id, 'puiw_billing_uin', sanitize_text_field($_POST['puiw_billing_uin']));
+          update_post_meta($order_id, '_billing_puiw_billing_uin', sanitize_text_field($_POST['puiw_billing_uin']));
+        }
       }
     }
     /**
@@ -1245,8 +1395,8 @@ if (!class_exists("PeproUltimateInvoice")) {
         }
 
         $fields['billing']['puiw_billing_uin'] = array(
-          'label'       => _x("Unique Identification Number", "wc-order-screen", $this->td),
-          'placeholder' => _x("Unique Identification Number", "wc-order-screen", $this->td),
+          'label'       => _x("Unique Identification Number", "wc-order-screen", "pepro-ultimate-invoice"),
+          'placeholder' => _x("Unique Identification Number", "wc-order-screen", "pepro-ultimate-invoice"),
           'required'    => true,
           'default'     => $default_UIN,
           'class'       => array('form-row-wide'),
@@ -1267,9 +1417,7 @@ if (!class_exists("PeproUltimateInvoice")) {
       wp_register_style("{$this->td}-dmy", false);
       wp_enqueue_style("{$this->td}-dmy");
       $plugin_settinng_url = admin_url('admin.php?page=wc-settings&tab=pepro_ultimate_invoice');
-      wp_add_inline_style("{$this->td}-dmy", "#wpadminbar #wp-admin-bar-puiw_toolbar_setting_btn a .ab-icon::before { font-family: WooCommerce !important; content: '\\e03d'; font-size: smaller;}
-              #wpadminbar #wp-admin-bar-puiw_toolbar_dash_btn a .ab-icon::before {content: \"\\f340\";top: 3px; }
-              .nav-tab-wrapper.woo-nav-tab-wrapper a.nav-tab[href='$plugin_settinng_url'] {display:none;}");
+      wp_add_inline_style("{$this->td}-dmy", "#wpadminbar #wp-admin-bar-puiw_toolbar_setting_btn a .ab-icon::before { font-family: WooCommerce !important; content: '\\e03d'; font-size: smaller;}#wpadminbar #wp-admin-bar-puiw_toolbar_dash_btn a .ab-icon::before {content: \"\\f340\";top: 3px; }");
     }
     /**
      * add a link to the WP Toolbar and remove all others
@@ -1289,21 +1437,21 @@ if (!class_exists("PeproUltimateInvoice")) {
       $wp_admin_bar->add_menu(
         array(
           'id'    => 'puiw_toolbar_dash_btn',
-          'title' => '<span class="ab-icon"></span>' . __("Back to Dashboard", $this->td),
+          'title' => '<span class="ab-icon"></span>' . __("Back to Dashboard", "pepro-ultimate-invoice"),
           'href'  => admin_url()
         )
       );
       $wp_admin_bar->add_menu(
         array(
           'id'    => 'puiw_toolbar_dark_btn',
-          'title' => __("Switch Dark-mode", $this->td),
+          'title' => __("Switch Dark-mode", "pepro-ultimate-invoice"),
           'href'  => admin_url()
         )
       );
       $wp_admin_bar->add_menu(
         array(
           'id'    => 'puiw_toolbar_showids',
-          'title' => __("Show IDs", $this->td),
+          'title' => __("Show IDs", "pepro-ultimate-invoice"),
           'href'  => "#"
         )
       );
@@ -1316,28 +1464,28 @@ if (!class_exists("PeproUltimateInvoice")) {
       $wp_admin_bar->add_menu(
         array(
           'id'    => 'puiw_toolbar_wc_orders',
-          'title' => __("Orders", $this->td),
+          'title' => __("Orders", "pepro-ultimate-invoice"),
           'href'  => admin_url("edit.php?post_type=shop_order")
         )
       );
       $wp_admin_bar->add_menu(
         array(
           'id'    => 'puiw_toolbar_wc_setting',
-          'title' => __("Settings", $this->td),
+          'title' => __("Settings", "pepro-ultimate-invoice"),
           'href'  => admin_url("admin.php?page=wc-settings")
         )
       );
       $wp_admin_bar->add_menu(
         array(
           'id'    => 'puiw_toolbar_wc_checkout',
-          'title' => __("Payment", $this->td),
+          'title' => __("Payment", "pepro-ultimate-invoice"),
           'href'  => admin_url("admin.php?page=wc-settings&tab=checkout")
         )
       );
       $wp_admin_bar->add_menu(
         array(
           'id'    => 'puiw_toolbar_wc_shipping',
-          'title' => __("Shipping", $this->td),
+          'title' => __("Shipping", "pepro-ultimate-invoice"),
           'href'  => admin_url("admin.php?page=wc-settings&tab=shipping")
         )
       );
@@ -1350,21 +1498,21 @@ if (!class_exists("PeproUltimateInvoice")) {
       $wp_admin_bar->add_menu(
         array(
           'id'    => 'puiw_toolbar_wc_rate',
-          'title' => __("&#x2B50; Rate us", $this->td),
+          'title' => __("&#x2B50; Rate us", "pepro-ultimate-invoice"),
           'href'  => "https://wordpress.org/support/plugin/pepro-ultimate-invoice/reviews/#new-post",
         )
       );
       $wp_admin_bar->add_menu(
         array(
           'id'    => 'puiw_toolbar_wc_bug',
-          'title' => __("&#x1FAB2; Report problem", $this->td),
+          'title' => __("&#x1FAB2; Report problem", "pepro-ultimate-invoice"),
           'href'  => 'https://wordpress.org/support/plugin/pepro-ultimate-invoice/#new-post'
         )
       );
       $wp_admin_bar->add_menu(
         array(
           'id'    => 'puiw_toolbar_wc_about',
-          'title' => __("&#x2139;&#xFE0F; About", $this->td),
+          'title' => __("&#x2139;&#xFE0F; About", "pepro-ultimate-invoice"),
           'href'  => 'https://peprodev.com/pepro-woocommerce-ultimate-invoice/'
         )
       );
@@ -1401,12 +1549,12 @@ if (!class_exists("PeproUltimateInvoice")) {
      */
     public function add_wc_prebuy_status() {
       register_post_status('wc-prebuy-invoice', array(
-        'label'                     => __('Pre-buy Invoice', $this->td),
+        'label'                     => __('Pre-buy Invoice', "pepro-ultimate-invoice"),
         'public'                    => true,
         'exclude_from_search'       => false,
         'show_in_admin_all_list'    => true,
         'show_in_admin_status_list' => true,
-        'label_count'               => _n_noop('Pre-buy Invoice (%s)', 'Pre-buy Invoices (%s)', $this->td)
+        'label_count'               => _n_noop('Pre-buy Invoice (%s)', 'Pre-buy Invoices (%s)', "pepro-ultimate-invoice")
       ));
     }
     /**
@@ -1438,11 +1586,11 @@ if (!class_exists("PeproUltimateInvoice")) {
 
       if (!empty($allowed_statuses) && in_array("wc-{$order->get_status()}", (array) $allowed_statuses)) {
         if ($this->print->has_access("HTML", $order)) {
-          $actions["{$this->td}_html"] = array('url'  => home_url("?invoice=" . $order->get_order_number()), 'name' => _x('View Invoice', "order-page", $this->td),);
+          $actions["{$this->td}_html"] = array('url'  => home_url("?invoice=" . $order->get_order_number()), 'name' => _x('View Invoice', "order-page", "pepro-ultimate-invoice"),);
         }
 
         if ($this->print->has_access("PDF", $order)) {
-          $actions["{$this->td}_pdf"] = array('url'  => home_url("?invoice-pdf=" . $order->get_order_number()), 'name' => _x('PDF Invoice', "order-page", $this->td),);
+          $actions["{$this->td}_pdf"] = array('url'  => home_url("?invoice-pdf=" . $order->get_order_number()), 'name' => _x('PDF Invoice', "order-page", "pepro-ultimate-invoice"),);
         }
       }
 
@@ -1462,7 +1610,7 @@ if (!class_exists("PeproUltimateInvoice")) {
       foreach ($order_statuses as $key => $status) {
         $new_order_statuses[$key] = $status;
         if ('wc-processing' === $key) {
-          $new_order_statuses['wc-prebuy-invoice'] = __('Pre-buy Invoice', $this->td);
+          $new_order_statuses['wc-prebuy-invoice'] = __('Pre-buy Invoice', "pepro-ultimate-invoice");
         }
       }
       return $new_order_statuses;
@@ -1485,21 +1633,21 @@ if (!class_exists("PeproUltimateInvoice")) {
           "$this->td-cart",
           "_i18n",
           array(
-            "title"     => _x("Unauthorized Access!", "js-cart-page", $this->td),
-            "okaylabel" => _x("Okay", "js-cart-page", $this->td),
-            "msg"       => sprintf(_x("We are sorry for inconvenience, this feature is only available to logged-in users.<br>Please %sLogin / Register%s.", "js-cart-page", $this->td), "<a href='" . get_permalink(get_option('woocommerce_myaccount_page_id')) . "' target='_blank'>", "</a>"),
+            "title"     => _x("Unauthorized Access!", "js-cart-page", "pepro-ultimate-invoice"),
+            "okaylabel" => _x("Okay", "js-cart-page", "pepro-ultimate-invoice"),
+            "msg"       => sprintf(_x("We are sorry for inconvenience, this feature is only available to logged-in users.<br>Please %sLogin / Register%s.", "js-cart-page", "pepro-ultimate-invoice"), "<a href='" . get_permalink(get_option('woocommerce_myaccount_page_id')) . "' target='_blank'>", "</a>"),
           )
         );
       } else {
         wp_enqueue_script("$this->td-cart", "$this->assets_url/js/wc.cart.private" . $this->debugEnabled(".js", ".min.js"), array("jquery"), "1.0.0", true);
         wp_localize_script("$this->td-cart", "_i18n", array(
           "td"        => "puiw_{$this->td}",
-          "okaylabel" => _x("Okay", "js-cart-page", $this->td),
+          "okaylabel" => _x("Okay", "js-cart-page", "pepro-ultimate-invoice"),
           "ajax"      => admin_url("admin-ajax.php"),
-          "nonce"     => wp_create_nonce($this->td),
+          "nonce"     => wp_create_nonce("pepro-ultimate-invoice"),
         ));
       }
-      echo "<a href=\"\" id=\"pepro-one-page-purchase--submit-invoice\" class=\"checkout-button button alt\"><span class=\"fa fa-spin fa-cog\" style='display: none;'></span>  " . __("Get Pre-buy Invoice", $this->td) . "</a>";
+      echo "<a href=\"\" id=\"pepro-one-page-purchase--submit-invoice\" class=\"checkout-button button alt\"><span class=\"fa fa-spin fa-cog\" style='display: none;'></span>  " . __("Get Pre-buy Invoice", "pepro-ultimate-invoice") . "</a>";
     }
     /**
      * Initiate plugins settings in wp options
@@ -1573,7 +1721,7 @@ if (!class_exists("PeproUltimateInvoice")) {
       $rtl                                              = is_rtl() ? "-rtl" : "";
       $pdf_font                                         = is_rtl() ? "iranyekanfa" : "dejavu";
       $force_persian_numbers                            = is_rtl() ? "yes" : "no";
-      $email_subject                                    = _x("Invoice #%s — ", "wc-setting", $this->td) . get_bloginfo('name', 'display');
+      $email_subject                                    = _x("Invoice #%s — ", "wc-setting", "pepro-ultimate-invoice") . get_bloginfo('name', 'display');
       $email_from_name                                  = get_bloginfo('name', 'display');
       $puiw_store_postcode                              = "";
       if (function_exists("WC")) {
@@ -1632,7 +1780,7 @@ if (!class_exists("PeproUltimateInvoice")) {
         "puiw_preinvoice_theme_color"                 => "#faee84",
         "puiw_preinvoice_theme_color2"                => "#fff59d",
         "puiw_preinvoice_theme_color3"                => "#fff8b5",
-        "puiw_invoice_title"                          => _x("Invoice %s", "wc-setting", $this->td),
+        "puiw_invoice_title"                          => _x("Invoice %s", "wc-setting", "pepro-ultimate-invoice"),
         "puiw_font_size"                              => "11",
         "puiw_invoice_prefix"                         => "INV-",
         "puiw_invoice_suffix"                         => "",
@@ -1779,18 +1927,18 @@ if (!class_exists("PeproUltimateInvoice")) {
       $t___defs = 'dir="ltr" lang="en-US" required';
       $s___defs = 'required';
 
-      echo "<h1 class='had'>" . $this->title_w . "</h1>";
+      echo "<h1 class='had'>" . $this->title . "</h1>";
       echo '<div class="wrap">';
 
       // Docmunentations are shown here
-      $hll = "<dev><h4><strong>" . __("Shortcode and Hooks for Developers", $this->td) . "</strong></h4>
+      $hll = "<dev><h4><strong>" . __("Shortcode and Hooks for Developers", "pepro-ultimate-invoice") . "</strong></h4>
             <pre class='caqpde' dir='ltr' align='left' lang='en-US'>" . implode(
         "\n",
         apply_filters("puiw_documentation", array(
-          "<b " . (is_rtl() ? "class='fa'" : "") . ">" . _x("WordPress Shortcode", "setting-general", $this->td) . "</b><hr>",
+          "<b " . (is_rtl() ? "class='fa'" : "") . ">" . _x("WordPress Shortcode", "setting-general", "pepro-ultimate-invoice") . "</b><hr>",
           '<strong class="tag">[puiw_quick_shop el_id="" el_class=""]</strong>      <i>Outputs Quick Shop page. You can use Visual Composer Widget too.</i>',
           '<br />',
-          "<b " . (is_rtl() ? "class='fa'" : "") . ">" . _x("WordPress Action Hooks", "setting-general", $this->td) . '</b>',
+          "<b " . (is_rtl() ? "class='fa'" : "") . ">" . _x("WordPress Action Hooks", "setting-general", "pepro-ultimate-invoice") . '</b>',
           '<hr>',
           '<strong class="tag" >order_ajax_request_success</strong>            <i>TRIGGERS ON DOCUMENT        --Fires on cart page, when "Get invoice" button successes</i>',
           '<strong class="tag" >order_ajax_request_success</strong>            <i>TRIGGERS ON DOCUMENT        --Fires on cart page, when "Get invoice" button successes</i>',
@@ -1798,14 +1946,14 @@ if (!class_exists("PeproUltimateInvoice")) {
           '<strong class="tag" >order_ajax_request_success</strong>            <i>TRIGGERS ON DOCUMENT        --Fires on cart page, when "Get invoice" button successes</i>',
           '<strong class="tag" >order_ajax_request_success</strong>            <i>TRIGGERS ON DOCUMENT        --Fires on cart page, when "Get invoice" button successes</i>',
           '<br />',
-          "<b " . (is_rtl() ? "class='fa'" : "") . ">" . _x("WordPress Filter Hooks", "setting-general", $this->td) . '</b>',
+          "<b " . (is_rtl() ? "class='fa'" : "") . ">" . _x("WordPress Filter Hooks", "setting-general", "pepro-ultimate-invoice") . '</b>',
           '<hr>',
           '<strong class="tag" >order_ajax_request_success</strong>            <i>TRIGGERS ON DOCUMENT        --Fires on cart page, when "Get invoice" button successes</i>',
           '<strong class="tag" >order_ajax_request_success</strong>            <i>TRIGGERS ON DOCUMENT        --Fires on cart page, when "Get invoice" button successes</i>',
           '<strong class="tag" >order_ajax_request_success</strong>            <i>TRIGGERS ON DOCUMENT        --Fires on cart page, when "Get invoice" button successes</i>',
           '<strong class="tag" >order_ajax_request_success</strong>            <i>TRIGGERS ON DOCUMENT        --Fires on cart page, when "Get invoice" button successes</i>',
           '<br />',
-          "<b " . (is_rtl() ? "class='fa'" : "") . ">" . _x("jQuery Triggering Hooks", "setting-general", $this->td) . '</b>',
+          "<b " . (is_rtl() ? "class='fa'" : "") . ">" . _x("jQuery Triggering Hooks", "setting-general", "pepro-ultimate-invoice") . '</b>',
           '<hr>',
           '<strong class="tag" style="display: block;" >const PEOPCA_MOTHER = $(".pepro-one-page-purchase---top-parent");</strong>',
           '<strong class="tag" >order_ajax_request_success</strong>            <i>TRIGGERS ON DOCUMENT        --Fires on cart page, when "Get invoice" button successes</i>',
@@ -1831,10 +1979,10 @@ if (!class_exists("PeproUltimateInvoice")) {
      */
     public function update_footer_info() {
       add_filter('admin_footer_text', function () {
-        return sprintf(_x("Thanks for using %s products.", "footer-copyright", $this->td), "<b><a href='https://pepro.dev/' target='_blank' >" . __("Pepro Dev", $this->td) . "</a></b>");
+        return sprintf(_x("Thanks for using %s products.", "footer-copyright", "pepro-ultimate-invoice"), "<b><a href='https://pepro.dev/' target='_blank' >" . __("Pepro Dev", "pepro-ultimate-invoice") . "</a></b>");
       }, 11000);
       add_filter('update_footer', function () {
-        return sprintf(_x("%s — Version %s", "footer-copyright", $this->td), "<strong><a href='https://wordpress.org/plugins/pepro-ultimate-invoice/' target='_blank'>$this->title</a></strong>", $this->version);
+        return sprintf(_x("%s — Version %s", "footer-copyright", "pepro-ultimate-invoice"), "<strong><a href='https://wordpress.org/plugins/pepro-ultimate-invoice/' target='_blank'>$this->title</a></strong>", $this->version);
       }, 1100);
     }
     /**
@@ -1848,19 +1996,19 @@ if (!class_exists("PeproUltimateInvoice")) {
      */
     public function handel_ajax_req() {
       if (wp_doing_ajax() && !empty($_POST['wparam']) && !empty($_POST['nonce'])) {
-        if (!wp_verify_nonce($_POST['nonce'], $this->td)) {
-          wp_send_json_error(array("message" => __('Unauthorized Access Denied!', $this->td)));
+        if (!wp_verify_nonce($_POST['nonce'], "pepro-ultimate-invoice")) {
+          wp_send_json_error(array("message" => __('Unauthorized Access Denied!', "pepro-ultimate-invoice")));
         }
         global $woocommerce;
         switch ($_POST['wparam']) {
           case 'save-resid':
             $order = sanitize_post($_POST['order']);
             $resid = sanitize_post($_POST['resid']);
-            if (empty($order)) wp_send_json_error(array("message" => __('Incorrect data!', $this->td)));
+            if (empty($order)) wp_send_json_error(array("message" => __('Incorrect data!', "pepro-ultimate-invoice")));
             $order = wc_get_order($order);
             $order->update_meta_data("_shipping_puiw_invoice_track_id", $resid);
             $order->save();
-            wp_send_json_success(["msg" => _x("Success", "wc-setting-js", $this->td), "res" => $order->get_meta("_shipping_puiw_invoice_track_id", true)]);
+            wp_send_json_success(["msg" => _x("Success", "wc-setting-js", "pepro-ultimate-invoice"), "res" => $order->get_meta("_shipping_puiw_invoice_track_id", true)]);
             break;
           case "add-cart":
             $cart_date = sanitize_post($_POST['lparam']);
@@ -1875,9 +2023,9 @@ if (!class_exists("PeproUltimateInvoice")) {
                   $woocommerce->cart->add_to_cart($pid, $qty);
                 }
               }
-              wp_send_json_success(array("message" => __('Products successfully added to cart!', $this->td), "url" => wc_get_cart_url()));
+              wp_send_json_success(array("message" => __('Products successfully added to cart!', "pepro-ultimate-invoice"), "url" => wc_get_cart_url()));
             } else {
-              wp_send_json_error(array("message" => __('Incorrect data!', $this->td)));
+              wp_send_json_error(array("message" => __('Incorrect data!', "pepro-ultimate-invoice")));
             }
             break;
           case "place-order":
@@ -1930,10 +2078,10 @@ if (!class_exists("PeproUltimateInvoice")) {
             }
             $order->set_address($billing_address, 'billing');
             $order->set_address($shipping_address, 'shipping');
-            $order->add_order_note(sprintf(__("Invoice Created by %s%s", $this->td), "<strong>{$this->title_w}</strong>", "<br /><a class='delete_note' style='font-size: 0.7rem;' href='https://pepro.dev/'>" . __("Pepro Dev. Group", $this->td) . "</a>"));
+            $order->add_order_note(sprintf(__("Invoice Created by %s%s", "pepro-ultimate-invoice"), "<strong>{$this->title} v.{$this->version}</strong>", "<br /><a class='delete_note' style='font-size: 0.7rem;' href='https://pepro.dev/'>" . __("Pepro Dev. Group", "pepro-ultimate-invoice") . "</a>"));
             $order->calculate_totals();
+            $order->update_meta_data('puiw_shopmngr_provided_note', wp_kses_post(nl2br(wptexturize($this->tpl->get_preorder_shopmngr_extra_note()))));
             $order->save();
-            update_post_meta($order->get_id(), 'puiw_shopmngr_provided_note', wp_kses_post(nl2br(wptexturize($this->tpl->get_preorder_shopmngr_extra_note()))));
             if ("yes" == $this->tpl->get_allow_preorder_emptycart()) {
               $woocommerce->cart->empty_cart();
             }
@@ -1942,7 +2090,7 @@ if (!class_exists("PeproUltimateInvoice")) {
                 "url" => home_url("?invoice=" . $order->get_order_number()),
                 "view" => $order->get_view_order_url(),
                 "invoice" => $order->get_order_number(),
-                "msg" => __('Request success!', $this->td),
+                "msg" => __('Request success!', "pepro-ultimate-invoice"),
               )
             );
 
@@ -1951,7 +2099,7 @@ if (!class_exists("PeproUltimateInvoice")) {
             $order_id = (int) trim($_POST['lparam']);
             $order = wc_get_order($order_id);
             if (!$order) {
-              wp_send_json_error(array("msg" => __("No valid order", $this->td)));
+              wp_send_json_error(array("msg" => __("No valid order", "pepro-ultimate-invoice")));
             }
             $id = $order->get_id();
             $email = $order->get_billing_email();
@@ -1997,15 +2145,15 @@ if (!class_exists("PeproUltimateInvoice")) {
                 $wp_mail = $this->send_formatted_email($order_id, $email, false);
               }
 
-              $email_label = (is_array($email) && count($email) > 0) ? count($email) > 3 ? sprintf(__("%d emails", $this->td), count($email)) : implode("<br>", $email) : $email;
+              $email_label = (is_array($email) && count($email) > 0) ? (count($email) > 3 ? sprintf(__("%d emails", "pepro-ultimate-invoice"), count($email)) : implode("<br>", $email)) : $email;
 
               if ($wp_mail) {
-                wp_send_json_success(array("e" => $puiw_send_mail_params_advanced, "msg" => sprintf(__("Sending email to <br><strong>%s</strong><br>was successfully done", $this->td), $email_label)));
+                wp_send_json_success(array("e" => $puiw_send_mail_params_advanced, "msg" => sprintf(__("Sending email to <br><strong>%s</strong><br>was successfully done", "pepro-ultimate-invoice"), $email_label)));
               } else {
-                wp_send_json_error(array("e" => $puiw_send_mail_params_advanced, "msg" => sprintf(__("Error sending email to <br><strong>%s</strong>", $this->td), $email_label)));
+                wp_send_json_error(array("e" => $puiw_send_mail_params_advanced, "msg" => sprintf(__("Error sending email to <br><strong>%s</strong>", "pepro-ultimate-invoice"), $email_label)));
               }
             } else {
-              wp_send_json_error(array("msg" => __("No valid email found for this order", $this->td)));
+              wp_send_json_error(array("msg" => __("No valid email found for this order", "pepro-ultimate-invoice")));
             }
 
             break;
@@ -2014,14 +2162,14 @@ if (!class_exists("PeproUltimateInvoice")) {
             if ($shopmngrs_mail && !empty($shopmngrs_mail) && count($shopmngrs_mail) > 0) {
               wp_send_json_success(array("emails" => $shopmngrs_mail));
             } else {
-              wp_send_json_error(array("msg" => __("Error fetching shop managers.", $this->td)));
+              wp_send_json_error(array("msg" => __("Error fetching shop managers.", "pepro-ultimate-invoice")));
             }
 
             break;
           case "save-swatches":
             $lparam = sanitize_textarea_field($_POST['lparam']);
             update_option("puiw_color_swatches", $lparam);
-            wp_send_json_success(array("msg" => __('Saved successfully!', $this->td),));
+            wp_send_json_success(array("msg" => __('Saved successfully!', "pepro-ultimate-invoice"),));
 
             break;
           case "import_options":
@@ -2033,7 +2181,7 @@ if (!class_exists("PeproUltimateInvoice")) {
               }
               $wc_opt_count = $this->change_default_settings("MODIFY", $wc_opt);
             }
-            wp_send_json_success(array("msg" => __('Saved successfully!', $this->td), 'opts' => $wc_opt_count, 'data' => $wc_opt));
+            wp_send_json_success(array("msg" => __('Saved successfully!', "pepro-ultimate-invoice"), 'opts' => $wc_opt_count, 'data' => $wc_opt));
 
             break;
         }
@@ -2098,6 +2246,10 @@ if (!class_exists("PeproUltimateInvoice")) {
         deactivate_plugins(plugin_basename(__FILE__));
       }
 
+      register_setting("{$this->td}_general", "puiw_address_display_method", array(
+        'sanitize_callback' => 'wp_kses_post',  // Allows safe HTML tags
+      ));
+
       $peproultimateinvoice_options = $this->get_setting_options();
       foreach ($peproultimateinvoice_options as $sections) {
         foreach ($sections["data"] as $id => $def) {
@@ -2107,7 +2259,9 @@ if (!class_exists("PeproUltimateInvoice")) {
       }
       add_action("add_meta_boxes", array($this, "add_meta_boxes"));
       add_action("admin_enqueue_scripts", array($this, 'admin_enqueue_scripts'));
-      add_action("save_post", array($this, "wc_save_shop_order_metabox"), -1);
+      // add_action("save_post", array($this, "wc_save_shop_order_metabox"), 10);
+      // add_action("woocommerce_process_order_meta", array($this, "wc_save_shop_order_metabox"), 10);
+      add_action("woocommerce_process_shop_order_meta", array($this, "wc_save_shop_order_metabox"));
       add_filter("woocommerce_email_styles", array($this, "woocommerce_email_styles_edit"));
     }
     /**
@@ -2202,7 +2356,7 @@ if (!class_exists("PeproUltimateInvoice")) {
       $extra[] = esc_attr($el_class);
       $extra[] = esc_attr($css_class);
       echo "<div class='".esc_attr("pepro-one-page-purchase---top-parent " . implode(" ", $extra))."' id='".esc_attr($el_id)."'>";
-      $cats = "<option value=\"[ALL]\">" . __("All Categories", $this->td) . "</option>";
+      $cats = "<option value=\"[ALL]\">" . __("All Categories", "pepro-ultimate-invoice") . "</option>";
       $products = "";
       $products_js = array();
       $cat_args = array('orderby' => "name", 'order' => "ASC", 'hide_empty' => true,);
@@ -2230,8 +2384,8 @@ if (!class_exists("PeproUltimateInvoice")) {
         $sku = $product->get_sku();
         $total_sales = get_post_meta($product->get_id(), 'total_sales', true);
         $_wc_average_rating = get_post_meta($product->get_id(), '_wc_average_rating', true);
-        $skutxt = _x("SKU:", "js-i18n", $this->td);
-        $skutxt = _x("SKU:", "js-i18n", $this->td);
+        $skutxt = _x("SKU:", "js-i18n", "pepro-ultimate-invoice");
+        $skutxt = _x("SKU:", "js-i18n", "pepro-ultimate-invoice");
         $stock = $product->get_stock_quantity();
         //https://www.php.net/manual/en/function.date.php
         $dateformat = apply_filters("pepro_one_page_purchase_prodcuts_date_format", "Y-m-j h:i:s");
@@ -2259,7 +2413,7 @@ if (!class_exists("PeproUltimateInvoice")) {
                   </div>
                 </div>
                 <div class=\"pepro-one-page-purchase--product-add2cart\" >
-                  <a href=\"#\" data-pid=\"{$product->get_id()}\" class=\"pepro-one-page-purchase--add2cart\" title=\"" . __("Add to cart", $this->td) . "\" >
+                  <a href=\"#\" data-pid=\"{$product->get_id()}\" class=\"pepro-one-page-purchase--add2cart\" title=\"" . __("Add to cart", "pepro-ultimate-invoice") . "\" >
                     <i class=\"fa fa-shopping-bag\"></i>
                   </a>
                 </div>
@@ -2287,33 +2441,33 @@ if (!class_exists("PeproUltimateInvoice")) {
       <div class="pepro-one-page-purchase--container tool">
         <div class="pepro-one-page-purchase--categories-container">
           <div class="pepro-one-page-purchase--categories">
-            <h4 class="pepro-one-page-purchase--title"><?php echo __("Filter Products by Category", $this->td); ?></h4>
+            <h4 class="pepro-one-page-purchase--title"><?php echo __("Filter Products by Category", "pepro-ultimate-invoice"); ?></h4>
             <select id="pepro-one-page-purchase--select-categories"><?php echo $cats; ?></select>
           </div>
         </div>
         <div class="pepro-one-page-purchase--products">
           <div class="pepro-one-page-purchase--product-search">
-            <h4 class="pepro-one-page-purchase--title"><?php echo __("Sort and Search shown products", $this->td); ?></h4>
+            <h4 class="pepro-one-page-purchase--title"><?php echo __("Sort and Search shown products", "pepro-ultimate-invoice"); ?></h4>
             <div class="pepro-one-page-purchase--product-search-container">
-              <input type="search" id="pepro-one-page-purchase--search-input" placeholder="<?php echo __("Search among current shown products", $this->td); ?> ..." title="<?php echo __("Search among current shown products", $this->td); ?>" />
+              <input type="search" id="pepro-one-page-purchase--search-input" placeholder="<?php echo __("Search among current shown products", "pepro-ultimate-invoice"); ?> ..." title="<?php echo __("Search among current shown products", "pepro-ultimate-invoice"); ?>" />
             </div>
             <div class="pepro-one-page-purchase--product-sort-container">
-              <span class="pepro-one-page-purchase--title"><?php echo __("Sort By: ", $this->td); ?></span>
-              <a class="pepro-one-page-purchase-filter" data-query="alphabetically" href="javascript:void(0);"><?php echo __("Alphabetically", $this->td); ?></a>
-              <a class="pepro-one-page-purchase-filter" data-query="popularity" href="javascript:void(0);"><?php echo __("Popularity", $this->td); ?></a>
-              <a class="pepro-one-page-purchase-filter" data-query="total_sales" href="javascript:void(0);"><?php echo __("Total Sales", $this->td); ?></a>
-              <a class="pepro-one-page-purchase-filter active" data-query="latest" href="javascript:void(0);"><?php echo __("Latest", $this->td); ?></a>
-              <a class="pepro-one-page-purchase-filter" data-query="price_asc" href="javascript:void(0);"><?php echo __("Price (ASC)", $this->td); ?></a>
-              <a class="pepro-one-page-purchase-filter" data-query="price_desc" href="javascript:void(0);"><?php echo __("Price (DESC)", $this->td); ?></a>
+              <span class="pepro-one-page-purchase--title"><?php echo __("Sort By: ", "pepro-ultimate-invoice"); ?></span>
+              <a class="pepro-one-page-purchase-filter" data-query="alphabetically" href="javascript:void(0);"><?php echo __("Alphabetically", "pepro-ultimate-invoice"); ?></a>
+              <a class="pepro-one-page-purchase-filter" data-query="popularity" href="javascript:void(0);"><?php echo __("Popularity", "pepro-ultimate-invoice"); ?></a>
+              <a class="pepro-one-page-purchase-filter" data-query="total_sales" href="javascript:void(0);"><?php echo __("Total Sales", "pepro-ultimate-invoice"); ?></a>
+              <a class="pepro-one-page-purchase-filter active" data-query="latest" href="javascript:void(0);"><?php echo __("Latest", "pepro-ultimate-invoice"); ?></a>
+              <a class="pepro-one-page-purchase-filter" data-query="price_asc" href="javascript:void(0);"><?php echo __("Price (ASC)", "pepro-ultimate-invoice"); ?></a>
+              <a class="pepro-one-page-purchase-filter" data-query="price_desc" href="javascript:void(0);"><?php echo __("Price (DESC)", "pepro-ultimate-invoice"); ?></a>
             </div>
           </div>
         </div>
       </div>
       <div class="pepro-one-page-purchase--container">
         <div class="pepro-one-page-purchase--cart-list">
-          <div class="pepro-one-page-purchase--cart-body" data-empty="<?php echo __("Your cart is empty!", $this->td); ?>"></div>
+          <div class="pepro-one-page-purchase--cart-body" data-empty="<?php echo __("Your cart is empty!", "pepro-ultimate-invoice"); ?>"></div>
         </div>
-        <ul class="pepro-one-page-purchase--product-list" data-empty="<?php echo __("Nothing found!", $this->td); ?>">
+        <ul class="pepro-one-page-purchase--product-list" data-empty="<?php echo __("Nothing found!", "pepro-ultimate-invoice"); ?>">
           <?php echo $products; ?>
         </ul>
       </div>
@@ -2331,26 +2485,26 @@ if (!class_exists("PeproUltimateInvoice")) {
         array(
           "ajax" => admin_url("admin-ajax.php"),
           "td" => "puiw_$this->td",
-          "okaylabel" => _x("Okay", "js-cart-page", $this->td),
-          "nonce" => wp_create_nonce($this->td),
-          "addedtocard" => _x("Added to cart", "js-i18n", $this->td),
-          "thisIsAnError" => _x("THIS IS AN ERROR!", "js-i18n", $this->td),
-          "emptycartSubmit" => _x("Your basket is empty!", "js-i18n", $this->td),
-          "tti" => _x("Total Items:", "js-i18n", $this->td),
-          "ttp" => _x("Total Products:", "js-i18n", $this->td),
-          "unknownError" => _x("There is an unknown error and we are unable to proccess your request", "js-i18n", $this->td),
-          "removefromcart" => _x("Remove from cart", "js-i18n", $this->td),
-          "removefromcartContent" => _x("Clear cart", "js-i18n", $this->td),
-          "skuText" => _x("SKU:", "js-i18n", $this->td),
-          "removeFrombasketConfirmation" => _x("Are you sure you want to remove this item from basket?", "js-i18n", $this->td),
-          "removeFrombasketConfirmation2" => _x("Are you sure you want to remove all items from basket?", "js-i18n", $this->td),
-          "removeFrombasketTitle" => _x("Removing", "js-i18n", $this->td),
-          "removeFrombasketTitle2" => _x("Clear basket", "js-i18n", $this->td),
-          "instantShoppingBasketUpated" => _x("Instant Shopping Basket Upated!", "js-i18n", $this->td),
-          "confirmYes" => _x("Yes", "js-i18n", $this->td),
-          "confirmNo" => _x("No", "js-i18n", $this->td),
+          "okaylabel" => _x("Okay", "js-cart-page", "pepro-ultimate-invoice"),
+          "nonce" => wp_create_nonce("pepro-ultimate-invoice"),
+          "addedtocard" => _x("Added to cart", "js-i18n", "pepro-ultimate-invoice"),
+          "thisIsAnError" => _x("THIS IS AN ERROR!", "js-i18n", "pepro-ultimate-invoice"),
+          "emptycartSubmit" => _x("Your basket is empty!", "js-i18n", "pepro-ultimate-invoice"),
+          "tti" => _x("Total Items:", "js-i18n", "pepro-ultimate-invoice"),
+          "ttp" => _x("Total Products:", "js-i18n", "pepro-ultimate-invoice"),
+          "unknownError" => _x("There is an unknown error and we are unable to proccess your request", "js-i18n", "pepro-ultimate-invoice"),
+          "removefromcart" => _x("Remove from cart", "js-i18n", "pepro-ultimate-invoice"),
+          "removefromcartContent" => _x("Clear cart", "js-i18n", "pepro-ultimate-invoice"),
+          "skuText" => _x("SKU:", "js-i18n", "pepro-ultimate-invoice"),
+          "removeFrombasketConfirmation" => _x("Are you sure you want to remove this item from basket?", "js-i18n", "pepro-ultimate-invoice"),
+          "removeFrombasketConfirmation2" => _x("Are you sure you want to remove all items from basket?", "js-i18n", "pepro-ultimate-invoice"),
+          "removeFrombasketTitle" => _x("Removing", "js-i18n", "pepro-ultimate-invoice"),
+          "removeFrombasketTitle2" => _x("Clear basket", "js-i18n", "pepro-ultimate-invoice"),
+          "instantShoppingBasketUpated" => _x("Instant Shopping Basket Upated!", "js-i18n", "pepro-ultimate-invoice"),
+          "confirmYes" => _x("Yes", "js-i18n", "pepro-ultimate-invoice"),
+          "confirmNo" => _x("No", "js-i18n", "pepro-ultimate-invoice"),
           "currencySymbol" => $currencysymbol,
-          "proceedToCheckout" => _x("Proceed to Checkout / Invoice", "js-i18n", $this->td),
+          "proceedToCheckout" => _x("Proceed to Checkout / Invoice", "js-i18n", "pepro-ultimate-invoice"),
         )
       );
       $s = ob_get_contents();
@@ -2368,7 +2522,7 @@ if (!class_exists("PeproUltimateInvoice")) {
     public function integrate_with_vc() {
       $params = array(
         array(
-          'group' => esc_html__('Design Options', $this->td),
+          'group' => esc_html__('Design Options', "pepro-ultimate-invoice"),
           'type' => "{$this->td}_about",
           'edit_field_class' => 'vc_column vc_col-sm-12',
           'admin_label' => false,
@@ -2377,31 +2531,31 @@ if (!class_exists("PeproUltimateInvoice")) {
         // vc_map_add_css_animation(),
         array(
           'type' => 'el_id',
-          'heading' => esc_html__('Element ID', $this->td),
+          'heading' => esc_html__('Element ID', "pepro-ultimate-invoice"),
           'param_name' => 'el_id',
           'edit_field_class' => 'vc_column vc_col-sm-6',
-          'description' => sprintf(esc_html__('Enter element ID (Note: make sure it is unique and valid according to %sW3C Specification%s).', $this->td), '<a href="https://www.w3schools.com/tags/att_global_id.asp" target="_blank">', '</a>'),
-          'group' => esc_html__('Design Options', $this->td),
+          'description' => sprintf(esc_html__('Enter element ID (Note: make sure it is unique and valid according to %sW3C Specification%s).', "pepro-ultimate-invoice"), '<a href="https://www.w3schools.com/tags/att_global_id.asp" target="_blank">', '</a>'),
+          'group' => esc_html__('Design Options', "pepro-ultimate-invoice"),
         ),
         array(
           'type' => 'textfield',
-          'heading' => esc_html__('Extra class name', $this->td),
+          'heading' => esc_html__('Extra class name', "pepro-ultimate-invoice"),
           'edit_field_class' => 'vc_column vc_col-sm-6',
           'param_name' => 'el_class',
-          'description' => esc_html__('If you wish to style particular content element differently, then use this field to add a class name and then refer to it in your css file.', $this->td),
-          'group' => esc_html__('Design Options', $this->td),
+          'description' => esc_html__('If you wish to style particular content element differently, then use this field to add a class name and then refer to it in your css file.', "pepro-ultimate-invoice"),
+          'group' => esc_html__('Design Options', "pepro-ultimate-invoice"),
         ),
         array(
           'type' => 'css_editor',
-          'heading' => esc_html__('CSS box', $this->td),
+          'heading' => esc_html__('CSS box', "pepro-ultimate-invoice"),
           'param_name' => 'css',
-          'group' => esc_html__('Design Options', $this->td),
+          'group' => esc_html__('Design Options', "pepro-ultimate-invoice"),
         )
       );
       vc_map(
         array(
           'base'                    => "puiw_quick_shop",
-          'name'                    => __("Quick Shop", $this->td),
+          'name'                    => __("Quick Shop", "pepro-ultimate-invoice"),
           'description'             => __('One-page Purchase', "$this->td"),
           'class'                   => "{$this->td}__class",
           'icon'                    => plugins_url("/assets/img/peprodev.svg", __FILE__),
@@ -2430,7 +2584,7 @@ if (!class_exists("PeproUltimateInvoice")) {
       ob_start();
       echo "<div style='display: flex;justify-content: start;align-items: center;'>
                   <p style='margin: 0.8rem 1rem;'><img src='" . plugins_url("/assets/img/peprodev.svg", __FILE__) . "' width='55px' /></p>
-                  <div><p>" . sprintf(__("Proudly Developed by %s", $this->td), "<strong><a target='_blank' href='https://pepro.dev/'>" . __("Pepro Dev. Group", $this->td) . "</a></strong>") . "</p></div>
+                  <div><p>" . sprintf(__("Proudly Developed by %s", "pepro-ultimate-invoice"), "<strong><a target='_blank' href='https://pepro.dev/'>" . __("Pepro Dev. Group", "pepro-ultimate-invoice") . "</a></strong>") . "</p></div>
                 </div>";
       $html_output = ob_get_contents();
       ob_end_clean();

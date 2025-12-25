@@ -1599,7 +1599,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
     {
       $address_display_method = get_option("puiw_address_display_method",$default);
       $address_display_method = empty($address_display_method) ? $default : $address_display_method;
-      return apply_filters("puiw_get_address_display_method", $address_display_method, $default);
+      return apply_filters("puiw_get_address_display_method", nl2br($address_display_method), $default);
     }
     /**
      * show transaction ref id?
@@ -1784,7 +1784,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
           break;
         case 'b':
         case 'shop_manager':
-          $notes .= wp_kses_post( nl2br( wptexturize( get_post_meta( $order->get_id(), "puiw_shopmngr_provided_note", true) ) ) );
+          $notes .= wp_kses_post( nl2br( wptexturize( $order->get_meta("puiw_shopmngr_provided_note", true) ) ) );
           break;
         default:
           // hide_note_from_invoice

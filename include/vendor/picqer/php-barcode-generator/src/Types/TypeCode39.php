@@ -70,8 +70,6 @@ class TypeCode39 implements TypeInterface
             throw new InvalidLengthException('You should provide a barcode string.');
         }
 
-        $code = strtoupper($code);
-
         if ($this->extended) {
             // extended mode
             $code = $this->encode_code39_ext($code);
@@ -115,7 +113,7 @@ class TypeCode39 implements TypeInterface
      * Encode a string to be used for CODE 39 Extended mode.
      *
      * @param string $code code to represent.
-     * @return bool|string encoded string.
+     * @return string encoded string.
      * @protected
      */
     protected function encode_code39_ext($code)
@@ -132,7 +130,7 @@ class TypeCode39 implements TypeInterface
             chr(8) => '$H',
             chr(9) => '$I',
             chr(10) => '$J',
-            chr(11) => '£K',
+            chr(11) => '$K',
             chr(12) => '$L',
             chr(13) => '$M',
             chr(14) => '$N',
