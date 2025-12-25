@@ -137,23 +137,23 @@
         },
         {
             "name": "mpdf/psr-log-aware-trait",
-            "version": "v3.0.0",
-            "version_normalized": "3.0.0.0",
+            "version": "v2.0.0",
+            "version_normalized": "2.0.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mpdf/psr-log-aware-trait.git",
-                "reference": "a633da6065e946cc491e1c962850344bb0bf3e78"
+                "reference": "7a077416e8f39eb626dee4246e0af99dd9ace275"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mpdf/psr-log-aware-trait/zipball/a633da6065e946cc491e1c962850344bb0bf3e78",
-                "reference": "a633da6065e946cc491e1c962850344bb0bf3e78",
+                "url": "https://api.github.com/repos/mpdf/psr-log-aware-trait/zipball/7a077416e8f39eb626dee4246e0af99dd9ace275",
+                "reference": "7a077416e8f39eb626dee4246e0af99dd9ace275",
                 "shasum": ""
             },
             "require": {
-                "psr/log": "^3.0"
+                "psr/log": "^1.0 || ^2.0"
             },
-            "time": "2023-05-03T06:19:36+00:00",
+            "time": "2023-05-03T06:18:28+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -178,7 +178,7 @@
             "description": "Trait to allow support of different psr/log versions.",
             "support": {
                 "issues": "https://github.com/mpdf/psr-log-aware-trait/issues",
-                "source": "https://github.com/mpdf/psr-log-aware-trait/tree/v3.0.0"
+                "source": "https://github.com/mpdf/psr-log-aware-trait/tree/v2.0.0"
             },
             "install-path": "../mpdf/psr-log-aware-trait"
         },
@@ -300,22 +300,22 @@
         },
         {
             "name": "picqer/php-barcode-generator",
-            "version": "v2.4.2",
-            "version_normalized": "2.4.2.0",
+            "version": "v2.4.0",
+            "version_normalized": "2.4.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/picqer/php-barcode-generator.git",
-                "reference": "e9d39681f617705492b609fc3fc58465ef88e8fd"
+                "reference": "4cec18909dffd86e14beb69b1040f2520c2e1bb1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/picqer/php-barcode-generator/zipball/e9d39681f617705492b609fc3fc58465ef88e8fd",
-                "reference": "e9d39681f617705492b609fc3fc58465ef88e8fd",
+                "url": "https://api.github.com/repos/picqer/php-barcode-generator/zipball/4cec18909dffd86e14beb69b1040f2520c2e1bb1",
+                "reference": "4cec18909dffd86e14beb69b1040f2520c2e1bb1",
                 "shasum": ""
             },
             "require": {
                 "ext-mbstring": "*",
-                "php": "^8.1"
+                "php": "^7.3|^8.0"
             },
             "require-dev": {
                 "phpstan/phpstan": "^1.10",
@@ -326,7 +326,7 @@
                 "ext-gd": "For JPG and PNG generators, GD or Imagick is required",
                 "ext-imagick": "For JPG and PNG generators, GD or Imagick is required"
             },
-            "time": "2024-09-18T08:09:33+00:00",
+            "time": "2023-09-16T08:58:52+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -378,7 +378,7 @@
             ],
             "support": {
                 "issues": "https://github.com/picqer/php-barcode-generator/issues",
-                "source": "https://github.com/picqer/php-barcode-generator/tree/v2.4.2"
+                "source": "https://github.com/picqer/php-barcode-generator/tree/v2.4.0"
             },
             "funding": [
                 {
@@ -446,33 +446,33 @@
         },
         {
             "name": "psr/log",
-            "version": "3.0.2",
-            "version_normalized": "3.0.2.0",
+            "version": "1.1.4",
+            "version_normalized": "1.1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "f16e1d5863e37f8d8c2a01719f5b34baa2b714d3"
+                "reference": "d49695b909c3b7628b6289db5479a1c204601f11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/f16e1d5863e37f8d8c2a01719f5b34baa2b714d3",
-                "reference": "f16e1d5863e37f8d8c2a01719f5b34baa2b714d3",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/d49695b909c3b7628b6289db5479a1c204601f11",
+                "reference": "d49695b909c3b7628b6289db5479a1c204601f11",
                 "shasum": ""
             },
             "require": {
-                "php": ">=8.0.0"
+                "php": ">=5.3.0"
             },
-            "time": "2024-09-11T13:17:53+00:00",
+            "time": "2021-05-03T11:20:27+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.x-dev"
+                    "dev-master": "1.1.x-dev"
                 }
             },
             "installation-source": "dist",
             "autoload": {
                 "psr-4": {
-                    "Psr\\Log\\": "src"
+                    "Psr\\Log\\": "Psr/Log/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -493,7 +493,7 @@
                 "psr-3"
             ],
             "support": {
-                "source": "https://github.com/php-fig/log/tree/3.0.2"
+                "source": "https://github.com/php-fig/log/tree/1.1.4"
             },
             "install-path": "../psr/log"
         },
@@ -880,6 +880,6 @@
             "install-path": "../voku/simple_html_dom"
         }
     ],
-    "dev": true,
+    "dev": false,
     "dev-package-names": []
 }

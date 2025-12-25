@@ -3,7 +3,7 @@
  * @Author: Amirhossein Hosseinpour <https://amirhp.com>
  * @Date Created: 2022/10/15 13:44:52
  * @Last modified by: amirhp-com <its@amirhp.com>
- * @Last modified time: 2025/12/25 05:32:41
+ * @Last modified time: 2025/12/25 13:46:48
  */
 
 namespace peproulitmateinvoice;
@@ -1474,7 +1474,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
 
         $optm = array(
           "n"             => $n,
-          "img"           => ("PDF" == $MODE) ? $product->get_image(array(50, 50)) : $product->get_image('shop_thumbnail'),
+          "img"           => $product->get_image(array(50, 50)),
           "sku"           => $sku,
           "title"         => $name,
           "qty"           => $quantity,
@@ -1696,7 +1696,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
 
         $optm = array(
           "n" => $n,
-          "img" => ("PDF" == $MODE) ? $product->get_image(array(50, 50)) : $product->get_image('shop_thumbnail'),
+          "img" => $product->get_image(array(50, 50)),
           "sku" => $sku,
           "title" => $name,
           "qty" => $quantity,

@@ -9,12 +9,12 @@ Developer: amirhp.com
 Author URI: https://pepro.dev/
 Developer URI: https://amirhp.com
 Plugin URI: https://peprodev.com/pepro-woocommerce-ultimate-invoice/
-Version: 2.2.1
-Stable tag: 2.2.1
+Version: 2.2.2
+Stable tag: 2.2.2
 Tested up to: 6.9
 WC tested up to: 10.4
 Requires at least: 5.0
-Requires PHP: 7.0
+Requires PHP: 7.4
 WC requires at least: 5.0
 Text Domain: pepro-ultimate-invoice
 Domain Path: /languages
@@ -22,7 +22,7 @@ Copyright: (c) 2025 Pepro Dev. Group, All rights reserved.
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * @Last modified by: amirhp-com <its@amirhp.com>
- * @Last modified time: 2025/12/25 06:30:48
+ * @Last modified time: 2025/12/25 13:53:07
  */
 
 namespace peproulitmateinvoice;
@@ -35,6 +35,22 @@ use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableControlle
  * prevent data leak
  */
 defined("ABSPATH") or die("<h2>Unauthorized Access!</h2><hr><small>PeproDev Ultimate Invoice :: Developed by Pepro Dev. Group (<a href='https://pepro.dev/'>https://pepro.dev/</a>)</small>");
+// Prevent activation / loading on PHP versions older than 7.4
+if (version_compare(PHP_VERSION, '7.4', '<')) {
+  if (defined('WP_ADMIN') && \is_admin()) {
+    // If this request is coming from an activation attempt, deactivate the plugin immediately
+    if (isset($_GET['activate']) && function_exists('deactivate_plugins')) {
+      \deactivate_plugins(\plugin_basename(__FILE__));
+      unset($_GET['activate']);
+    }
+    // Show an admin notice about the PHP version requirement
+    \add_action('admin_notices', function () {
+      $msg = sprintf(\__('%s requires at least PHP version %s to function. Your site is currently running PHP version %s. Please contact your hosting provider to upgrade your PHP version.', 'pepro-ultimate-invoice'), '<strong>PeproDev Ultimate Invoice for Woocommerce</strong>', '<strong>7.4</strong>', '<strong>' . PHP_VERSION . '</strong>');
+      printf('<div class="notice notice-error"><p>%s</p></div>', $msg);
+    });
+  }
+  return;
+}
 /**
  * if plugin was not initiated before, let's do it
  */
@@ -44,7 +60,7 @@ if (!class_exists("PeproUltimateInvoice")) {
    */
   class PeproUltimateInvoice {
     public $td      = "pepro-ultimate-invoice";
-    public $version = "2.2.1";
+    public $version = "2.2.2";
     public $title   = "Ultimate Invoice";
     public $db_slug = "pepro-ultimate-invoice";
     public $plugin_dir;
@@ -187,6 +203,13 @@ if (!class_exists("PeproUltimateInvoice")) {
       if (!$this->_wc_activated()) {
         $installWC = admin_url("plugin-install.php?s=woo&tab=search&type=tag");
         $alerttext = sprintf(__("%s needs %s to function. Please install and activate it.", "pepro-ultimate-invoice"), "<strong>PeproDev Ultimate Invoice for Woocommerce</strong>", "<a href='$installWC' target='_blank'><strong>WooCommerce</strong></a>");
+        $message = "<div style='padding: 0.3rem 0.5rem;line-height: 1; margin-inline-start: -0.5rem;'><img src='{$this->assets_url}img/peprodev.svg' width='32px' /></div>";
+        $message .= "<div>$alerttext</div>";
+        $message = apply_filters("peprodevups_alert_after_active", $message);
+      }
+      // check php version be 7.4 at least or show warning and disable plugin
+      if (version_compare(PHP_VERSION, '7.4', '<')) {
+        $alerttext = sprintf(__("%s requires at least PHP version %s to function. Your site is currently running PHP version %s. Please contact your hosting provider to upgrade your PHP version.", "pepro-ultimate-invoice"), "<strong>PeproDev Ultimate Invoice for Woocommerce</strong>", "<strong>7.4</strong>", "<strong>" . PHP_VERSION . "</strong>");
         $message = "<div style='padding: 0.3rem 0.5rem;line-height: 1; margin-inline-start: -0.5rem;'><img src='{$this->assets_url}img/peprodev.svg' width='32px' /></div>";
         $message .= "<div>$alerttext</div>";
         $message = apply_filters("peprodevups_alert_after_active", $message);

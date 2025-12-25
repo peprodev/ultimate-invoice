@@ -4,9 +4,9 @@ Donate link: https://pepro.dev/donate
 Tags: woocommerce invoice, pdf invoice, persian, WooCommerce
 Requires at least: 5.0
 Tested up to: 6.9
-Version: 2.2.1
-Stable tag: 2.2.1
-Requires PHP: 7.0
+Version: 2.2.2
+Stable tag: 2.2.2
+Requires PHP: 7.4
 WC requires at least: 5.0
 WC tested up to: 10.4
 License: GPLv2 or later
@@ -19,7 +19,7 @@ Advanced WooCommerce invoice plugin: create customizable HTML/PDF invoices, atta
 ### Merry Christmas & Happy New Year 2026! 🎄🎉
 Thank you for using and supporting this free plugin! If you have any questions or need assistance, please ask on the WordPress support forum. We're here to help!
 
-**Update to v2.2.1 to get the new Thermal Invoice feature and many more improvements!**
+**Update to v2.2.2 to get the new Thermal Invoice feature and many more improvements!**
 
 -----------------------
 
@@ -165,8 +165,8 @@ You can help us improve our works by committing your changes to our Github repos
 
 
 == Upgrade Notice ==
-
-= 2.2.1 =
+Upgrade to enjoy the latest features and security improvements.
+- v2.2.2 | 2025-12-25 | 1404-10-04
 - *Merry/ Christmas & Happy New Year 2026! 🎄🎉*
 - Thank you for using and supporting this free plugin! If you have any questions or need assistance, please ask on the WordPress support forum. We're here to help!
 - This update adds full thermal printer support, improves WooCommerce HPOS compatibility, and includes important PDF and performance improvements. Recommended for all users.
@@ -174,12 +174,16 @@ For full changelog please view [Github Repo.](https://github.com/peprodev/ultima
 
 == Changelog ==
 
+- *Merry/ Christmas & Happy New Year 2026! 🎄🎉*
+- Thank you for using and supporting this free plugin! If you have any questions or need assistance, please ask on the WordPress support forum. We're here to help!
+- This update adds full thermal printer support, improves WooCommerce HPOS compatibility, and includes important PDF and performance improvements. Recommended for all users.
 For full changelog please view [Github Repo.](https://github.com/peprodev/ultimate-invoice)
 
-= v2.2.1 | 2025-12-25 | 1404-10-04 =
+= v2.2.2 | 2025-12-25 | 1404-10-04 =
 - Added: New Feature to Support Thermal Printer Labels (80mm / پرینتر حرارتی / فیش پرینتر)
 - Added: New Template for Thermal Printer Invoices
 - Added: Download POS Invoices PDF as ZIP Archive
+- Improvement: Changed *minimum PHP requirement to 7.4* 🙋‍♂️
 - Improvement: WooCommerce HPOS Full Compatibility
 - Improvement: Compatibility with WP 6.9 and WC 10.4
 - Improvement: PDF Zip Archive Comments Formatting

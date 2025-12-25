@@ -1,10 +1,19 @@
-<img src="https://ps.w.org/pepro-ultimate-invoice/assets/banner-772x250.png" style="border-radius: 7px;"/>
-<img src="https://ps.w.org/pepro-ultimate-invoice/assets/banner-772x250-rtl.png" style="border-radius: 7px;"/>
+|en|fa|
+|----|----|
+|<img src="https://ps.w.org/pepro-ultimate-invoice/assets/banner-772x250.png" style="border-radius: 7px;"/>|<img src="https://ps.w.org/pepro-ultimate-invoice/assets/banner-772x250-rtl.png" style="border-radius: 7px;"/>|
 
-**[PeproDev Ultimate Invoice](https://wordpress.org/plugins/pepro-ultimate-invoice/)**
+**[Click here to Install PeproDev Ultimate Invoice](https://wordpress.org/plugins/pepro-ultimate-invoice/)**
 ==========================
 
-The Most Advanced Invoice Plugin you were looking for! Create customizable PDF/HTML invoices for WooCommerce, attach to Email, Packing Slips, Shipping Labels, Shipping Tracking, Single-shop feature and ...
+Advanced WooCommerce invoice plugin: create customizable HTML/PDF invoices, attach to emails, and let customers download styled invoices easily.
+
+## Merry Christmas & Happy New Year 2026! 🎄🎉
+
+Thank you for using and supporting this free plugin! If you have any questions or need assistance, please ask on the WordPress support forum. We're here to help!
+
+### **Update to v2.2.2 to get the new Thermal Invoice feature and many more improvements!**
+
+-----------------------
 
 This plugin lets you to Generate Awesome Invoices for WooCommerce orders and:
 
@@ -22,14 +31,6 @@ This plugin lets you to Generate Awesome Invoices for WooCommerce orders and:
 -   and .....
 
 -----------------------
-
-#### Merry Christmas & Happy New Year 2026! 🎄🎉
-Thank you for using and supporting this free plugin! If you have any questions or need assistance, please ask on the WordPress support forum. We're here to help!
-
-**Update to v2.2.1 to get the new Thermal Invoice feature and many more improvements!**
-
------------------------
-
 
 ### Made by Developers for Developers
 - [Github Wiki](https://github.com/peprodev/ultimate-invoice/wiki)
@@ -101,10 +102,11 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 ### ***Changelog***
 
 
-#### Version 2.2.1 | 2025-12-25 | 1404-10-04
+#### Version 2.2.2 | 2025-12-25 | 1404-10-04
 - Added: New Feature to Support Thermal Printer Labels (80mm / پرینتر حرارتی / فیش پرینتر)
 - Added: New Template for Thermal Printer Invoices
 - Added: Download POS Invoices PDF as ZIP Archive
+- Improvement: Changed *minimum PHP requirement to 7.4* 🙋‍♂️
 - Improvement: WooCommerce HPOS Full Compatibility
 - Improvement: Compatibility with WP 6.9 and WC 10.4
 - Improvement: PDF Zip Archive Comments Formatting
@@ -125,6 +127,7 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 - Fixed: Loading Translation Issues
 - Developers: Added New hook `puiw_create_pdf_fit_height` for controlling PDF fit to height option
 - Developers: Improvement `puiw_printinvoice_check_user_has_access` hook to control access manager checks
+
 
 
 #### Version 2.1.0 | 2025-02-22 | 1403-12-04
