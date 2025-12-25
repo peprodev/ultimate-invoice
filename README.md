@@ -23,6 +23,14 @@ This plugin lets you to Generate Awesome Invoices for WooCommerce orders and:
 
 -----------------------
 
+#### Merry Christmas & Happy New Year 2026! 🎄🎉
+Thank you for using and supporting this free plugin! If you have any questions or need assistance, please ask on the WordPress support forum. We're here to help!
+
+**Update to v2.2.1 to get the new Thermal Invoice feature and many more improvements!**
+
+-----------------------
+
+
 ### Made by Developers for Developers
 - [Github Wiki](https://github.com/peprodev/ultimate-invoice/wiki)
 - Over 190 Filter Hook
@@ -107,6 +115,7 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 - Improvement: Updated mPDF Library to v8.2.7
 - Improvement: Allowed HTML Tags in Address Display method field
 - Improvement: Invoice Templates Content & Display styles
+- Improvement: Added Built-in mPDF fonts for better PDF Styling
 - Fixed: Minor Bug Fixes
 - Fixed: Security Issue CVE-2025-54869
 - Fixed: Shop Manager note not saving issue

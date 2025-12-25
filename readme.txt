@@ -184,6 +184,7 @@ Thank you for using and supporting this free plugin! If you have any questions o
 - Improvement: Updated mPDF Library to v8.2.7
 - Improvement: Allowed HTML Tags in Address Display method field
 - Improvement: Invoice Templates Content & Display styles
+- Improvement: Added Built-in mPDF fonts for better PDF Styling
 - Fixed: Minor Bug Fixes
 - Fixed: Security Issue CVE-2025-54869
 - Fixed: Shop Manager note not saving issue
@@ -213,6 +214,7 @@ For full changelog please view [Github Repo.](https://github.com/peprodev/ultima
 - Improvement: Updated mPDF Library to v8.2.7
 - Improvement: Allowed HTML Tags in Address Display method field
 - Improvement: Invoice Templates Content & Display styles
+- Improvement: Added Built-in mPDF fonts for better PDF Styling
 - Fixed: Minor Bug Fixes
 - Fixed: Security Issue CVE-2025-54869
 - Fixed: Shop Manager note not saving issue
