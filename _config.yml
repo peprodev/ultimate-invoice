@@ -1,25 +1,2 @@
-title: PeproDev Ultimate Invoice
-description: The most complete invoice plugin you will ever need. Easily create HTML/PDF invoices for your WC orders, in a beautiful style and e-mail it to your customers. 
-remote_theme: pages-themes/modernist@v0.2.0
+theme: jekyll-theme-cayman
 show_downloads: true
-
-# Include the README.md file as the homepage
-defaults:
-  - scope:
-      path: "" # all files in the root
-      type: "pages"
-    values:
-      permalink: /:basename/
-
-# Exclude index.html so README.md takes priority
-exclude:
-  - index.html
-
-# Build settings
-plugins:
-  - jekyll-redirect-from
-  - jekyll-remote-theme
-
-# Redirect index.html to README.md if someone directly accesses it
-redirect_from:
-  - /index.html
