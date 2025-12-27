@@ -35,7 +35,7 @@
 	border-collapse: collapse;
 }
 .content-table tr{
-	page-break-after: avoid;
+	page-break-inside: avoid;
 }
 
 .show_product_base_price,

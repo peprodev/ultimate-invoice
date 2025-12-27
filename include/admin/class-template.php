@@ -842,6 +842,12 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
       $pdf_size = empty($pdf_size) ? $default : $pdf_size;
       return apply_filters("puiw_get_pdf_size", $pdf_size, $default);
     }
+    public function get_pdf_size_slip($default="A4")
+    {
+      $pdf_size = get_option("puiw_pdf_size_slip",$default);
+      $pdf_size = empty($pdf_size) ? $default : $pdf_size;
+      return apply_filters("puiw_pdf_size_slip", $pdf_size, $default);
+    }
     /**
      * Get Pdf orientation
      *
@@ -1135,6 +1141,36 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
       $invoice_prefix = get_option("puiw_pdf_font",$default);
       $invoice_prefix = empty($invoice_prefix) ? $default : $invoice_prefix;
       return apply_filters("puiw_get_pdf_font", $invoice_prefix, $default);
+    }
+    public function get_margin_right($default=0){
+      $margin_right = get_option("puiw_pdf_margin_right",$default);
+      $margin_right = empty($margin_right) ? $default : floatval($margin_right);
+      return apply_filters("puiw_get_pdf_margin_right", $margin_right, $default);
+    }
+    public function get_margin_left($default=0){
+      $margin_left = get_option("puiw_pdf_margin_left",$default);
+      $margin_left = empty($margin_left) ? $default : floatval($margin_left);
+      return apply_filters("puiw_get_pdf_margin_left", $margin_left, $default);
+    }
+    public function get_margin_top($default=0){
+      $margin_top = get_option("puiw_pdf_margin_top",$default);
+      $margin_top = empty($margin_top) ? $default : floatval($margin_top);
+      return apply_filters("puiw_get_pdf_margin_top", $margin_top, $default);
+    }
+    public function get_margin_bottom($default=0){
+      $margin_bottom = get_option("puiw_pdf_margin_bottom",$default);
+      $margin_bottom = empty($margin_bottom) ? $default : floatval($margin_bottom);
+      return apply_filters("puiw_get_pdf_margin_bottom", $margin_bottom, $default);
+    }
+    public function get_margin_header($default=0){
+      $margin_header = get_option("puiw_pdf_margin_header",$default);
+      $margin_header = empty($margin_header) ? $default : floatval($margin_header);
+      return apply_filters("puiw_get_pdf_margin_header", $margin_header, $default);
+    }
+    public function get_margin_footer($default=0){
+      $margin_footer = get_option("puiw_pdf_margin_footer",$default);
+      $margin_footer = empty($margin_footer) ? $default : floatval($margin_footer);
+      return apply_filters("puiw_get_pdf_margin_footer", $margin_footer, $default);
     }
     /**
      * get invoice suffix
@@ -1760,6 +1796,12 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
       $show_order_note = get_option("puiw_show_order_note", $default);
       $show_order_note = empty($show_order_note) ? $default : $show_order_note;
       return apply_filters("puiw_get_show_order_note", $show_order_note, $default);
+    }
+    public function get_show_order_note_slip($default="note_provided_by_customer")
+    {
+      $show_order_note_slip = get_option("puiw_show_order_note_slip", $default);
+      $show_order_note_slip = empty($show_order_note_slip) ? $default : $show_order_note_slip;
+      return apply_filters("puiw_get_show_order_note_slip", $show_order_note_slip, $default);
     }
     /**
      * Get order note

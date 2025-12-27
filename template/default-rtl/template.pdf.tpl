@@ -147,13 +147,17 @@
         </tr>
       </div>
       <tr class="show_custom_footer" style="{{{show_custom_footer_hc}}}"><div style="{{{show_custom_footer_dn}}}">
-        <td class="show_custom_footer" style="vertical-align: middle; {{{show_custom_footer_dn}}}" colspan="{{{invoice_final_row_colspan}}}">{{{invoices_footer}}}</td></div>
+        <td class="show_custom_footer" style="vertical-align: middle; {{{show_custom_footer_dn}}}" colspan="{{{invoice_final_row_colspan}}}">
+          {{{invoices_footer}}}
+        </td></div>
+      </tr>
+      <tr class="show_invoice_notes" style="{{{show_invoice_notes_hc}}}"><div style="{{{show_invoice_notes_dn}}}">
+        <td class="show_invoice_notes" style="vertical-align: middle; {{{show_invoice_notes_dn}}}" colspan="{{{invoice_final_row_colspan}}}">
+          <table noborder="1">
+            <tr>{{{invoice_notes}}}</tr>
+          </table>
+        </td></div>
       </tr>
     </tbody>
-  </table>
-  <table id="show_order_notes" style="{{{show_order_notes_hc}}}">
-    <tr class="show_order_notes bg4" style="{{{show_order_notes_hc}}}">
-      {{{invoice_notes}}}
-    </tr>
   </table>
 </div>

@@ -11,7 +11,7 @@ Advanced WooCommerce invoice plugin: create customizable HTML/PDF invoices, atta
 
 Thank you for using and supporting this free plugin! If you have any questions or need assistance, please ask on the WordPress support forum. We're here to help!
 
-### **Update to v2.2.2 to get the new Thermal Invoice feature and many more improvements!**
+### **Update to v2.2.3 to get the new Thermal Invoice feature and many more improvements!**
 
 -----------------------
 
@@ -101,6 +101,13 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 ### ***Changelog***
 
+#### Version 2.2.3 | 2025-12-27 | 1404-10-06
+- Added: Option to Print Order Notes on Shipping Slips (RTL-Template Only)
+- Added: Option to Set Different PDF Page-size for Invoices and Slips
+- Added: Option to Set PDF Margins (Top, Right, Bottom, Left, Header, Footer)
+- Fixed: Breaking Order Items table into multiple pages
+- Fixed: Icons loaded incorrectly on Admin Orders Screen
+- Fixed: Not showing order notes on PDF Invoices
 
 #### Version 2.2.2 | 2025-12-25 | 1404-10-04
 - Added: New Feature to Support Thermal Printer Labels (80mm / پرینتر حرارتی / فیش پرینتر)

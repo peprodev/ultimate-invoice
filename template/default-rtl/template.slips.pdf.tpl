@@ -8,6 +8,7 @@
           <p><strong>{{{store_name}}}</strong></p>
           <p>آدرس: {{{store_address}}}</p>
           <p>کدپستی: {{{store_postcode}}} | تلفن: {{{store_phone}}}</p>
+          <p>{{{invoice_note_shopmngr_slip}}}</p>
         </div>
       </div>
       <div class="strippedbg receive">
@@ -16,6 +17,7 @@
           <p><strong>{{{customer_fullname}}}</strong></p>
           <p>آدرس: {{{customer_address}}}</p>
           <p>کدپستی: {{{customer_postcode}}} | تلفن: {{{customer_phone}}}</p>
+          <p>{{{invoice_note_customer_slip}}}</p>
         </div>
       </div>
 
@@ -25,7 +27,6 @@
           <p>تاریخ و ساعت سفارش: {{{order_date_created}}}<span class="show_shipping_date"> | تاریخ و ساعت تحویل: {{{order_date_shipped}}}</span> | روش حمل و نقل: {{{order_shipping_method}}}</p>
         </div>
       </div>
-
     </div>
   </div>
 </body>
