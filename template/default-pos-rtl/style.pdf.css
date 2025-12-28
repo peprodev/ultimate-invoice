@@ -71,7 +71,11 @@ table.table-full{
 	border-collapse: collapse;
 }
 
-table.table-full td, 
+table.table-full tr{
+	page-break-inside: auto;
+}
+
+table.table-full td,
 table.table-full th{
 	padding: 4px;
 	font-size: 10px;
@@ -91,7 +95,7 @@ table.table-full-2n{
 	border-collapse: collapse;
 }
 
-table.table-full-2n td, 
+table.table-full-2n td,
 table.table-full-2n th{
 	padding: 4px;
 	font-size: 10px;

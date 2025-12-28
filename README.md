@@ -101,6 +101,11 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 ### ***Changelog***
 
+#### v2.2.4 | 2025-12-28 | 1404-10-07
+- Fixed: Thermal Invoice height
+- Removed: Extra mPDF fonts (not used widely)
+- Improved: Persian translations
+
 #### Version 2.2.3 | 2025-12-27 | 1404-10-06
 - Added: Option to Print Order Notes on Shipping Slips (RTL-Template Only)
 - Added: Option to Set Different PDF Page-size for Invoices and Slips

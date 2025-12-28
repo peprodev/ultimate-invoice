@@ -4,8 +4,8 @@ Donate link: https://pepro.dev/donate
 Tags: woocommerce invoice, pdf invoice, persian, WooCommerce
 Requires at least: 5.0
 Tested up to: 6.9
-Version: 2.2.3
-Stable tag: 2.2.3
+Version: 2.2.4
+Stable tag: 2.2.4
 Requires PHP: 7.4
 WC requires at least: 5.0
 WC tested up to: 10.4
@@ -165,19 +165,29 @@ You can help us improve our works by committing your changes to our Github repos
 
 
 == Upgrade Notice ==
+
+**Merry Christmas & Happy New Year 2026! 🎄🎉**
+
 Upgrade to enjoy the latest features and security improvements.
-- v2.2.3 | 2025-12-27 | 1404-10-06
-- *Merry Christmas & Happy New Year 2026! 🎄🎉*
-- Thank you for using and supporting this free plugin! If you have any questions or need assistance, please ask on the WordPress support forum. We're here to help!
-- This update adds full thermal printer support, improves WooCommerce HPOS compatibility, and includes important PDF and performance improvements. Recommended for all users.
+
+Thank you for using and supporting this free plugin! If you have any questions or need assistance, please ask on the WordPress support forum. We're here to help!
+
+This update adds full thermal printer support, improves WooCommerce HPOS compatibility, and includes important PDF and performance improvements. Recommended for all users.
+
 For full changelog please view [Github Repo.](https://github.com/peprodev/ultimate-invoice)
 
 == Changelog ==
 
-- *Merry Christmas & Happy New Year 2026! 🎄🎉*
-- Thank you for using and supporting this free plugin! If you have any questions or need assistance, please ask on the WordPress support forum. We're here to help!
-- This update adds full thermal printer support, improves WooCommerce HPOS compatibility, and includes important PDF and performance improvements. Recommended for all users.
+**Merry Christmas & Happy New Year 2026! 🎄🎉**
+
+Thank you for using and supporting this free plugin! If you have any questions or need assistance, please ask on the WordPress support forum. We're here to help!
+
 For full changelog please view [Github Repo.](https://github.com/peprodev/ultimate-invoice)
+
+= v2.2.4 | 2025-12-28 | 1404-10-07 =
+- Fixed: Thermal Invoice height
+- Removed: Extra mPDF fonts (not used widely)
+- Improved: Persian translations
 
 = v2.2.3 | 2025-12-27 | 1404-10-06 =
 - Added: Option to Print Order Notes on Shipping Slips (RTL-Template Only)

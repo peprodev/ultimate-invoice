@@ -9,8 +9,8 @@ Developer: amirhp.com
 Author URI: https://pepro.dev/
 Developer URI: https://amirhp.com
 Plugin URI: https://peprodev.com/pepro-woocommerce-ultimate-invoice/
-Version: 2.2.3
-Stable tag: 2.2.3
+Version: 2.2.4
+Stable tag: 2.2.4
 Tested up to: 6.9
 WC tested up to: 10.4
 Requires at least: 5.0
@@ -22,7 +22,7 @@ Copyright: (c) 2025 Pepro Dev. Group, All rights reserved.
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * @Last modified by: amirhp-com <its@amirhp.com>
- * @Last modified time: 2025/12/27 21:21:52
+ * @Last modified time: 2025/12/28 14:02:58
  */
 
 namespace peproulitmateinvoice;
@@ -60,7 +60,7 @@ if (!class_exists("PeproUltimateInvoice")) {
    */
   class PeproUltimateInvoice {
     public $td      = "pepro-ultimate-invoice";
-    public $version = "2.2.2";
+    public $version = "2.2.4";
     public $title   = "Ultimate Invoice";
     public $db_slug = "pepro-ultimate-invoice";
     public $plugin_dir;
@@ -797,7 +797,7 @@ if (!class_exists("PeproUltimateInvoice")) {
       ob_end_clean();
       return $html;
     }
-    public function printinvoice_create_html_item_row($optm, $item_id, $item, $product_id, $order) {
+    public function printinvoice_create_html_item_row($args, $item_id, $item, $product_id, $order) {
       // Retrieve saved price or use current price
       $saved_price = (float) $item->get_meta('_saved_price', true);
       $current_price = (float) $item->get_meta('_line_regular_price', true);
@@ -808,9 +808,10 @@ if (!class_exists("PeproUltimateInvoice")) {
       // Calculate net total
       $net_total = $price_to_use * $quantity;
       // Save net total
-      $optm['base_price'] = wc_price($net_total);
-      $optm['discount'] = wc_price($net_total - $item->get_total());
-      return $optm;
+      $args['base_price'] = wc_price($net_total);
+      $args['discount'] = wc_price($net_total - $item->get_total());
+      $args['sku'] = !empty($args["sku"]) ? "({$args["sku"]})" : "";
+      return $args;
     }
     public function setup_thermal_invoice(){
       add_filter("puiw_get_default_dynamic_params", array($this, "modify_storage_invoice_params"), 999, 2);

@@ -3,7 +3,7 @@
  * @Author: Amirhossein Hosseinpour <https://amirhp.com>
  * @Date Created: 2022/10/15 13:44:52
  * @Last modified by: amirhp-com <its@amirhp.com>
- * @Last modified time: 2025/12/27 20:17:58
+ * @Last modified time: 2025/12/28 14:00:17
  */
 
 namespace peproulitmateinvoice;
@@ -1036,12 +1036,12 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           "fontdata"               => $_fontData,
           "default_font"           => $this->fn->get_pdf_font(),
           "format"                 => $get_pdf_size, // A4-L
-          "margin_right"           => (float) $template_pdf_setting["pdf_margin_right"] + (float) $this->fn->get_margin_right(),
-          "margin_left"            => (float) $template_pdf_setting["pdf_margin_left"] + (float) $this->fn->get_margin_left(),
-          "margin_top"             => (float) $template_pdf_setting["pdf_margin_top"] + (float) $this->fn->get_margin_top(),
-          "margin_bottom"          => (float) $template_pdf_setting["pdf_margin_bottom"] + (float) $this->fn->get_margin_bottom(),
-          "margin_header"          => (float) $template_pdf_setting["pdf_margin_header"] + (float) $this->fn->get_margin_header(),
-          "margin_footer"          => (float) $template_pdf_setting["pdf_margin_footer"] + (float) $this->fn->get_margin_footer(),
+          "margin_right"           => (float) $template_pdf_setting["pdf_margin_right"] + (!$fit_height ? (float) $this->fn->get_margin_right() : 0),
+          "margin_left"            => (float) $template_pdf_setting["pdf_margin_left"]  + (!$fit_height ? (float) $this->fn->get_margin_left() : 0),
+          "margin_top"             => (float) $template_pdf_setting["pdf_margin_top"]   + (!$fit_height ? (float) $this->fn->get_margin_top() : 0),
+          "margin_bottom"          => (float) $template_pdf_setting["pdf_margin_bottom"]+ (!$fit_height ? (float) $this->fn->get_margin_bottom() : 0),
+          "margin_header"          => (float) $template_pdf_setting["pdf_margin_header"]+ (!$fit_height ? (float) $this->fn->get_margin_header() : 0),
+          "margin_footer"          => (float) $template_pdf_setting["pdf_margin_footer"]+ (!$fit_height ? (float) $this->fn->get_margin_footer() : 0),
           "debug"                  => false,
           "allow_output_buffering" => true,
           "showImageErrors"        => false,
