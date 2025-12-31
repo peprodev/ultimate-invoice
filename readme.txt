@@ -4,8 +4,8 @@ Donate link: https://pepro.dev/donate
 Tags: woocommerce invoice, pdf invoice, persian, WooCommerce
 Requires at least: 5.0
 Tested up to: 6.9
-Version: 2.2.4
-Stable tag: 2.2.4
+Version: 2.2.5
+Stable tag: 2.2.5
 Requires PHP: 7.4
 WC requires at least: 5.0
 WC tested up to: 10.4
@@ -183,6 +183,10 @@ For full changelog please view [Github Repo.](https://github.com/peprodev/ultima
 Thank you for using and supporting this free plugin! If you have any questions or need assistance, please ask on the WordPress support forum. We're here to help!
 
 For full changelog please view [Github Repo.](https://github.com/peprodev/ultimate-invoice)
+
+= v2.2.5 | 2025-12-31 | 1404-10-10 =
+- Fixed: Error preventing checkout process
+- Fixed: Missing fonts added to the plugin
 
 = v2.2.4 | 2025-12-28 | 1404-10-07 =
 - Fixed: Thermal Invoice height

@@ -101,6 +101,10 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 ### ***Changelog***
 
+#### v2.2.5 | 2025-12-31 | 1404-10-10 =
+- Fixed: Error preventing checkout process
+- Fixed: Missing fonts added to the plugin
+
 #### v2.2.4 | 2025-12-28 | 1404-10-07
 - Fixed: Thermal Invoice height
 - Removed: Extra mPDF fonts (not used widely)
