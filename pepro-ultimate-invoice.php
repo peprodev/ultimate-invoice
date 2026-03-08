@@ -9,8 +9,8 @@ Developer: amirhp.com
 Author URI: https://pepro.dev/
 Developer URI: https://amirhp.com
 Plugin URI: https://peprodev.com/pepro-woocommerce-ultimate-invoice/
-Version: 2.2.5
-Stable tag: 2.2.5
+Version: 2.2.6
+Stable tag: 2.2.6
 Tested up to: 6.9
 WC tested up to: 10.4
 Requires at least: 5.0
@@ -22,7 +22,7 @@ Copyright: (c) 2025 Pepro Dev. Group, All rights reserved.
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * @Last modified by: amirhp-com <its@amirhp.com>
- * @Last modified time: 2025/12/31 15:43:06
+ * @Last modified time: 2026/03/08 23:12:03
  */
 
 namespace peproulitmateinvoice;
@@ -60,7 +60,7 @@ if (!class_exists("PeproUltimateInvoice")) {
    */
   class PeproUltimateInvoice {
     public $td      = "pepro-ultimate-invoice";
-    public $version = "2.2.5";
+    public $version = "2.2.6";
     public $title   = "Ultimate Invoice";
     public $db_slug = "pepro-ultimate-invoice";
     public $plugin_dir;
@@ -493,7 +493,8 @@ if (!class_exists("PeproUltimateInvoice")) {
           $date_time = date_i18n("Y_m_d_H_i_s", $date_now);
           $name_dir = PEPROULTIMATEINVOICE_DIR . "/zip_temp";
           if (!file_exists($name_dir)) @mkdir($name_dir, 0777, true);
-          $name_dot_ext = "InvoicesArchive-$date_time.zip";
+          $random = wp_generate_password(8, false, false);
+          $name_dot_ext = "InvoicesArchive-$date_time-$random.zip";
           $zip_file = "{$name_dir}/{$name_dot_ext}";
           file_exists($zip_file) and unlink($zip_file);
           $zip = new \ZipArchive;
@@ -522,6 +523,7 @@ if (!class_exists("PeproUltimateInvoice")) {
           header('Content-type: application/force-download');
           header("Content-Disposition: attachment; filename={$name_dot_ext}");
           readfile($zip_file);
+          unlink($zip_file);
           exit;
         }
         #endregion
@@ -550,7 +552,8 @@ if (!class_exists("PeproUltimateInvoice")) {
           $date_time = date_i18n("Y_m_d_H_i_s", $date_now);
           $name_dir = PEPROULTIMATEINVOICE_DIR . "/zip_temp";
           if (!file_exists($name_dir)) @mkdir($name_dir, 0777, true);
-          $name_dot_ext = "InvoicesPOSArchive-$date_time.zip";
+          $random = wp_generate_password(8, false, false);
+          $name_dot_ext = "InvoicesPOSArchive-$date_time-$random.zip";
           $zip_file = "{$name_dir}/{$name_dot_ext}";
           file_exists($zip_file) and unlink($zip_file);
           $zip = new \ZipArchive;
@@ -579,6 +582,7 @@ if (!class_exists("PeproUltimateInvoice")) {
           header('Content-type: application/force-download');
           header("Content-Disposition: attachment; filename={$name_dot_ext}");
           readfile($zip_file);
+          unlink($zip_file);
           exit;
         }
         #endregion
@@ -686,26 +690,25 @@ if (!class_exists("PeproUltimateInvoice")) {
       add_filter("pwoosms_order_sms_body_after_replace", array($this, "sms_body_after_replace"), -1, 5);
 
       if ("yes" == $this->tpl->get_allow_preorder_invoice()) {
-        add_action("woocommerce_proceed_to_checkout",                 array($this, "woocommerce_after_cart_contents"), 1000);
+        add_action("woocommerce_proceed_to_checkout", array($this, "woocommerce_after_cart_contents"), 1000);
       }
       if ("yes" == $this->tpl->get_allow_users_use_invoices()) {
-        add_filter("woocommerce_my_account_my_orders_actions",        array($this, 'add_view_invoice_button_orderpage'), 10, 2);
+        add_filter("woocommerce_my_account_my_orders_actions", array($this, 'add_view_invoice_button_orderpage'), 10, 2);
       }
       if ("yes" == $this->tpl->get_allow_quick_shop()) {
-        add_shortcode("puiw_quick_shop",                              array($this, 'integrate_with_shortcode'));
+        add_shortcode("puiw_quick_shop", array($this, 'integrate_with_shortcode'));
       }
 
       add_action('woocommerce_admin_order_data_after_shipping_address', array($this, "after_shipping_shopmngr_provided_note"), 10, 1);
-
-      add_action("woocommerce_order_details_after_order_table_items",   array($this, "woocommerce_order_details_after_order_table_items"));
-      add_action('woocommerce_checkout_update_order_meta',              array($this, "woocommerce_checkout_update_order_meta"));
-      add_action('woocommerce_checkout_update_user_meta',               array($this, "woocommerce_checkout_update_user_meta"), 10, 2);
-      add_filter('woocommerce_checkout_fields',                         array($this, "checkout_fields_add_uin"));
-      add_action("woocommerce_order_details_before_order_table",        array($this, "woocommerce_order_details_before_order_table"), -1000);
-      add_filter("wc_order_statuses",                                   array($this, "add_wc_order_statuses"));
-      add_filter("woocommerce_admin_billing_fields",                    array($this, "woocommerce_admin_billing_fields"));
-      add_filter("woocommerce_admin_shipping_fields",                   array($this, "woocommerce_admin_shipping_fields"));
-      add_action("woocommerce_checkout_create_order_line_item",         array($this, "prices_as_order_line_item_meta"), 20, 4);
+      add_action("woocommerce_order_details_after_order_table_items", array($this, "woocommerce_order_details_after_order_table_items"));
+      add_action('woocommerce_checkout_update_order_meta', array($this, "woocommerce_checkout_update_order_meta"));
+      add_action('woocommerce_checkout_update_user_meta', array($this, "woocommerce_checkout_update_user_meta"), 10, 2);
+      add_filter('woocommerce_checkout_fields', array($this, "checkout_fields_add_uin"));
+      add_action("woocommerce_order_details_before_order_table", array($this, "woocommerce_order_details_before_order_table"), -1000);
+      add_filter("wc_order_statuses", array($this, "add_wc_order_statuses"));
+      add_filter("woocommerce_admin_billing_fields", array($this, "woocommerce_admin_billing_fields"));
+      add_filter("woocommerce_admin_shipping_fields", array($this, "woocommerce_admin_shipping_fields"));
+      add_action("woocommerce_checkout_create_order_line_item", array($this, "prices_as_order_line_item_meta"), 20, 4);
 
 
       // remove previous generated pdf files

@@ -101,6 +101,9 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 ### ***Changelog***
 
+#### v2.2.6 | 2026-03-08 | 1404-12-17 =
+- Security Issue Fixed: Randomized invoice archive filenames and removed files after download
+
 #### v2.2.5 | 2025-12-31 | 1404-10-10 =
 - Fixed: Error preventing checkout process
 - Fixed: Missing fonts added to the plugin
