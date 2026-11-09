@@ -35,6 +35,7 @@ class ComposerStaticInit6f16b5c10e4a7c0815c223eaf3ba8785
         ),
         'M' => 
         array (
+            'Mpdf\\QrCode\\' => 12,
             'Mpdf\\PsrLogAwareTrait\\' => 22,
             'Mpdf\\PsrHttpMessageShim\\' => 24,
             'Mpdf\\' => 5,
@@ -77,6 +78,10 @@ class ComposerStaticInit6f16b5c10e4a7c0815c223eaf3ba8785
         'Picqer\\Barcode\\' => 
         array (
             0 => __DIR__ . '/..' . '/picqer/php-barcode-generator/src',
+        ),
+        'Mpdf\\QrCode\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/mpdf/qrcode/src',
         ),
         'Mpdf\\PsrLogAwareTrait\\' => 
         array (

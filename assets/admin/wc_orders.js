@@ -108,9 +108,9 @@
     var dd = String(today.getDate()).padStart(2, '0');
     var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
     var yyyy = today.getFullYear();
-      var $success_color = "rgba(21, 139, 2, 0.8)";
-      var $error_color   = "rgba(139, 2, 2, 0.8)";
-      var $info_color    = "rgba(2, 133, 139, 0.8)";
+      var $success_color = "#46b450";
+      var $error_color   = "#d63638";
+      var $info_color    = "#3858e9";
       if (!$("toast").length) {$(document.body).append($("<toast>!</toast>"));}
     var today = `${yyyy}-${mm}-${dd}`;
     if ($.trim(prevdata) == "") {
@@ -263,7 +263,7 @@
     $(document).on("click tap", ".clearmedia", function(e) {
       e.preventDefault();
       let me = $(this);
-      $(me.data("ref")).val("");
+      $(me.data("ref")).val("").trigger("change");
       me.parent().find("img, .clearmedia").remove();
     });
 
@@ -285,7 +285,7 @@
       }).open().on('select', function(e) {
         var uploaded_image = image.state().get('selection').first();
         var image_url = uploaded_image.toJSON().url;
-        $this.val(image_url);
+        $this.val(image_url).trigger("change");
         $this.parent().find("img, .clearmedia").remove();
         $this.parent().append($(`
           <img src="${image_url}" rel="wppopup" style="${imagePreviewInlineStyle}" />
@@ -394,12 +394,13 @@
       $("#_transaction_id").focus();
     });
 
+    // the tracking code saves on its own, without saving the whole order
     if ($(".form-field._shipping_puiw_invoice_track_id_field").length) {
-      if ($("body").hasClass("rtl")) {
-        $(".form-field._shipping_puiw_invoice_track_id_field").append(`<a class="button button-small btn-save-resid" style="position: absolute;bottom: 0;left: 0;"><span class="dashicons dashicons-cloud-saved" style="margin: 4px -4px !important;"></span></a>`)
-      }else{
-        $(".form-field._shipping_puiw_invoice_track_id_field").append(`<a class="button button-small btn-save-resid" style="position: absolute;bottom: 0;right: 0;"><span class="dashicons dashicons-cloud-saved" style="margin: 4px -4px !important;"></span></a>`)
-      }
+      $(".form-field._shipping_puiw_invoice_track_id_field").addClass("puiw-has-inline-save").append(
+        $('<button type="button" class="button btn-save-resid puiw-inline-save"></button>')
+          .attr({ title: _i18n.saveTrack || "", "aria-label": _i18n.saveTrack || "" })
+          .html((_i18n.iconSave || "") + '<span>' + (_i18n.saveTxt || "") + '</span>')
+      );
     }
 
     $(document).on("click tap", ".form-field._shipping_puiw_invoice_track_id_field .button.btn-save-resid", function(e){
@@ -421,7 +422,7 @@
         },
         success: function(e) {
           if (e.success === true) {
-            show_toast(e.data.msg, $success_color);
+            show_toast((_i18n.iconOk || "") + '<span>' + e.data.msg + '</span>', $success_color);
           } else {
             show_toast(e.data.msg, $error_color);
           }
@@ -519,6 +520,18 @@
 
     var DEFAULT_SWATACHES = `[{"n":"Smoke","p":"#9E9E9E","s":"#A6A6A6","t":"#B3B3B3"},{"n":"Mango","p":"#FFCC80","s":"#FCD59A","t":"#FFDFB0"},{"n":"Gold","p":"#FAEE84","s":"#FFF59D","t":"#FFF8B5"},{"n":"Grass","p":"#A5D6A7","s":"#AFE0B1","t":"#C3EBC5"},{"n":"Sea","p":"#90CAF9","s":"#A6D5FC","t":"#B5DEFF"},{"n":"Peach","p":"#EF9A9A","s":"#F5ABAB","t":"#F0BBBB"}]`;
 
+    // only entries with a name and three colours can be drawn; anything else
+    // (an older format, a hand edited value) falls back to the built in set
+    function puiw_parse_swatches(raw) {
+      var isHex = function (c) { return /^#[0-9a-f]{3,8}$/i.test(String(c || "")); };
+      var list = [];
+      try { list = $.parseJSON(raw); } catch (err) { list = []; }
+      list = $.grep($.isArray(list) ? list : [], function (v) {
+        return v && v.n && isHex(v.p) && isHex(v.s) && isHex(v.t);
+      });
+      return list.length ? list : $.parseJSON(DEFAULT_SWATACHES);
+    }
+
     if (_i18n.load_themes){
       themes = _i18n.load_themes;
       get_template = _i18n.get_template; ind=0;
@@ -532,16 +545,17 @@
           \n/* style for theme selector -- title: ${val.name}*/
           ul.select2-results__options li[id$='${val.path}']{
             background: white url('${val.icon}') no-repeat center left;
-            background-position-x: 4px;
-            background-size: 64px;
-            height: 64px;
-            line-height: 64px;
-            padding-inline-start: 74px;
-            font-style: italic;
-            font-weight: bold;
+            background-position-x: 6px;
+            background-size: 24px 32px;
+            min-height: 40px;
+            line-height: 40px;
+            padding-top: 0;
+            padding-bottom: 0;
+            padding-inline-start: 40px;
+            font-size: 12px;
           }
           [dir=rtl] ul.select2-results__options li[id$='${val.path}']{
-            background-position-x: calc(100% - 4px);
+            background-position-x: calc(100% - 6px);
           }
           ul.select2-results__options li[id$='${val.path}'].select2-results__option--highlighted{
             background-color:#0073aa;
@@ -556,8 +570,7 @@
       var swatches = $(select).attr("swatches");
       if (!swatches){swatches = DEFAULT_SWATACHES;}
       $(select).empty();
-      try {var dJSON = $.parseJSON(swatches);}
-      catch (err) {var dJSON = DEFAULT_SWATACHES;}
+      var dJSON = puiw_parse_swatches(swatches);
       styles = '';
       $.each(dJSON, function(index, val) {
         var $elidraw = Math.floor(Math.random() * Math.random()) + Date.now() + index++;
@@ -606,7 +619,7 @@
       $(val).trigger("change");
     });
 
-    $(".wc-color-picker").wpColorPicker();
+    if (window.PuiwAlwan) { window.PuiwAlwan.scan(document); }
 
     $("#puiwc_advanced_opts").prop("checked",false).trigger("change");
 
@@ -832,6 +845,10 @@
                     lparam: id,
                     eparam: _advanced_get_opts(),
                   },
+                  error: function() {
+                    jc.hideLoading();
+                    $.alert({ title: errorTxt, content: errorTxt, type: 'red' });
+                  },
                   success: function(result) {
                     jc.close();
                     if (result.success === true){
@@ -858,7 +875,7 @@
           closeIcon: true,
           animation: 'scale',
           onOpenBefore: function () {
-            $(".jconfirm-closeIcon, .jconfirm-buttons").hide();
+            jc.$el.find(".puiw-dialog-foot").hide();
             jc.showLoading(true);
             $.ajax({
               type: 'POST',
@@ -869,15 +886,20 @@
                 nonce: _i18n.nonce,
                 wparam: "retrive-admins-emails",
               },
+              error: function() {
+                jc.close();
+                $.alert({ title: errorTxt, content: errorTxt, type: 'red' });
+              },
               success: function(result) {
                 jc.close();
                 if (result.success === true){
-                    CURRENT_ADMINS = '';
+                    var links = [];
                     CURRENT_ADMINS_EMAILS = [];
                     $.each(result.data.emails,function(i,x){
-                      CURRENT_ADMINS += `<a target='_blank' rel='puiw_tooltip' title='${x}<br>${i}' href='users.php?s=${i}'>${i}</a>, `;
+                      links.push(`<a target='_blank' rel='puiw_tooltip' title='${x}<br>${i}' href='users.php?s=${i}'>${i}</a>`);
                       CURRENT_ADMINS_EMAILS.push(i);
                     });
+                    CURRENT_ADMINS = links.join(", ");
                     var jcv = $.confirm({
                         title: _i18n.emailShopMngrTitle,
                         content: _i18n.emailShopMngrAsk.replace("%s", `<div style="direction: ltr;">${CURRENT_ADMINS}</div>` + $checkboxforpdf),
@@ -886,7 +908,7 @@
                         closeIcon: true,
                         animation: 'scale',
                         onContentReady: function(){
-                          $("[rel=puiw_tooltip]").tipTip();
+                          if ($.fn.tipTip) { $("[rel=puiw_tooltip]").tipTip(); }
                         },
                         buttons: {
                           no: { text: txtNop, btnClass: 'btn-red', keys: ['n','esc'], action: function(){} },
@@ -906,6 +928,10 @@
                                   dparam: $('input.pdfattachment').prop('checked') ? "PDF" : "",
                                   lparam: id,
                                   eparam: _advanced_get_opts(),
+                                },
+                                error: function() {
+                                  jcv.hideLoading();
+                                  $.alert({ title: errorTxt, content: errorTxt, type: 'red' });
                                 },
                                 success: function(result) {
                                   jcv.close();
@@ -945,8 +971,11 @@
           animation: 'scale',
           onContentReady: function () {
             var jcw = this;
-            this.$content.find('.address').multiple_emails({position: 'bottom',});
-            this.$content.find('.multiple_emails-container').prepend(`<button class="button button-primary" style="float: inline-start; margin-top: 5px;">+</button>`);
+            this.$content.find('.address').multiple_emails({position: 'bottom', placeholder: 'name@example.com'});
+            // a tap target for adding what is typed, next to the field rather than floating above it
+            var $field = this.$content.find('.multiple_emails-input');
+            $(`<button type="button" class="button puiw-email-add">+</button>`).appendTo(this.$content.find('.multiple_emails-container'))
+              .on('click', function (e) { e.preventDefault(); e.stopPropagation(); $field.trigger('blur').trigger('focus'); });
 
             this.$content.find('form').on('submit', function (e) {
                 e.preventDefault();
@@ -978,6 +1007,10 @@
                     dparam: $('input.pdfattachment').prop('checked') ? "PDF" : "",
                     lparam: id,
                     eparam: _advanced_get_opts(),
+                  },
+                  error: function() {
+                    jc.hideLoading();
+                    $.alert({ title: errorTxt, content: errorTxt, type: 'red' });
                   },
                   success: function(result) {
                     jc.close();

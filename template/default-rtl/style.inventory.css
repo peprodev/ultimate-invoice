@@ -33,14 +33,14 @@ html {
 	font-family: iranyekan;
 	font-style: normal;
 	font-weight: bold;
-	src: url("{{{CURENT_DIR_URL}}}/fonts/woff2/iranyekanwebbold.woff2") format('woff2'), url("{{{CURENT_DIR_URL}}}/fonts/woff/iranyekanwebbold.woff") format('woff'));
+	src: url("{{{CURENT_DIR_URL}}}/fonts/woff2/iranyekanwebbold.woff2") format('woff2'), url("{{{CURENT_DIR_URL}}}/fonts/woff/iranyekanwebbold.woff") format('woff');
 }
 
 @font-face {
 	font-family: iranyekan;
 	font-style: normal;
 	font-weight: normal;
-	src: url("{{{CURENT_DIR_URL}}}/fonts/woff2/iranyekanwebregular.woff2") format('woff2'), url("{{{CURENT_DIR_URL}}}/fonts/woff/iranyekanwebregular.woff") format('woff'));
+	src: url("{{{CURENT_DIR_URL}}}/fonts/woff2/iranyekanwebregular.woff2") format('woff2'), url("{{{CURENT_DIR_URL}}}/fonts/woff/iranyekanwebregular.woff") format('woff');
 }
 
 svg.barcode {

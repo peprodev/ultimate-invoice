@@ -208,3 +208,13 @@ img.barcode {
 
 .show_product_title_description, .show_product_title_description * { text-align: left !important; }
 tfoot td:last-of-type * { text-align: left; vertical-align: top; }
+
+.original_price{display:block;opacity:.7;font-size:.85em;}
+.original_price del{text-decoration:line-through;}
+.puiw-item-extra{display:block;font-size:.85em;opacity:.85;}
+
+.show_invoice_notes td, td.show_invoice_notes, .invoice_note_customer, .invoice_note_shopmngr{
+  word-break: normal;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}

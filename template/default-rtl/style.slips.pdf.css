@@ -78,3 +78,10 @@ h2 strong {
 .page.body .strippedbg.receive {
 	border: 1mm dashed #cf2004;
 }
+
+/* sender / recipient arrangement of the postal label */
+.slip-layout-stacked .ship_to{ margin-top: 4mm; }
+
+/* packing slip layout: mpdf has no flexbox, so stacking is done with width/display */
+.slip-layout-stacked .ship_from,
+.slip-layout-stacked .ship_to { width: 100%; display: block; float: none; }

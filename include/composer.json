@@ -2,7 +2,8 @@
     "require": {
         "voku/css-to-inline-styles": "^2.0",
         "mpdf/mpdf": "^8.0",
-        "picqer/php-barcode-generator": "^2.0"
+        "picqer/php-barcode-generator": "^2.0",
+        "mpdf/qrcode": "^1.2"
     },
     "config": {
         "platform": {

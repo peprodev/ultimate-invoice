@@ -13,6 +13,11 @@ defined("ABSPATH") or die("Pepro Ultimate Invoice :: Unauthorized Access!");
 if (!class_exists("PeproUltimateInvoice_Print")) {
   class PeproUltimateInvoice_Print {
     protected $td = "pepro-ultimate-invoice";
+    /** @var bool true while the POS receipt is being built */
+    protected $pos_mode = false;
+    protected $force_ltr = false;
+    protected $ltr_template = false;
+    protected $order_lang = array();
     protected $fn;
     protected $parent;
     protected $hide_bundles_parent;
@@ -28,12 +33,15 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
       global $PeproUltimateInvoice;
       $this->parent = $PeproUltimateInvoice;
       $this->fn = new PeproUltimateInvoice_Template;
+      add_filter("puiw_template_part_markup", array($this, "ltr_markup"), 30, 2);
 
       add_filter("puiw_get_default_dynamic_params", array($this, "puiw_get_default_dynamic_params"), 10, 2);
       // add compatibility with WPC Product Bundles for WooCommerce By WPClever
       $this->hide_bundles_parent = 0;
       $this->hide_bundles_child = 0;
 
+      // read on init: translated defaults must not run before the textdomain is loaded,
+      // and the filters below depend on the values so they are registered here too
       add_action("init", function(){
         $this->_woosb_show_bundles           = $this->fn->get_woosb_show_bundles();
         $this->_woosb_show_bundles_subtitle  = $this->fn->get_woosb_show_bundles_subtitle();
@@ -42,14 +50,14 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
         $this->_woosb_show_bundled_hierarchy = $this->fn->get_woosb_show_bundled_hierarchy();
         $this->_woosb_show_bundled_prefix    = $this->fn->get_woosb_bundled_subtitle_prefix(_x("Bundled in:", "wc-setting", "pepro-ultimate-invoice"));
         $this->_woosb_show_bundles_prefix    = $this->fn->get_woosb_bundles_subtitle_prefix(_x("Bundled products:", "wc-setting", "pepro-ultimate-invoice"));
+        if ($this->_woosb_show_bundles == "no") {
+          add_filter("puiw_order_items", array($this, "woosb_puiw_hide_bundles_parent"), 10, 2);
+        }
+        if ($this->_woosb_show_bundled_products == "no") {
+          add_filter("puiw_order_items", array($this, "woosb_puiw_hide_bundled_childs"), 10, 2);
+        }
       });
       add_filter("puiw_order_items", array($this, "puiw_sort_order_items"), 2, 2);
-      if ($this->_woosb_show_bundles == "no") {
-        add_filter("puiw_order_items", array($this, "woosb_puiw_hide_bundles_parent"), 10, 2);
-      }
-      if ($this->_woosb_show_bundled_products == "no") {
-        add_filter("puiw_order_items", array($this, "woosb_puiw_hide_bundled_childs"), 10, 2);
-      }
       add_action("woocommerce_before_order_itemmeta", array($this, "woosb_before_order_item_meta"), 10, 1);
       add_filter("puiw_invoice_item_extra_classes",   array($this, "puiw__item_extra_classes"), 10, 6);
       add_filter("puiw_get_custom_css_style",         array($this, "custom_css_per_invoice"), 10, 2);
@@ -59,8 +67,14 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
     public function puiw_get_default_dynamic_params($opts, $order) {
 
       if (isset($_GET["tp"]) && !empty($_GET["tp"])) {
-        $opts["template"] = sanitize_text_field(base64_decode(urldecode($_GET["tp"])));
-        $opts["preinvoice_template"] = sanitize_text_field(base64_decode(urldecode($_GET["tp"])));
+        // the value is a directory path, so it has to be matched against the
+        // registered templates: anything else let a visitor point the template
+        // loader at an arbitrary local path or remote url (CVE-2026-65516)
+        $requested = $this->validate_template_path(sanitize_text_field(base64_decode(urldecode(wp_unslash($_GET["tp"])))));
+        if ($requested) {
+          $opts["template"] = $requested;
+          $opts["preinvoice_template"] = $requested;
+        }
       }
 
       if (isset($_GET["pclr"]) && !empty($_GET["pclr"])) {
@@ -88,6 +102,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
      * @return void
      */
     public function get_default_dynamic_params($order_id, $order) {
+      $this->use_invoice_language($order);
       $opts = array(
         "order_date_created"                     => $order->get_date_created() ? $this->fn->get_date($order->get_date_created()) : "",
         "order_date_modified"                    => $order->get_date_modified() ? $this->fn->get_date($order->get_date_modified()) : "",
@@ -96,9 +111,9 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
         "order_date_paid"                        => $order->get_date_paid() ? $this->fn->get_date($order->get_date_paid()) : "",
         "order_status"                           => wc_get_order_status_name($order->get_status()),
         "order_total"                            => $order->get_formatted_order_total(),
-        "order_date_shipped"                     => !empty(get_post_meta($order_id, "_shipping_puiw_invoice_shipdate", true)) ? $this->fn->get_date(get_post_meta($order_id, "_shipping_puiw_invoice_shipdate", true), "Y/m/d", true) : "",
-        "order_date_shipped_raw"                 => get_post_meta($order_id, "_shipping_puiw_invoice_shipdate", true),
-        "order_date_shipped_raw_shamsi"          => get_post_meta($order_id, "_shipping_puiw_invoice_shipdatefa", true),
+        "order_date_shipped"                     => !empty($order->get_meta("_shipping_puiw_invoice_shipdate", true)) ? $this->fn->get_date($order->get_meta("_shipping_puiw_invoice_shipdate", true), "Y/m/d", true) : "",
+        "order_date_shipped_raw"                 => $order->get_meta("_shipping_puiw_invoice_shipdate", true),
+        "order_date_shipped_raw_shamsi"          => $order->get_meta("_shipping_puiw_invoice_shipdatefa", true),
         "store_name"                             => $this->fn->get_store_name(),
         "store_logo"                             => $this->fn->get_store_logo("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="),
         "store_website"                          => $this->fn->get_store_website(),
@@ -131,6 +146,10 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
         "custom_css_style"                       => $this->fn->get_custom_css_style(),
         "custom_pdf_css_style"                   => $this->fn->get_pdf_css_style(),
         "inventory_css_style"                    => $this->fn->get_inventory_css_style(),
+        // the slips, their PDF and the POS receipt each take a stylesheet of their own
+        "slips_css_style"                        => (string) apply_filters("puiw_get_slips_css_style", get_option("puiw_slips_css_style", ""), ""),
+        "slips_pdf_css_style"                    => (string) apply_filters("puiw_get_slips_pdf_css_style", get_option("puiw_slips_pdf_css_style", ""), ""),
+        "pos_css_style"                          => (string) apply_filters("puiw_get_pos_css_style", get_option("puiw_pos_css_style", ""), ""),
         "template"                               => $this->fn->get_template(),
         "theme_color"                            => $this->fn->get_theme_color(),
         "theme_color2"                           => $this->fn->get_theme_color2(),
@@ -168,6 +187,10 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
         "show_store_registration_number"         => $this->fn->get_show_store_registration_number(),
         "show_store_economical_number"           => $this->fn->get_show_store_economical_number(),
         "show_customer_address"                  => $this->fn->get_show_customer_address(),
+        "show_customer_order_count"              => $this->fn->get_show_customer_order_count(),
+        "show_slip_weight"                       => $this->fn->get_slip_show_weight(),
+        "show_slip_barcode"                      => $this->fn->get_slip_show_barcode(),
+        "slip_layout"                            => $this->fn->get_slip_layout(),
         "show_customer_phone"                    => $this->fn->get_show_customer_phone(),
         "show_customer_email"                    => $this->fn->get_show_customer_email(),
         "show_order_date"                        => $this->fn->get_show_order_date(),
@@ -234,9 +257,31 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
       $opts["customer_uin"]               = apply_filters("puiw_printinvoice_getcustomer_uin"             , $order->get_meta('puiw_billing_uin', true), $opts, $order);
       $opts["invoice_qrcode"]             = apply_filters("puiw_printinvoice_getinvoice_qrdata"           , add_query_arg("invoice", $order->get_id(), home_url()), $opts, $order);
       $opts["invoice_qrcode"]             = wp_strip_all_tags($opts["invoice_qrcode"], true);
+      // "no" hides the block, "qr" replaces the 1D barcode, "both" prints them side by side
+      $qr_mode                            = $this->fn->get_show_qr_code_id("no");
+      $opts["show_qr_code_id"]            = ("no" === $qr_mode || "" === $qr_mode) ? "no" : "yes";
+      $opts["show_invoice_barcode_only"]  = "qr" === $qr_mode ? "no" : "yes";
+      $opts["invoice_qrcode_pdf"]         = "no" === $opts["show_qr_code_id"] ? "" : sprintf('<barcode code="%s" type="QR" class="barcode" size="0.9" error="M" />', esc_attr($opts["invoice_qrcode"]));
+      // rendered server side so the html invoice does not depend on javascript
+      $opts["invoice_qrcode_img"]         = "no" === $opts["show_qr_code_id"] ? "" : $this->render_qrcode_img($opts["invoice_qrcode"]);
       $opts["customer_company"] = !empty($opts["customer_company"]) ? "( ".$opts["customer_company"]." )" : "";
-      $get_base_countries = WC()->countries->__get('countries');
-      $get_base_states = WC()->countries->get_states($opts["customer_country"]);
+      $get_base_countries = (array) WC()->countries->__get('countries');
+      // get_states() returns false for an unknown or empty country, and the country
+      // itself can be empty on manual orders, so both lookups have to be guarded
+      $get_base_states = $opts["customer_country"] ? WC()->countries->get_states($opts["customer_country"]) : array();
+      $get_base_states = is_array($get_base_states) ? $get_base_states : array();
+
+      // the postcode is part of the formatted address, printing the dedicated field
+      // as well is what made it show up twice on every invoice
+      $postcode_display = $this->fn->get_postcode_display("both");
+      $address_display_method = $this->fn->get_address_display_method();
+      if ("field" === $postcode_display) {
+        // the token is [po_box] and the shipped default wraps it in parentheses
+        $address_display_method = preg_replace('/\s*[\(\[]?\s*\[po_box\]\s*[\)\]]?/u', "", $address_display_method);
+        $address_display_method = preg_replace('/\s*[-،,]\s*$/u', "", trim($address_display_method));
+      }
+      $opts["show_customer_postcode"] = "address" === $postcode_display ? "no" : "yes";
+      $opts["customer_order_count"]   = $order->get_customer_id() ? (string) wc_get_customer_order_count($order->get_customer_id()) : "";
 
       $opts["customer_address"] = str_replace(
         apply_filters( "puiw_printinvoice_address_template",
@@ -263,8 +308,8 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
             $opts["customer_fname"],
             $opts["customer_lname"],
             $opts["customer_company"],
-            $get_base_countries[$opts["customer_country"]] ? $get_base_countries[$opts["customer_country"]] : $opts["customer_country"],
-            $get_base_states[$opts["customer_state"]] ? $get_base_states[$opts["customer_state"]] : $opts["customer_state"],
+            !empty($get_base_countries[$opts["customer_country"]]) ? $get_base_countries[$opts["customer_country"]] : $opts["customer_country"],
+            !empty($get_base_states[$opts["customer_state"]]) ? $get_base_states[$opts["customer_state"]] : $opts["customer_state"],
             $opts["customer_city"],
             $opts["customer_address_1"],
             $opts["customer_address_2"],
@@ -276,11 +321,20 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           $opts,
           $order
         ),
-        $this->fn->get_address_display_method()
+        $address_display_method
       );
       // $opts["customer_address"]        = ($use_billing == "billing") ? $order->get_formatted_billing_address() : $order->get_formatted_shipping_address();
       $opts["invoice_track_id"]           = $order->get_meta('puiw_invoice_track_id', true);
-      $opts["invoice_track_id_en"]        = $opts["invoice_track_id"] ? $opts["invoice_track_id"] : "0000000000000000";
+      if (empty($opts["invoice_track_id"])) {
+        // woocommerce writes the shipping-prefixed key, the metabox writes the plain one
+        $opts["invoice_track_id"]         = $order->get_meta('_shipping_puiw_invoice_track_id', true);
+      }
+      $opts["invoice_track_id_en"]        = $opts["invoice_track_id"];
+      // without a tracking serial there is nothing to show, printing a row of
+      // zeroes and a barcode for them only confuses the customer
+      if ("" === trim((string) $opts["invoice_track_id"])) {
+        $opts["show_shipping_ref_id"] = "no";
+      }
       $opts["invoice_final_price"]        = $order->get_formatted_order_total();
       $opts["invoice_final_prices"]       = $this->get_order_final_prices($order);
       $opts["invoice_final_prices_pdf"]   = $this->get_order_final_prices_pdf($order);
@@ -306,10 +360,224 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
       $opts["customer_postcode_barcode"] = empty($opts["customer_postcode"])    ? $defaultemptyimg : ('data:image/jpeg;base64,' . base64_encode($generator->getBarcode($opts["customer_postcode"], $generator::TYPE_CODE_128)));
       $opts["store_postcode_barcode"]    = empty($opts["store_postcode"])       ? $defaultemptyimg : ('data:image/jpeg;base64,' . base64_encode($generator->getBarcode($opts["store_postcode"], $generator::TYPE_CODE_128)));
 
-      return apply_filters("puiw_get_default_dynamic_params", $opts, $order);
+      $opts = apply_filters("puiw_get_default_dynamic_params", $opts, $order);
+      $opts["template"] = $this->language_template($opts["template"]);
+      $this->ltr_template = "ltr" === $this->template_direction($opts["template"]);
+      return $opts;
+    }
+    /**
+     * switch to the language this order's invoice prints in
+     *
+     * "auto" prints a left to right template in English when the order's language
+     * is written right to left, "en" always prints in English, "site" never switches
+     *
+     * @method use_invoice_language
+     * @param  \WC_Order $order
+     * @return string the language code
+     */
+    public function use_invoice_language($order) {
+      global $PeproUltimateInvoice;
+      $i18n = is_object($PeproUltimateInvoice) && isset($PeproUltimateInvoice->i18n) ? $PeproUltimateInvoice->i18n : null;
+      // detect() reads the current locale when the order carries no language, and once
+      // switched that is no longer the shop's, so the first answer for an order stands
+      $key = is_a($order, "WC_Order") ? $order->get_id() : 0;
+      if (!isset($this->order_lang[$key])) {
+        $this->order_lang[$key] = $i18n ? $i18n->detect($order) : "";
+      }
+      $lang   = $this->order_lang[$key];
+      $mode   = $this->fn->get_invoice_language();
+      $locale = "";
+      if ("en" === $mode) {
+        $locale = "en_US";
+      } elseif ("auto" === $mode) {
+        if ($this->is_rtl_language($lang) && "ltr" === $this->template_direction($this->order_template())) {
+          $locale = "en_US";
+        }
+      } elseif ("site" !== $mode) {
+        $locale = $mode;
+      }
+      $locale = (string) apply_filters("puiw_invoice_forced_locale", $locale, $order, $lang, $mode);
+      if ("" !== $locale) {
+        $lang = strtolower(substr($locale, 0, 2));
+      }
+      // English figures, dates and title whenever a right to left order prints in a left to right language
+      $this->force_ltr = "" !== $locale && !$this->is_rtl_language($lang);
+      $this->force_ltr = (bool) apply_filters("puiw_invoice_force_ltr", $this->force_ltr, $order, $lang, $mode);
+      if ($i18n) {
+        $i18n->activate($lang);
+      }
+      // Polylang or WPML may not list the language, in which case activate() could not switch
+      if ("" !== $locale && function_exists("switch_to_locale") && get_locale() !== $locale && determine_locale() !== $locale) {
+        switch_to_locale($locale);
+      }
+      $this->ltr_template = "ltr" === $this->template_direction($this->language_template($this->order_template()));
+      $hooked = has_filter("puiw_get_force_persian_numbers", array($this, "latin_digits"));
+      if ($this->force_ltr && !$hooked) {
+        add_filter("puiw_get_force_persian_numbers", array($this, "latin_digits"), 99);
+        add_filter("puiw_get_date_shamsi", array($this, "gregorian"), 99);
+        add_filter("puiw_get_invoice_title", array($this, "ltr_title"), 99);
+        add_filter("puiw_get_pdf_font", array($this, "ltr_font"), 99);
+      } elseif (!$this->force_ltr && $hooked) {
+        remove_filter("puiw_get_force_persian_numbers", array($this, "latin_digits"), 99);
+        remove_filter("puiw_get_date_shamsi", array($this, "gregorian"), 99);
+        remove_filter("puiw_get_invoice_title", array($this, "ltr_title"), 99);
+        remove_filter("puiw_get_pdf_font", array($this, "ltr_font"), 99);
+      }
+      return $lang;
+    }
+    public function latin_digits() {
+      return "latin";
+    }
+    public function gregorian() {
+      return "no";
+    }
+    /**
+     * the saved title is in the site's language; unless one was set for English
+     * under Translations, an English invoice gets the stock English title
+     *
+     * @method ltr_title
+     * @param  string $title
+     * @return string
+     */
+    public function ltr_title($title) {
+      return preg_match('/[\x{0590}-\x{08FF}]/u', (string) $title) ? _x("Invoice %s", "wc-setting", "pepro-ultimate-invoice") : $title;
+    }
+    /**
+     * the Persian-digit cut of a PDF font draws 0-9 as ۰-۹ whatever the text says
+     *
+     * @method ltr_font
+     * @param  string $font
+     * @return string
+     */
+    public function ltr_font($font) {
+      $map = array("iranyekanfa" => "iranyekanen", "iransansfa" => "iransans", "danafa" => "danaen");
+      return isset($map[$font]) ? $map[$font] : $font;
+    }
+    /**
+     * the direction the page is laid out in: the shop's switch when it forces one,
+     * otherwise the one the template declares
+     *
+     * @method page_direction
+     * @return string ltr|rtl
+     */
+    public function page_direction() {
+      $forced = $this->fn->get_template_direction();
+      if ("auto" !== $forced) {
+        return $forced;
+      }
+      // a template says which way it reads; the site language has no say in that
+      return $this->ltr_template ? "ltr" : "rtl";
+    }
+    /**
+     * the stylesheets set direction and alignment on body and cells themselves,
+     * so the attribute alone loses to them; inline runs keep theirs (numbers, codes)
+     *
+     * @method forced_direction_css
+     * @return string
+     */
+    public function forced_direction_css() {
+      $forced = $this->fn->get_template_direction();
+      if ("auto" === $forced) {
+        return "";
+      }
+      $start = "rtl" === $forced ? "right" : "left";
+      return "body,.page,table,thead,tbody,tfoot,tr,td,th,div,p,h1,h2,h3,h4,h5,ul,ol,li{direction:{$forced} !important;}body,td,th,p,div{text-align:{$start};}";
+    }
+    protected function html_dir() {
+      return $this->page_direction();
+    }
+    /**
+     * the legacy templates and every bundled slips and inventory page open with
+     * <body dir="rtl">, so a left to right template printed in a left to right
+     * language came out mirrored, most of all in the PDF where mPDF obeys it.
+     * With a forced direction every page body follows the switch.
+     *
+     * @method ltr_markup
+     * @param  string $markup
+     * @param  string $file
+     * @return string
+     */
+    public function ltr_markup($markup, $file = "") {
+      if (!preg_match('/\.(html|tpl)$/i', (string) $file) || false === stripos($markup, "<body")) {
+        return $markup;
+      }
+      $forced = $this->fn->get_template_direction();
+      if ("auto" === $forced) {
+        if (!$this->ltr_template) {
+          return $markup;
+        }
+        $forced = "ltr";
+      }
+      $markup = preg_replace_callback('/<body\b[^>]*>/i', function ($m) use ($forced) {
+        $tag = preg_replace('/\sdir\s*=\s*("[^"]*"|\'[^\']*\'|\S+)/i', "", $m[0]);
+        return preg_replace('/^<body\b/i', "<body dir=\"{$forced}\"", $tag);
+      }, $markup);
+      $css = $this->forced_direction_css();
+      if ("" !== $css) {
+        // after the template's own stylesheet, so it wins over the direction it sets
+        $markup = preg_replace('/(<body\b[^>]*>)/i', "$1<style type=\"text/css\">{$css}</style>", $markup, 1);
+      }
+      return $markup;
+    }
+    /**
+     * an invoice forced into a left to right language has no use for the right to
+     * left copy of a template when its left to right twin is there
+     *
+     * @method language_template
+     * @param  string $template
+     * @return string
+     */
+    protected function language_template($template) {
+      if (!$this->force_ltr || "auto" === $this->fn->get_invoice_language() || "rtl" !== $this->template_direction($template)) {
+        return $template;
+      }
+      $sibling = preg_replace('/-rtl$/i', "", untrailingslashit($template));
+      return $sibling !== untrailingslashit($template) && is_readable("{$sibling}/default.cfg") ? $sibling : $template;
+    }
+    /**
+     * the template folder this request renders with, before the language is known
+     *
+     * @method order_template
+     * @return string
+     */
+    protected function order_template() {
+      if (!empty($_GET["tp"])) {
+        $requested = $this->validate_template_path(sanitize_text_field(base64_decode(urldecode(wp_unslash($_GET["tp"])))));
+        if ($requested) {
+          return $requested;
+        }
+      }
+      return $this->fn->get_template();
+    }
+    /**
+     * @method template_direction
+     * @param  string $template folder path
+     * @return string ltr|rtl
+     */
+    public function template_direction($template) {
+      $template = untrailingslashit((string) $template);
+      $cfg = is_readable("{$template}/default.cfg") ? $this->parseTemplate((string) file_get_contents("{$template}/default.cfg")) : array();
+      if (!empty($cfg["direction"])) {
+        return "rtl" === strtolower(trim($cfg["direction"])) ? "rtl" : "ltr";
+      }
+      return preg_match('/-rtl$/i', $template) ? "rtl" : "ltr";
+    }
+    protected function is_rtl_language($code) {
+      return in_array(strtolower((string) $code), array("fa", "ar", "he", "ur", "ps", "ckb", "ug", "yi", "dv", "sd", "ku", "arz", "azb", "haz"), true);
+    }
+    /**
+     * @method html_lang
+     * @return string
+     */
+    protected function html_lang() {
+      return esc_attr(str_replace("_", "-", get_locale()));
     }
     public function get_preserve_english_numbers($opt, $order) {
-      return $keepOriginalENnumbers = apply_filters(
+      // values that end up inside a style attribute: "width:۰" is no css at all
+      $styles = array_values(array_filter(array_keys((array) $opt), function ($key) {
+        return (bool) preg_match('/(_hc|_css|_colspan)$/', (string) $key);
+      }));
+      return $keepOriginalENnumbers = array_merge($styles, (array) apply_filters(
         "puiw_printinvoice_preserve_english_numbers",
         array(
           "invoice_id_en",
@@ -339,6 +607,9 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           "custom_css_style",
           "custom_pdf_css_style",
           "inventory_css_style",
+          "slips_css_style",
+          "slips_pdf_css_style",
+          "pos_css_style",
           "store_email",
           "base_price",
           "discount",
@@ -362,7 +633,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
         ),
         $opt,
         $order
-      );
+      ));
     }
     public function get_preserve_html_tags($opt, $order) {
       return apply_filters(
@@ -371,6 +642,9 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           "invoice_final_prices",
           "invoice_final_prices_pdf",
           "invoice_products_list",
+          "invoice_qrcode_pdf",
+          "invoice_qrcode_img",
+          "original_price",
           "invoices_footer",
           "base_price",
           "customer_address",
@@ -384,6 +658,9 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           "custom_css_style",
           "custom_pdf_css_style",
           "inventory_css_style",
+          "slips_css_style",
+          "slips_pdf_css_style",
+          "pos_css_style",
         ),
         $opt,
         $order
@@ -393,6 +670,12 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
 
       if (has_filter("puiw_printinvoice_check_user_has_access")) {
         return apply_filters("puiw_printinvoice_check_user_has_access", false, $type, $order);
+      }
+
+      // roles picked in the privacy settings, so sites using a role editor do not
+      // need a functions.php snippet to let their staff print invoices
+      if (is_user_logged_in() && $this->current_user_has_allowed_role()) {
+        return true;
       }
 
       // Allow Customer/Users view invoices
@@ -447,6 +730,13 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
       }
       // USER IS GUEST AND NOT LOGGED IN
       else {
+        // Even with guest access enabled the visitor has to prove they were given
+        // the link: without this, order ids could simply be counted up and every
+        // customer's name, address, phone and basket read off the invoice
+        // (CVE-2026-27372 / CVE-2026-65499)
+        if (!$this->request_has_valid_order_key($order)) {
+          return false;
+        }
         // Allow Guests view invoices IS CHECKED
         if ("yes" == $allow_guest_view_invoices) {
           // Request is PDF invoice
@@ -502,7 +792,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
         $opts["invoice_final_prices"] = $this->get_order_final_prices_pdf($order);
       }
       $opt = apply_filters("puiw_printinvoice_create_html_options", $opts, $order);
-      $opt["CURENT_DIR_URL"] = apply_filters("puiw_get_template_dir_url", plugin_dir_url($opt["template"]), $opt["template"], $order);
+      $opt["CURENT_DIR_URL"] = apply_filters("puiw_get_template_dir_url", plugin_dir_url($opt["template"] . "/default.cfg"), $opt["template"], $order);
       $keepOriginalHTMLtags  = $this->get_preserve_html_tags($opt, $order);
       $keepOriginalENnumbers = $this->get_preserve_english_numbers($opt, $order);
       do_action("puiw_printinvoice_before_create_html", $opt, $opts, $order);
@@ -510,6 +800,9 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
       $main_css_style_inline = "";
       $order_note_a = apply_filters("puiw_printinvoice_order_note_customer", "<strong>" . __("Note provided by Customer", "pepro-ultimate-invoice") . "</strong><br><div>" . $this->fn->get_order_note($order, "a") . "</div>", $this->fn->get_order_note($order, "a"), $order, $opt);
       $order_note_b = apply_filters("puiw_printinvoice_order_note_shopmngr", "<strong>" . __("Note provided by Shop manager", "pepro-ultimate-invoice") . "</strong><br><div>" . $this->fn->get_order_note($order, "b") . "</div>", $this->fn->get_order_note($order, "b"), $order, $opt);
+      // the seller block prints these lines only when the store filled them in
+      $opt["show_store_website"] = "" !== trim((string) $opt["store_website"]) ? "yes" : "no";
+      $opt["show_store_email"]   = "" !== trim((string) $opt["store_email"]) ? "yes" : "no";
       $notes = ""; $opt["show_order_notes"] = "no";
       $opt["show_invoice_note_customer"] = "no";
       $opt["show_invoice_note_shopmngr"] = "no";
@@ -551,6 +844,9 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
       $opt["invoice_note_customer"] = $order_note_a;
       $opt["invoice_note_shopmngr"] = $order_note_b;
       $opt["invoice_notes"] = $notes;
+      // templates hide the notes block by show_order_notes; it was set to "no" above and
+      // never back, so a template that used it squeezed the notes into a zero width cell
+      $opt["show_order_notes"] = "" !== trim($notes) ? "yes" : "no";
       foreach ($opt as $key => $value) {
         if (substr($key, 0, 5) == "show_" && $value !== "yes") {
           $main_css_style_inline .= "[if~='$key']{display:none !important; visibility: hidden !important;}" . PHP_EOL;
@@ -623,19 +919,19 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
       }
       $templateDirpath = apply_filters("puiw_get_template_dir_path", $opt["template"], $order);
       if ("PDF_EXTRA_STYLE" == $MODE) {
-        return $main_css_style_inline . $opts["custom_pdf_css_style"];
+        return $main_css_style_inline . ($this->pos_mode ? $opts["pos_css_style"] : $opts["custom_pdf_css_style"]);
       }
       if ("PDF" == $MODE) {
-        $template = file_get_contents("$templateDirpath/template.pdf.tpl");
+        $template = $this->read_template_part($templateDirpath, "template.pdf.tpl");
         if (!empty($part)) {
-          $template  = file_get_contents("$templateDirpath/template.pdf.{$part}.tpl");
+          $template  = $this->read_template_part($templateDirpath, "template.pdf.{$part}.tpl");
         }
-        $product_row_RAW = file_get_contents("$templateDirpath/template.pdf.row.tpl");
+        $product_row_RAW = $this->read_template_part($templateDirpath, "template.pdf.row.tpl");
       } else {
         $extrainvoiceheaddata   = '';
-        $main_css_style = file_get_contents("$templateDirpath/style.css");
+        $main_css_style = $this->read_template_part($templateDirpath, "style.css");
         if ($email_printout) {
-          $main_css_style = file_get_contents("$templateDirpath/style.email.css");
+          $main_css_style = $this->read_template_part($templateDirpath, "style.email.css");
         }
         $main_css_style = $main_css_style_inline . $main_css_style;
         $body_content = '';
@@ -654,14 +950,14 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           }
           $body_content .= '</p>';
         }
-        $body_content           .= file_get_contents("$templateDirpath/template.tpl");
+        $body_content           .= $this->read_template_part($templateDirpath, "template.tpl");
         $invoicehtmltitle       = "{{{invoice_title}}} | {{{store_name}}}";
         $body_content           = apply_filters("puiw_printinvoice_HTML_body", $body_content, $order_id);
         $extrainvoiceheaddata   = apply_filters("puiw_printinvoice_HTML_extrahead", $extrainvoiceheaddata, $order_id);
         $invoicehtmltitle       = apply_filters("puiw_printinvoice_HTML_title", $invoicehtmltitle, $order_id);
         $main_css_style         = apply_filters("puiw_printinvoice_HTML_style", $main_css_style, $main_css_style_inline, $order_id);
-        $product_row_RAW        = file_get_contents("$templateDirpath/template.row.tpl");
-        $template               = "<!DOCTYPE html><html lang=\"fa\" dir=\"ltr\"><head><title>$invoicehtmltitle</title>$extrainvoiceheaddata<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /><style type='text/css'>{$main_css_style}{{{custom_css_style}}}</style></head>$body_content</html>";
+        $product_row_RAW        = $this->read_template_part($templateDirpath, "template.row.tpl");
+        $template               = "<!DOCTYPE html><html lang=\"{$this->html_lang()}\" dir=\"{$this->html_dir()}\"><head><title>$invoicehtmltitle</title>$extrainvoiceheaddata<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /><style type='text/css'>{$main_css_style}{{{custom_css_style}}}</style></head>$body_content</html>";
       }
       $n = 0; $total_weight = 0;
       foreach (apply_filters("puiw_order_items", $order->get_items(), $order) as $item_id => $item) {
@@ -694,6 +990,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
         $allmeta             = apply_filters("puiw_invoice_item_get_meta_data",         $item->get_meta_data(), $product, $item, $order);
         $description         = apply_filters("puiw_invoice_item_get_purchase_note",     $product->get_purchase_note(), $product, $item, $order);
         $description        .= $this->get_item_meta($item_id, $item, $product);
+        $description        .= $this->get_item_extra_attributes($product, $item);
         $weight_raw          = apply_filters("puiw_invoice_item_get_product_weight_raw", $product->get_weight(), $product, $item, $order);
         $weight              = apply_filters("puiw_invoice_item_get_product_weight",    $this->fn->get_format_weight($weight_raw), $product, $item, $order);
         $dimension           = apply_filters("puiw_invoice_item_get_product_dimension", $this->fn->get_product_dimension($item->get_product_id()), $product, $item, $order);
@@ -881,6 +1178,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           "description"                 => $description,
           "extra_classes"               => implode(" ", (array) $extra_classes),
           "discount"                    => $discount_display,
+          "original_price"              => $this->get_item_original_price($item, $product, $order),
           "weight"                      => $weight_raw > 0 ? $weight : "",
           "total_weight"                => $totalweight,
           "product_description_colspan" => $opt["product_description_colspan"],
@@ -954,17 +1252,22 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
       global $PeproUltimateInvoice;
       // add_filter("woocommerce_price_format", function () {return '%2$s %1$s';}, 10000, 2); // you should change it from wc setting
       require_once PEPROULTIMATEINVOICE_DIR . '/include/vendor/autoload.php';
+      $this->use_invoice_language($order);
       $class                  = "pepro-one-page-purchase---invoice-simple";
-      $class                 .= is_rtl() ? "rtl" : "";
-      $dire                   = is_rtl() ? 'rtl' : 'ltr';
-      $texe                   = is_rtl() ? 'right' : 'left';
+      $class                 .= "rtl" === $this->page_direction() ? "rtl" : "";
+      $dire                   = $this->page_direction();
+      $texe                   = "rtl" === $this->page_direction() ? 'right' : 'left';
       $defaultConfig          = (new \Mpdf\Config\ConfigVariables())->getDefaults();
       $fontDirs               = $defaultConfig['fontDir'];
       $defaultFontConfig      = (new \Mpdf\Config\FontVariables())->getDefaults();
       $fontData               = $defaultFontConfig['fontdata'];
-      $template               = $this->fn->get_template();
+      // the page geometry has to come from the template this order really renders with,
+      // not from the saved default, or a per order template gets the wrong margins and
+      // a roll receipt gets an A4 page
+      $daynamic_params        = $this->get_default_dynamic_params($order_id, $order);
+      $template               = !empty($daynamic_params["template"]) ? $daynamic_params["template"] : $this->fn->get_template();
       $templateDirpath        = apply_filters("puiw_get_template_dir_path", $template, $order);
-      $contents               = file_get_contents("$templateDirpath/default.cfg");
+      $contents               = $this->read_template_part($templateDirpath, "default.cfg");
       $template_pdf_setting   = $this->parseTemplate($contents);
       /* if we had an error, don't let script stop !*/
       $get_allow_pdf_customer = $this->fn->get_allow_pdf_customer();
@@ -1017,13 +1320,34 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
       ];
 
 
-      if ("L" == $get_pdf_orientation) $get_pdf_size = "$get_pdf_size-L";
       // https://mpdf.github.io/paging/page-size-orientation.html
+      $get_pdf_size = $this->resolve_page_format($get_pdf_size, "L" == $get_pdf_orientation);
+      // a template may insist on its own page, which is what makes a roll receipt a roll
+      // and not an A4 sheet with a receipt in the corner: PDF_page_width/_height in mm,
+      // or PDF_page_size with a named format
+      // a roll template asks to be exactly as long as its content; mPDF only honours a
+      // page format given to the constructor, so the tall page is set up here and the
+      // measured height is applied on the second pass below
+      $roll_width = 0.0;
+      // the POS button asks for a roll too, whatever template it prints with; it used
+      // to measure on an A4 page and spill the receipt over two pages
+      if ($fit_height || (!empty($template_pdf_setting["pdf_fit_height"]) && "no" !== strtolower((string) $template_pdf_setting["pdf_fit_height"]))) {
+        $roll_width = !empty($template_pdf_setting["pdf_page_width"]) ? (float) $template_pdf_setting["pdf_page_width"] : 76;
+      }
+      if ($roll_width > 0) {
+        $get_pdf_size = array($roll_width, 2970);
+      } elseif (!empty($template_pdf_setting["pdf_page_width"])) {
+        $width  = (float) $template_pdf_setting["pdf_page_width"];
+        $height = !empty($template_pdf_setting["pdf_page_height"]) ? (float) $template_pdf_setting["pdf_page_height"] : 2000;
+        if ($width > 0) {
+          $get_pdf_size = array($width, $height);
+        }
+      } elseif (!empty($template_pdf_setting["pdf_page_size"])) {
+        $get_pdf_size = $this->resolve_page_format($template_pdf_setting["pdf_page_size"], "L" == $get_pdf_orientation);
+      }
       $get_pdf_size = apply_filters("puiw_generate_pdf_page_size", $get_pdf_size, $order_id, $order, "PDF");
 
-      $daynamic_params = $this->get_default_dynamic_params($order_id, $order);
-
-      error_reporting(0);
+      $puiw_error_reporting = error_reporting(0);
       @ini_set("display_errors", 0);
       @ini_set("max_execution_time", "300");
       @ini_set("pcre.backtrack_limit", PHP_INT_MAX);
@@ -1064,7 +1388,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           "invoice_start"  => $this->fn->get_invoice_start(),
         ));
         $order_id_formatted = $opts["invoice_prefix"] . ($opts["invoice_start"] + $order_id) . $opts["invoice_suffix"] ? $opts["invoice_prefix"] . ($opts["invoice_start"] + $order_id) . $opts["invoice_suffix"] : "0000000000000000";
-        $pdf_title          = sprintf(_x("Invoice #%s on %s", "invoice-template", $PeproUltimateInvoice->td), "<strong>{$order_id_formatted}</strong>", get_bloginfo('title'));
+        $pdf_title          = sprintf(_x("Invoice #%s on %s", "invoice-template", "pepro-ultimate-invoice"), "<strong>{$order_id_formatted}</strong>", get_bloginfo('title'));
         $pdf_title          = apply_filters("puiw_generate_pdf_title_of_pdf", $pdf_title);
         $datenow            = current_time('timestamp');
         $mpdf->SetDirectionality($dire);
@@ -1082,44 +1406,87 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           $mpdf->showWatermarkImage = apply_filters("puiw_generate_pdf_watermark_show", true, $order_id, $order, "PDF");
         }
         if (!$order) {
-          $errrxt = _x('Error! Invoice does not exist.', 'invoice-template', $PeproUltimateInvoice->td);
+          $errrxt = _x('Error! Invoice does not exist.', 'invoice-template', "pepro-ultimate-invoice");
           $err_html .= "<body dir='$dire'><h2 style='text-align:center;'>$errrxt</h2><p style='text-align:center;' dir='$dire'>" .
-            sprintf(_x('Created by %s<br>( %s )', 'invoice-template', $PeproUltimateInvoice->td), $PeproUltimateInvoice->title_t, "<a href='https://pepro.dev/'>" . $PeproUltimateInvoice->title_d . '</a>') .
+            sprintf(_x('Created by %s<br>( %s )', 'invoice-template', "pepro-ultimate-invoice"), $PeproUltimateInvoice->title_t, "<a href='https://peprodev.com/'>" . $PeproUltimateInvoice->title_d . '</a>') .
             "</p><br><span><hr style='width: 80%;'><p style='text-align:center;' dir='$dire'>" .
-            sprintf(_x('%sBack to Dashboard%s', 'invoice-template', $PeproUltimateInvoice->td), "<a href='" . get_permalink(get_option('woocommerce_myaccount_page_id')) . "'>", '</a>') . " / " .
-            sprintf(_x('%sBack to Orders%s', 'invoice-template', $PeproUltimateInvoice->td), "<a href='" . wc_get_endpoint_url('orders', '', get_permalink(get_option('woocommerce_myaccount_page_id'))) . "'>", '</a>') .
+            sprintf(_x('%sBack to Dashboard%s', 'invoice-template', "pepro-ultimate-invoice"), "<a href='" . get_permalink(get_option('woocommerce_myaccount_page_id')) . "'>", '</a>') . " / " .
+            sprintf(_x('%sBack to Orders%s', 'invoice-template', "pepro-ultimate-invoice"), "<a href='" . wc_get_endpoint_url('orders', '', get_permalink(get_option('woocommerce_myaccount_page_id'))) . "'>", '</a>') .
             "</span></p></body>";
           $mpdf->WriteHTML($err_html);
         }
         else {
           $stylesheet      = $this->get_pdf_style($order_id, $order);
+          // the POS button asks for a roll; it styles with its own stylesheet, not the invoice PDF's
+          $this->pos_mode  = (bool) $fit_height;
           $PDF_EXTRA_STYLE = $this->create_html($order_id, "PDF_EXTRA_STYLE", "", "", $skipAuth);
-          $stylesheet      = $PDF_EXTRA_STYLE . $stylesheet;
-          $html_invoice    = $this->create_html($order_id, "PDF", "", "", $skipAuth);
-          $html_header     = $this->create_html($order_id, "PDF", "header", "", $skipAuth);
-          $html_footer     = $this->create_html($order_id, "PDF", "footer", "", $skipAuth);
-          $footerhtml      = "<div class='footerauto' style='text-align: center; padding: 1rem;' dir='$dire'><table width='100%'><tr>
-                <td style=\"padding: 1rem; text-align: center; width: 33%;\">" . _x("Page", "invoice-footer", "pepro-ultimate-invoice") . " {PAGENO} / {nbpg}</td>
-                <td style=\"padding: 1rem; text-align: center; width: 33%;\">{$pdf_title}</td>
-                <td style=\"padding: 1rem; text-align: center; width: 33%;\">{$PeproUltimateInvoice->title_t} (https://pepro.dev)</td>
-              <tr></table></div>";
+          $this->pos_mode  = false;
+          $stylesheet      = $PDF_EXTRA_STYLE . $stylesheet . $this->forced_direction_css();
+          $html_invoice    = $this->prepare_images_for_pdf($this->create_html($order_id, "PDF", "", "", $skipAuth));
+          $html_header     = $this->prepare_images_for_pdf($this->create_html($order_id, "PDF", "header", "", $skipAuth));
+          $html_footer     = $this->prepare_images_for_pdf($this->create_html($order_id, "PDF", "footer", "", $skipAuth));
+          $footer_middle = apply_filters("puiw_get_pdf_footer_text", $pdf_title, $order);
+          // three cells: page number, the invoice line, the credit. An add-on may rewrite
+          // or empty any of them; with all three empty the page footer is left out
+          $footer_cells  = apply_filters("puiw_pdf_footer_cells", array(
+            "start"  => _x("Page", "invoice-footer", "pepro-ultimate-invoice") . " {PAGENO} / {nbpg}",
+            "middle" => $footer_middle,
+            "end"    => "{$PeproUltimateInvoice->title_t} (https://peprodev.com)",
+          ), $order, $order_id);
+          $footerhtml = "";
+          if ("" !== trim(implode("", array_map("strval", (array) $footer_cells)))) {
+            $footerhtml = "<div class='footerauto' style='text-align: center; padding: 1rem;' dir='$dire'><table width='100%'><tr>";
+            foreach (array("start", "middle", "end") as $cell) {
+              $footerhtml .= "<td style=\"padding: 1rem; text-align: center; width: 33%;\">" . (isset($footer_cells[$cell]) ? $footer_cells[$cell] : "") . "</td>";
+            }
+            $footerhtml .= "</tr></table></div>";
+          }
           $footerhtml = apply_filters_deprecated("puiw_printinvoice_pdf_footer", [$footerhtml, "", "", $order, $order_id], "1.9.0", "puiw_printinvoice_pdf_footer_new");
           $footerhtml = apply_filters("puiw_printinvoice_pdf_footer_new", $footerhtml, $order, $order_id);
-          $mpdf->SetHTMLHeader($html_header);
-          $mpdf->SetHTMLFooter($html_footer . $footerhtml);
+          // a roll is one continuous slip: a repeating page header and footer would be
+          // drawn on top of the receipt, which is what printed the page number over the
+          // barcode
+          if ($roll_width > 0) {
+            $mpdf->SetHTMLHeader("");
+            $mpdf->SetHTMLFooter("");
+          } else {
+            // signatures and notes live in the footer; a long one used to sit on top of
+            // the last item rows, so the bottom margin grows to fit it
+            $mpdf->setAutoTopMargin    = "stretch";
+            $mpdf->setAutoBottomMargin = "stretch";
+            $mpdf->SetHTMLHeader($html_header);
+            $mpdf->SetHTMLFooter($html_footer . $footerhtml);
+          }
           $mpdf->WriteHTML($stylesheet, \Mpdf\HTMLParserMode::HEADER_CSS);
 
-          // allow printing 8cm-yh thermal-invoices
+          // a roll receipt is as long as it needs to be: render once to measure, then
+          // set the page to the measured height and render again. A template asks for
+          // this with PDF_fit_height in its default.cfg.
+          if ($roll_width > 0) {
+            $fit_height = true;
+          }
           $fit_height = apply_filters("puiw_create_pdf_fit_height", $fit_height, $order_id, $order, $MODE);
           if ($fit_height) {
             $p = 'P';
-            $mpdf->_setPageSize(array(76, 2970), $p);
+            $roll = $roll_width > 0 ? $roll_width : 76;
             $html_invoice = mb_convert_encoding($html_invoice, 'UTF-8', 'auto');
-            $mpdf->WriteHTML($html_invoice, \Mpdf\HTMLParserMode::HTML_BODY);
+            // a trailing table that is switched off with display:none sends mPDF's
+            // cursor back to the top of the page, which made every measurement zero.
+            // Hidden markup has no height, so it is dropped from the measuring pass.
+            $measure_html = preg_replace(
+              '#<table[^>]*display\s*:\s*none[^>]*>.*?</table>#is',
+              "",
+              $html_invoice
+            );
+            $mpdf->WriteHTML(null === $measure_html ? $html_invoice : $measure_html, \Mpdf\HTMLParserMode::HTML_BODY);
+            // read the cursor before the reset: afterwards it is back at the top of a
+            // page that no longer exists, which is why every roll came out 4mm tall
+            $measured = (float) $mpdf->y + (max(1, (int) $mpdf->page) - 1) * 2970;
             $mpdf->page  = 0;
             $mpdf->state = 0;
             unset($mpdf->pages[0]);
-            $mpdf->_setPageSize(array(76, $mpdf->y + 4), $p);
+            $tall = max($measured + (float) $template_pdf_setting["pdf_margin_bottom"] + 6, 40);
+            $mpdf->_setPageSize(array($roll, $tall), $p);
             $mpdf->addPage();
             $mpdf->WriteHTML($html_invoice, \Mpdf\HTMLParserMode::HTML_BODY);
           }
@@ -1135,7 +1502,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
         $name = "Invoice-$order_id_formatted-$datetime";
         $name = apply_filters("puiw_get_export_pdf_name", $name, $order_id_formatted, $order_id, $datenow);
         if ("S" == $MODE) {
-          $namedir    = PEPROULTIMATEINVOICE_DIR . "/pdf_temp";
+          $namedir    = $this->get_pdf_temp_dir();
           $namedotext = "Invoice-$order_id_formatted.$datetime.pdf";
           $namedir    = apply_filters("puiw_get_default_mail_pdf_temp_path", $namedir, $order_id);
           $namedotext = apply_filters("puiw_get_default_mail_pdf_temp_name", $namedotext, $order_id);
@@ -1145,9 +1512,560 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           return $namedotext;
         }
         $mpdf->Output($name . ".pdf", ($force_download ? "D" : "I"));
-      } catch (\Mpdf\MpdfException $e) {
-        error_log("puiw debugging ~> " . var_export($e, 1));
-        wp_die($e->getMessage());
+      } catch (\Throwable $e) {
+        // a PDF failure must never take down checkout, the gateway return or an email
+        $this->log_error("create_pdf", $e, $order_id);
+        if ("S" === $MODE || !$showerror) {
+          return false;
+        }
+        wp_die(esc_html($e->getMessage()), esc_html__("Invoice could not be generated", "pepro-ultimate-invoice"), array("back_link" => true));
+      } finally {
+        error_reporting($puiw_error_reporting);
+      }
+    }
+    /**
+     * print selected product attributes or meta under a line item, used for
+     * warranty names and similar data other plugins store on the product
+     *
+     * @method get_item_extra_attributes
+     * @param WC_Product $product
+     * @param WC_Order_Item $item
+     * @return string
+     * @version 1.0.0
+     * @since 2.3.0
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    protected function get_item_extra_attributes($product, $item) {
+      $keys = $this->fn->get_item_extra_attributes("");
+      $keys = array_filter(array_map("trim", explode(",", (string) $keys)));
+      if (empty($keys) || !$product) {
+        return "";
+      }
+      $out = "";
+      foreach ($keys as $key) {
+        $value = "";
+        if (0 === strpos($key, "pa_") || $product->get_attribute($key)) {
+          $value = $product->get_attribute($key);
+        }
+        if ("" === $value) {
+          $value = $product->get_meta($key, true);
+        }
+        if ("" === $value && $product->get_parent_id()) {
+          $parent = wc_get_product($product->get_parent_id());
+          $value  = $parent ? ($parent->get_attribute($key) ?: $parent->get_meta($key, true)) : "";
+        }
+        if ("" === $value || is_array($value)) {
+          continue;
+        }
+        $label = wc_attribute_label($key, $product);
+        $out  .= '<div class="puiw-item-extra"><small>' . esc_html($label) . ": " . esc_html($value) . "</small></div>";
+      }
+      return apply_filters("puiw_invoice_item_extra_attributes", $out, $product, $item);
+    }
+    /**
+     * pre-discount unit price, so invoices can show what dynamic pricing plugins
+     * took off the line item instead of silently printing the reduced price
+     *
+     * @method get_item_original_price
+     * @param WC_Order_Item $item
+     * @param WC_Product $product
+     * @param WC_Order $order
+     * @return string
+     * @version 1.0.0
+     * @since 2.3.0
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    protected function get_item_original_price($item, $product, $order) {
+      if ("yes" !== $this->fn->get_show_item_discount("no")) {
+        return "";
+      }
+      $quantity = (int) $item->get_quantity();
+      if ($quantity < 1) {
+        return "";
+      }
+      $subtotal = (float) $item->get_subtotal();
+      $total    = (float) $item->get_total();
+      $original = $subtotal / $quantity;
+      if ($subtotal <= $total && $product) {
+        // dynamic pricing plugins often rewrite the price before the item is stored,
+        // in that case the product regular price is the only reference left
+        $regular = (float) $product->get_regular_price();
+        $original = $regular > $original ? $regular : $original;
+      }
+      $paid = $total / $quantity;
+      if ($original <= $paid) {
+        return "";
+      }
+      $percent = round((($original - $paid) / $original) * 100, 2);
+      $html    = '<del>' . wc_price($original, array("currency" => $order->get_currency())) . '</del>';
+      $html   .= '<small class="puiw-item-off"> (' . sprintf(_x("%s%% off", "invoice-template", "pepro-ultimate-invoice"), $percent) . ')</small>';
+      return apply_filters("puiw_invoice_item_original_price", $html, $item, $product, $order);
+    }
+    /**
+     * check the current user against the roles allowed in the privacy settings
+     *
+     * @method current_user_has_allowed_role
+     * @return bool
+     * @version 1.0.0
+     * @since 2.3.0
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    protected function current_user_has_allowed_role() {
+      if (current_user_can("manage_woocommerce")) {
+        return true;
+      }
+      $allowed = $this->fn->get_allowed_roles(array("administrator", "shop_manager"));
+      $allowed = is_array($allowed) ? $allowed : array_filter(array_map("trim", explode(",", (string) $allowed)));
+      if (empty($allowed)) {
+        return false;
+      }
+      $user = wp_get_current_user();
+      return (bool) array_intersect($allowed, (array) $user->roles);
+    }
+    /**
+     * put the sender and recipient blocks of a packing slip in the configured order
+     *
+     * mpdf has no flexbox, so the order has to be decided in the markup rather
+     * than with css
+     *
+     * @method order_slip_blocks
+     * @param string $html
+     * @param string $layout
+     * @return string
+     * @version 1.0.0
+     * @since 2.3.8
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    protected function order_slip_blocks($html, $layout) {
+      if ("sender-left" !== $layout) {
+        return $html;
+      }
+      if (!preg_match('/<!--puiw:recipient-->(.*?)<!--\/puiw:recipient-->/s', $html, $r)) {
+        return $html;
+      }
+      if (!preg_match('/<!--puiw:sender-->(.*?)<!--\/puiw:sender-->/s', $html, $d)) {
+        return $html;
+      }
+      // swap the two marked blocks, keeping the markers so a second pass is stable
+      $recipient = "<!--puiw:recipient-->" . $r[1] . "<!--/puiw:recipient-->";
+      $sender    = "<!--puiw:sender-->" . $d[1] . "<!--/puiw:sender-->";
+      $html = str_replace($recipient, "%%PUIW_SLIP_A%%", $html);
+      $html = str_replace($sender, "%%PUIW_SLIP_B%%", $html);
+      $html = str_replace("%%PUIW_SLIP_A%%", $sender, $html);
+      $html = str_replace("%%PUIW_SLIP_B%%", $recipient, $html);
+      return $html;
+    }
+    /**
+     * build a QR code as an inline svg data uri
+     *
+     * the html invoice used to carry an empty div that only a script could fill,
+     * and that script was never loaded on the invoice, so nothing was shown
+     *
+     * @method render_qrcode_img
+     * @param string $data
+     * @param int $size
+     * @return string
+     * @version 1.0.0
+     * @since 2.3.8
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    public function render_qrcode_img($data, $size = 110) {
+      $data = trim((string) $data);
+      if ("" === $data) {
+        return "";
+      }
+      require_once PEPROULTIMATEINVOICE_DIR . "/include/vendor/autoload.php";
+      if (!class_exists("\\Mpdf\\QrCode\\QrCode")) {
+        return "";
+      }
+      try {
+        $qr  = new \Mpdf\QrCode\QrCode($data);
+        $svg = (new \Mpdf\QrCode\Output\Svg())->output($qr, $size);
+      } catch (\Throwable $e) {
+        $this->log_error("render_qrcode_img", $e);
+        return "";
+      }
+      $src = "data:image/svg+xml;base64," . base64_encode($svg);
+      return sprintf('<img class="puiw-qrcode" alt="QR" src="%s" style="width:%dpx;height:%dpx;" />', esc_attr($src), (int) $size, (int) $size);
+    }
+    /**
+     * translate a stored page size into something mpdf understands
+     *
+     * label sizes are stored as LABEL_<width>x<height> in millimetres
+     *
+     * @method resolve_page_format
+     * @param string $size
+     * @param bool $landscape
+     * @return string|array
+     * @version 1.0.0
+     * @since 2.3.0
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    protected function resolve_page_format($size, $landscape = false) {
+      if (preg_match('/^LABEL_(\d+)x(\d+)$/i', (string) $size, $m)) {
+        $width  = (float) $m[1];
+        $height = (float) $m[2];
+        return $landscape ? array($height, $width) : array($width, $height);
+      }
+      return $landscape ? "$size-L" : $size;
+    }
+    /**
+     * check the request carries the order key that belongs to this order
+     *
+     * WooCommerce uses the same scheme for its own guest order pages
+     *
+     * @method request_has_valid_order_key
+     * @param WC_Order|int $order
+     * @return bool
+     * @version 1.0.0
+     * @since 2.3.8
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    protected function request_has_valid_order_key($order) {
+      // a site that really wants unauthenticated access can opt back in
+      if (true === apply_filters("puiw_guest_access_without_order_key", false, $order)) {
+        return true;
+      }
+      $order = is_a($order, "WC_Order") ? $order : wc_get_order($order);
+      // a refund is an order object without an order key, and asking one for its key is
+      // a fatal, not a false
+      if (!$order || !method_exists($order, "get_order_key")) {
+        return false;
+      }
+      $expected = (string) $order->get_order_key();
+      if ("" === $expected) {
+        return false;
+      }
+      foreach (array("key", "order_key", "_wpnonce_key") as $param) {
+        if (!empty($_GET[$param])) {
+          $given = sanitize_text_field(wp_unslash($_GET[$param]));
+          if (hash_equals($expected, $given)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+    /**
+     * only allow template directories the site actually registered
+     *
+     * @method validate_template_path
+     * @param string $path
+     * @return string|false the real path when it is a known template, false otherwise
+     * @version 1.0.0
+     * @since 2.3.8
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    public function validate_template_path($path) {
+      $path = trim((string) $path);
+      if ("" === $path || preg_match('#^[a-z][a-z0-9+.-]*://#i', $path)) {
+        return false;
+      }
+      $real = realpath($path);
+      if (!$real || !is_dir($real)) {
+        return false;
+      }
+      $allowed = array();
+      foreach ((array) apply_filters("puiw_get_templates_list", glob(PEPROULTIMATEINVOICE_DIR . "template/*/default.cfg")) as $cfg) {
+        $dir = realpath(dirname($cfg));
+        if ($dir) {
+          $allowed[] = $dir;
+        }
+      }
+      return in_array($real, $allowed, true) ? $real : false;
+    }
+    /**
+     * read a template part, falling back to the bundled default when the selected
+     * template does not ship that part (custom templates and the POS template do
+     * not provide the inventory/slip parts, which used to emit file_get_contents
+     * warnings straight into the printed page)
+     *
+     * @method read_template_part
+     * @param string $dir selected template directory
+     * @param string $file file name inside the template directory
+     * @return string
+     * @version 1.0.0
+     * @since 2.3.1
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    public function read_template_part($dir, $file) {
+      // templates ship as .html since 3.0, a .tpl of the same name still works so
+      // themes written for older releases keep rendering untouched
+      $names = array($file);
+      if (preg_match('/\.tpl$/i', $file)) {
+        array_unshift($names, preg_replace('/\.tpl$/i', ".html", $file));
+      } elseif (preg_match('/\.html$/i', $file)) {
+        $names[] = preg_replace('/\.html$/i', ".tpl", $file);
+      }
+      $names    = apply_filters("puiw_template_part_names", $names, $file, $dir);
+      // a file the template does not ship comes from the bundled template of the same
+      // direction; going by the site language gave an LTR template the RTL PDF layout
+      $fallback = "rtl" === $this->template_direction($dir) ? "default-rtl" : "default";
+      $roots    = array(untrailingslashit($dir), PEPROULTIMATEINVOICE_DIR . "template/$fallback", PEPROULTIMATEINVOICE_DIR . "template/default");
+      $candidates = array();
+      foreach ($roots as $root) {
+        foreach ($names as $name) {
+          $candidates[] = "$root/$name";
+        }
+      }
+      $candidates = apply_filters("puiw_template_part_candidates", $candidates, $dir, $file);
+      foreach ($candidates as $candidate) {
+        if ($candidate && is_readable($candidate)) {
+          $markup = (string) file_get_contents($candidate);
+          // {{{i18n:Text}}} is a label in the template, written in English and shown
+          // in the invoice's language through the plugin's own translations
+          if (false !== strpos($markup, "{{{i18n:")) {
+            $markup = preg_replace_callback('/\{\{\{i18n:([^{}]+)\}\}\}/', function ($m) {
+              global $PeproUltimateInvoice;
+              // wording set under Translations for this language wins over the bundled one
+              $own = is_object($PeproUltimateInvoice) && isset($PeproUltimateInvoice->i18n) ? $PeproUltimateInvoice->i18n->override(trim($m[1])) : "";
+              return esc_html("" !== $own ? $own : translate($m[1], "pepro-ultimate-invoice"));
+            }, $markup);
+          }
+          return (string) apply_filters("puiw_template_part_markup", $markup, $file, $dir);
+        }
+      }
+      return "";
+    }
+    /**
+     * resolve every remote image in the markup to a local file before mpdf sees it
+     *
+     * mpdf fetching images itself fails on hotlink protection, on hosts without a
+     * working http client and on webp/avif sources, and its psr http shim clashes
+     * with other plugins shipping a different psr/http-message version
+     *
+     * @method prepare_images_for_pdf
+     * @param string $html
+     * @return string
+     * @version 1.0.0
+     * @since 2.3.0
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    public function prepare_images_for_pdf($html) {
+      if (empty($html) || false === strpos($html, "<img")) {
+        return $html;
+      }
+      if ("no" === apply_filters("puiw_localize_pdf_images", "yes")) {
+        return $html;
+      }
+      // srcset/sizes would send mpdf back to the original webp file, and lazy loading
+      // attributes have no meaning in a pdf
+      $html = preg_replace('/\s(?:srcset|sizes|loading|decoding)\s*=\s*("[^"]*"|\'[^\']*\')/i', "", $html);
+      return preg_replace_callback('/(<img\b[^>]*?\bsrc\s*=\s*)(["\'])(.*?)\2/is', function ($m) {
+        $src = trim(html_entity_decode($m[3], ENT_QUOTES));
+        if ("" === $src || 0 === stripos($src, "data:")) {
+          return $m[0];
+        }
+        $local = $this->localize_image($src);
+        return $local ? $m[1] . $m[2] . $local . $m[2] : $m[0];
+      }, $html);
+    }
+    /**
+     * map an image url to a readable local path, converting formats mpdf cannot embed
+     *
+     * @method localize_image
+     * @param string $src
+     * @return string|false
+     * @version 1.0.0
+     * @since 2.3.0
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    protected function localize_image($src) {
+      $path = $this->resolve_local_image_path($src);
+      if (!$path) {
+        $path = $this->download_image($src);
+      }
+      if (!$path || !is_readable($path)) {
+        return false;
+      }
+      $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+      if (in_array($ext, array("webp", "avif"), true)) {
+        $converted = $this->convert_image_to_png($path, $ext);
+        if (!$converted) {
+          return false;
+        }
+        $path = $converted;
+        $ext  = "png";
+      }
+      // hand mpdf a data uri: it refuses absolute filesystem paths unless local file
+      // access is enabled, and enabling that on a customer site is not worth the risk
+      $data = @file_get_contents($path);
+      if (false === $data) {
+        return false;
+      }
+      $mimes = array("jpg" => "image/jpeg", "jpeg" => "image/jpeg", "png" => "image/png", "gif" => "image/gif");
+      $mime  = isset($mimes[$ext]) ? $mimes[$ext] : "image/png";
+      return "data:$mime;base64," . base64_encode($data);
+    }
+    /**
+     * translate a site url into a filesystem path when the file belongs to this install
+     *
+     * @method resolve_local_image_path
+     * @param string $src
+     * @return string|false
+     * @version 1.0.0
+     * @since 2.3.0
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    protected function resolve_local_image_path($src) {
+      if (0 === strpos($src, "//")) {
+        $src = (is_ssl() ? "https:" : "http:") . $src;
+      }
+      if (0 === strpos($src, "/") && 0 !== strpos($src, "//")) {
+        $candidate = untrailingslashit(ABSPATH) . $src;
+        return file_exists($candidate) ? $candidate : false;
+      }
+      $uploads = wp_upload_dir();
+      foreach (array($uploads["baseurl"] => $uploads["basedir"], content_url() => WP_CONTENT_DIR, site_url() => untrailingslashit(ABSPATH)) as $url => $dir) {
+        $url = preg_replace("#^https?://#i", "", untrailingslashit($url));
+        $bare = preg_replace("#^https?://#i", "", $src);
+        if (0 === stripos($bare, $url)) {
+          $candidate = untrailingslashit($dir) . substr($bare, strlen($url));
+          $candidate = explode("?", $candidate)[0];
+          if (file_exists($candidate)) {
+            return $candidate;
+          }
+        }
+      }
+      return false;
+    }
+    /**
+     * fetch a remote image into the temp directory, server side
+     *
+     * @method download_image
+     * @param string $src
+     * @return string|false
+     * @version 1.0.0
+     * @since 2.3.0
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    protected function download_image($src) {
+      if (!preg_match("#^https?://#i", $src)) {
+        return false;
+      }
+      $dir  = $this->get_pdf_temp_dir();
+      $name = "img-" . md5($src);
+      $hit  = glob("$dir/$name.*");
+      if ($hit) {
+        return $hit[0];
+      }
+      $response = wp_remote_get($src, array("timeout" => 10, "sslverify" => false, "redirection" => 3));
+      if (is_wp_error($response) || 200 !== (int) wp_remote_retrieve_response_code($response)) {
+        return false;
+      }
+      $body = wp_remote_retrieve_body($response);
+      if ("" === $body) {
+        return false;
+      }
+      $type = strtolower((string) wp_remote_retrieve_header($response, "content-type"));
+      $map  = array("image/jpeg" => "jpg", "image/png" => "png", "image/gif" => "gif", "image/webp" => "webp", "image/avif" => "avif", "image/svg+xml" => "svg");
+      $ext  = "";
+      foreach ($map as $mime => $candidate) {
+        if (false !== strpos($type, $mime)) {
+          $ext = $candidate;
+          break;
+        }
+      }
+      if ("" === $ext) {
+        $ext = strtolower(pathinfo(parse_url($src, PHP_URL_PATH), PATHINFO_EXTENSION));
+      }
+      if (!in_array($ext, array("jpg", "jpeg", "png", "gif", "webp", "avif"), true)) {
+        return false;
+      }
+      $file = "$dir/$name.$ext";
+      return file_put_contents($file, $body) ? $file : false;
+    }
+    /**
+     * convert webp/avif to png so mpdf can embed it
+     *
+     * @method convert_image_to_png
+     * @param string $path
+     * @param string $ext
+     * @return string|false
+     * @version 1.0.0
+     * @since 2.3.0
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    protected function convert_image_to_png($path, $ext) {
+      $target = $this->get_pdf_temp_dir() . "/img-" . md5($path . filemtime($path)) . ".png";
+      if (file_exists($target)) {
+        return $target;
+      }
+      $reader = "webp" === $ext ? "imagecreatefromwebp" : "imagecreatefromavif";
+      if (!function_exists($reader) || !function_exists("imagepng")) {
+        return false;
+      }
+      $image = @$reader($path);
+      if (!$image) {
+        return false;
+      }
+      imagepalettetotruecolor($image);
+      imagealphablending($image, true);
+      imagesavealpha($image, true);
+      $done = @imagepng($image, $target);
+      imagedestroy($image);
+      return $done ? $target : false;
+    }
+    /**
+     * log a failure to the woocommerce logger and, as a fallback, to the php error log
+     *
+     * @method log_error
+     * @param string $context
+     * @param \Throwable $e
+     * @param int $order_id
+     * @version 1.0.0
+     * @since 2.3.0
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    protected function log_error($context, $e, $order_id = 0) {
+      $message = sprintf("%s failed for order #%s: %s in %s:%s", $context, $order_id, $e->getMessage(), $e->getFile(), $e->getLine());
+      if (function_exists("wc_get_logger")) {
+        wc_get_logger()->error($message, array("source" => "pepro-ultimate-invoice"));
+        return;
+      }
+      error_log("pepro-ultimate-invoice ~> $message");
+    }
+    /**
+     * writable, self-cleaning directory for temporary pdf files
+     *
+     * @method get_pdf_temp_dir
+     * @return string
+     * @version 1.0.0
+     * @since 2.3.0
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    public function get_pdf_temp_dir() {
+      $uploads = wp_upload_dir();
+      $dir     = trailingslashit($uploads["basedir"]) . "puiw-temp";
+      if (!file_exists($dir)) {
+        wp_mkdir_p($dir);
+        // generated invoices may contain customer data, keep them out of the web root listing
+        @file_put_contents("$dir/index.php", "<?php\n// Silence is golden.\n");
+        @file_put_contents("$dir/.htaccess", "deny from all");
+      }
+      $this->prune_pdf_temp_dir($dir);
+      return $dir;
+    }
+    /**
+     * remove leftover temporary pdf files
+     *
+     * @method prune_pdf_temp_dir
+     * @param string $dir
+     * @param int $max_age seconds
+     * @version 1.0.0
+     * @since 2.3.0
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    protected function prune_pdf_temp_dir($dir, $max_age = HOUR_IN_SECONDS) {
+      $files = glob(trailingslashit($dir) . "*.{pdf,zip,png,jpg,jpeg,gif,webp,avif}", GLOB_BRACE);
+      if (!$files) {
+        return;
+      }
+      $now = time();
+      foreach ($files as $file) {
+        if (($now - (int) @filemtime($file)) > $max_age) {
+          @unlink($file);
+        }
       }
     }
     public function create_slips_pdf($order_id = 0, $force_download = false, $MODE = "I", $showerror = true) {
@@ -1171,20 +2089,22 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
         $this->CheckPDFRequirements($showerror);
       }
       global $PeproUltimateInvoice;
+      try {
       require_once PEPROULTIMATEINVOICE_DIR . '/include/vendor/autoload.php';
-      $class                   = "pepro-one-page-purchase---invoice-simple " . is_rtl() ? "rtl" : "";
-      $dire                    = is_rtl() ? 'rtl' : 'ltr';
-      $texe                    = is_rtl() ? 'right' : 'left';
+      $this->use_invoice_language($order);
+      $class                   = "pepro-one-page-purchase---invoice-simple " . ("rtl" === $this->page_direction() ? "rtl" : "");
+      $dire                    = $this->page_direction();
+      $texe                    = "rtl" === $this->page_direction() ? 'right' : 'left';
       $defaultConfig           = (new \Mpdf\Config\ConfigVariables())->getDefaults();
       $fontDirs                = $defaultConfig['fontDir'];
       $defaultFontConfig       = (new \Mpdf\Config\FontVariables())->getDefaults();
       $fontData                = $defaultFontConfig['fontdata'];
       $template                = $this->fn->get_template();
       $templateDirpath         = apply_filters("puiw_get_template_dir_path", $template, $order);
-      $contents                = file_get_contents("$templateDirpath/default.cfg");
+      $contents                = $this->read_template_part($templateDirpath, "default.cfg");
       $template_pdf_setting    = $this->parseTemplate($contents);
       $get_allow_pdf_customer  = $this->fn->get_allow_pdf_customer();
-      $get_pdf_size            = $this->fn->get_pdf_size_slip() . ("L" == $this->fn->get_pdf_orientation() ? "-L" : "");
+      $get_pdf_size            = $this->resolve_page_format($this->fn->get_pdf_size_slip(), "L" == $this->fn->get_pdf_orientation());
       $_fontData               = $fontData + [
         'dejavu' => [
           'R' => 'DejaVuSans.ttf',
@@ -1231,7 +2151,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
       ];
 
       @ini_set('display_errors', 0);
-      error_reporting(0);
+      $puiw_error_reporting = error_reporting(0);
 
       $mpdf = new \Mpdf\Mpdf(apply_filters("puiw_create_slips_pdf_Mpdf_options", array(
         'fontDir'                => array_merge($fontDirs, [plugin_dir_path(__FILE__)]),
@@ -1263,7 +2183,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
         "invoice_start" => $this->fn->get_invoice_start(),
       ));
       $order_id_formatted = $opts["invoice_prefix"] . ($opts["invoice_start"] + $order_id) . $opts["invoice_suffix"] ? $opts["invoice_prefix"] . ($opts["invoice_start"] + $order_id) . $opts["invoice_suffix"] : "0000000000000000";
-      $pdf_title          = sprintf(_x("Invoice #%s on %s", "invoice-template", $PeproUltimateInvoice->td), $order_id_formatted, get_bloginfo('title'));
+      $pdf_title          = sprintf(_x("Invoice #%s on %s", "invoice-template", "pepro-ultimate-invoice"), $order_id_formatted, get_bloginfo('title'));
       $pdf_title          = apply_filters("puiw_generate_pdf_title_of_pdf", $pdf_title);
       $datenow            = current_time('timestamp');
       $mpdf->SetDirectionality($dire);
@@ -1272,19 +2192,19 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
       $mpdf->SetAuthor($PeproUltimateInvoice->title_d);
       $mpdf->SetCreator($PeproUltimateInvoice->title_tw);
       if (!$order) {
-        $errrxt = _x('Error! Invoice does not exist.', 'invoice-template', $PeproUltimateInvoice->td);
+        $errrxt = _x('Error! Invoice does not exist.', 'invoice-template', "pepro-ultimate-invoice");
         $err_html .= "<body dir='$dire'><h2 style='text-align:center;'>$errrxt</h2><p style='text-align:center;' dir='$dire'>" .
-          sprintf(_x('Created by %s<br>( %s )', 'invoice-template', $PeproUltimateInvoice->td), $PeproUltimateInvoice->title_t, "<a href='https://pepro.dev/'>" . $PeproUltimateInvoice->title_d . '</a>') .
+          sprintf(_x('Created by %s<br>( %s )', 'invoice-template', "pepro-ultimate-invoice"), $PeproUltimateInvoice->title_t, "<a href='https://peprodev.com/'>" . $PeproUltimateInvoice->title_d . '</a>') .
           "</p><br><span><hr style='width: 80%;'><p style='text-align:center;' dir='$dire'>" .
-          sprintf(_x('%sBack to Dashboard%s', 'invoice-template', $PeproUltimateInvoice->td), "<a href='" . get_permalink(get_option('woocommerce_myaccount_page_id')) . "'>", '</a>') . " / " .
-          sprintf(_x('%sBack to Orders%s', 'invoice-template', $PeproUltimateInvoice->td), "<a href='" . wc_get_endpoint_url('orders', '', get_permalink(get_option('woocommerce_myaccount_page_id'))) . "'>", '</a>') .
+          sprintf(_x('%sBack to Dashboard%s', 'invoice-template', "pepro-ultimate-invoice"), "<a href='" . get_permalink(get_option('woocommerce_myaccount_page_id')) . "'>", '</a>') . " / " .
+          sprintf(_x('%sBack to Orders%s', 'invoice-template', "pepro-ultimate-invoice"), "<a href='" . wc_get_endpoint_url('orders', '', get_permalink(get_option('woocommerce_myaccount_page_id'))) . "'>", '</a>') .
           "</span></p></body>";
         $mpdf->WriteHTML($err_html);
       } else {
         $stylesheet      = $this->get_pdf_style($order_id, $order);
         $PDF_EXTRA_STYLE = $this->create_slips($order_id, "CSS");
-        $html_invoice    = $this->create_slips($order_id, "PDF");
-        $mpdf->WriteHTML($stylesheet . $PDF_EXTRA_STYLE, \Mpdf\HTMLParserMode::HEADER_CSS);
+        $html_invoice    = $this->prepare_images_for_pdf($this->create_slips($order_id, "PDF"));
+        $mpdf->WriteHTML($stylesheet . $PDF_EXTRA_STYLE . $this->forced_direction_css(), \Mpdf\HTMLParserMode::HEADER_CSS);
         $mpdf->WriteHTML($html_invoice, \Mpdf\HTMLParserMode::HTML_BODY);
       }
       $datetime = date_i18n("Y_m_d_H_i", $datenow);
@@ -1295,7 +2215,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
       $name = apply_filters("puiw_get_export_pdf_name", $name, $order_id_formatted, $order_id, $datenow);
       if ("S" == $MODE) {
         $rand       = md5(time());
-        $namedir    = PEPROULTIMATEINVOICE_DIR . "/pdf_temp";
+        $namedir    = $this->get_pdf_temp_dir();
         $namedotext = "PackingSlip-$order_id_formatted.$datetime.pdf";
         $namedir    = apply_filters("puiw_get_default_mail_pdf_temp_path", $namedir);
         $namedotext = apply_filters("puiw_get_default_mail_pdf_temp_name", $namedotext);
@@ -1305,6 +2225,15 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
         return $namedotext;
       }
       $mpdf->Output($name . ".pdf", ($force_download ? "D" : "I"));
+      } catch (\Throwable $e) {
+        $this->log_error("create_slips_pdf", $e, $order_id);
+        if ("S" === $MODE || !$showerror) {
+          return false;
+        }
+        wp_die(esc_html($e->getMessage()), esc_html__("Packing slip could not be generated", "pepro-ultimate-invoice"), array("back_link" => true));
+      } finally {
+        error_reporting($puiw_error_reporting);
+      }
     }
     public function create_slips($order_id = 0, $MODE = "HTML") {
       if (!$order_id || empty(trim($order_id)) || !is_numeric(trim($order_id))) {
@@ -1329,14 +2258,17 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
       $opts                  = $this->get_default_dynamic_params($order_id, $order);
       $opt                   = apply_filters("puiw_printslips_create_html_options", $opts, $order);
       $templateDirpath       = apply_filters("puiw_get_template_dir_path",  $opt["template"], $order);
-      $opt["CURENT_DIR_URL"] = apply_filters("puiw_get_template_dir_url",   plugin_dir_url($opt["template"]), $opt["template"], $order);
+      $opt["CURENT_DIR_URL"] = apply_filters("puiw_get_template_dir_url",   plugin_dir_url($opt["template"] . "/default.cfg"), $opt["template"], $order);
       $keepOriginalHTMLtags  = $this->get_preserve_html_tags($opt, $order);
       $keepOriginalENnumbers = $this->get_preserve_english_numbers($opt, $order);
       do_action("puiw_printslips_before_create_html", $opt, $opts, $order);
       $extrainvoiceheaddata  = '';
-      $main_css_style        = file_get_contents("$templateDirpath/style.slips" . ("PDF" == $MODE || "CSS" == $MODE ? ".pdf" : "") . ".css");
+      $main_css_style        = $this->read_template_part($templateDirpath, "style.slips" . ("PDF" == $MODE || "CSS" == $MODE ? ".pdf" : "") . ".css");
       $body_content          = "PDF" == $MODE ? "" : '<p style="text-align:center;"><a class="print-button" href="javascript:;" onclick="window.print();return false;">' . __("PRINT", "pepro-ultimate-invoice") . '</a></p>';
-      $body_content         .= file_get_contents("$templateDirpath/template.slips" . ("PDF" == $MODE ? ".pdf" : "") . ".tpl");
+      $body_content         .= $this->order_slip_blocks(
+        $this->read_template_part($templateDirpath, "template.slips" . ("PDF" == $MODE ? ".pdf" : "") . ".tpl"),
+        $this->fn->get_slip_layout("sender-right")
+      );
       $invoicehtmltitle      = "PDF" == $MODE ? "" : "{{{invoice_title}}} | {{{store_name}}}";
       $order_note_a          = apply_filters("puiw_printslips_order_note_customer", "<strong>" . __("Note provided by Customer", "pepro-ultimate-invoice") . "</strong><br>" . $this->fn->get_order_note($order, "a"), $this->fn->get_order_note($order, "a"), $order, $opt);
       $order_note_b          = apply_filters("puiw_printslips_order_note_shopmngr", "<strong>" . __("Note provided by Shop manager", "pepro-ultimate-invoice") . "</strong><br>" . $this->fn->get_order_note($order, "b"), $this->fn->get_order_note($order, "b"), $order, $opt);
@@ -1433,10 +2365,11 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
       $extrainvoiceheaddata = apply_filters("puiw_printslips_HTML_extrahead", $extrainvoiceheaddata);
       $invoicehtmltitle     = apply_filters("puiw_printslips_HTML_title", $invoicehtmltitle);
       $main_css_style       = apply_filters("puiw_printslips_HTML_style", $main_css_style);
-      $template_css         = "{$main_css_style}{{{custom_css_style}}}";
-      $template             = "<!DOCTYPE html><html lang=\"fa\" dir=\"ltr\"><head><title>$invoicehtmltitle</title>$extrainvoiceheaddata<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /><style type='text/css'>{$main_css_style}{{{custom_css_style}}}</style></head>$body_content</html>";
+      // the PDF used to get "{{{custom_css_style}}}" back as literal text here
+      $template_css         = $main_css_style . (isset($opt["slips_pdf_css_style"]) ? $opt["slips_pdf_css_style"] : "");
+      $template             = "<!DOCTYPE html><html lang=\"{$this->html_lang()}\" dir=\"{$this->html_dir()}\"><head><title>$invoicehtmltitle</title>$extrainvoiceheaddata<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /><style type='text/css'>{$main_css_style}{{{slips_css_style}}}</style></head>$body_content</html>";
       $template             = "PDF" == $MODE ? $body_content : $template;
-      $product_row_RAW      = file_get_contents("$templateDirpath/template.row.tpl");
+      $product_row_RAW      = $this->read_template_part($templateDirpath, "template.row.tpl");
       $n                    = 0;
       $total_weight = 0;
       foreach (apply_filters("puiw_order_items", $order->get_items(), $order) as $item_id => $item) {
@@ -1574,28 +2507,26 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
       if (!$order) {
         return __('Incorrect Order!', "pepro-ultimate-invoice");
       }
-      if ("HTML" == $MODE && !$this->has_access("HTML", $order)) {
+      // the inventory report is a warehouse document: shelf numbers, buying prices
+      // and internal notes. Owning the order is not enough to read it.
+      if (!apply_filters("puiw_inventory_report_has_access", current_user_can("edit_shop_orders") || current_user_can("manage_woocommerce"), $order)) {
         global $PeproUltimateInvoice;
-        $PeproUltimateInvoice->die("printClass_create_html auth_check", __("Err 403 - Access Denied", "pepro-ultimate-invoice"), $PeproUltimateInvoice->Unauthorized_Access);
-      }
-      if ("PDF" == $MODE && !$this->has_access("PDF", $order)) {
-        global $PeproUltimateInvoice;
-        $PeproUltimateInvoice->die("printClass_create_html_pdf auth_check", __("Err 403 - Access Denied", "pepro-ultimate-invoice"), $PeproUltimateInvoice->Unauthorized_Access);
+        $PeproUltimateInvoice->die("printClass_inventory auth_check", __("Err 403 - Access Denied", "pepro-ultimate-invoice"), $PeproUltimateInvoice->Unauthorized_Access);
       }
       ob_start();
       $opts = $this->get_default_dynamic_params($order_id, $order);
       $opt = apply_filters("puiw_printinventory_create_html_options", $opts, $order);
 
       $templateDirpath = apply_filters("puiw_get_template_dir_path", $opt["template"], $order);
-      $opt["CURENT_DIR_URL"] = apply_filters("puiw_get_template_dir_url", plugin_dir_url($opt["template"]), $opt["template"], $order);
+      $opt["CURENT_DIR_URL"] = apply_filters("puiw_get_template_dir_url", plugin_dir_url($opt["template"] . "/default.cfg"), $opt["template"], $order);
 
       $keepOriginalHTMLtags = $this->get_preserve_html_tags($opt, $order);
       $keepOriginalENnumbers = $this->get_preserve_english_numbers($opt, $order);
       do_action("puiw_printinventory_before_create_html", $opt, $opts, $order);
       $extrainvoiceheaddata = '';
-      $main_css_style = file_get_contents("$templateDirpath/style.inventory.css");
+      $main_css_style = $this->read_template_part($templateDirpath, "style.inventory.css");
       $body_content = '<p style="text-align:center;"><a class="print-button" href="javascript:;" onclick="window.print();return false;">' . __("PRINT", "pepro-ultimate-invoice") . '</a></p>';
-      $body_content .= file_get_contents("$templateDirpath/template.inventory.tpl");
+      $body_content .= $this->read_template_part($templateDirpath, "template.inventory.tpl");
       $invoicehtmltitle = "{{{invoice_title}}} | {{{store_name}}}";
       $extrainvoiceheaddata .= '<script src="' . PEPROULTIMATEINVOICE_URL . '/assets/js/qrcode.min.js"></script>';
       $order_note_a = apply_filters("puiw_printinventory_order_note_customer", "<strong>" . __("Note provided by Customer", "pepro-ultimate-invoice") . "</strong><br>" . $this->fn->get_order_note($order, "a"), $this->fn->get_order_note($order, "a"), $order, $opt);
@@ -1652,8 +2583,8 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
       $extrainvoiceheaddata = apply_filters("puiw_printinventory_HTML_extrahead", $extrainvoiceheaddata);
       $invoicehtmltitle = apply_filters("puiw_printinventory_HTML_title", $invoicehtmltitle);
       $main_css_style = apply_filters("puiw_printinventory_HTML_style", $main_css_style);
-      $template = "<!DOCTYPE html><html lang=\"fa\" dir=\"ltr\"><head><title>$invoicehtmltitle</title>$extrainvoiceheaddata<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /><style type='text/css'>{$main_css_style}{{{inventory_css_style}}}</style></head>$body_content</html>";
-      $product_row_RAW = file_get_contents("$templateDirpath/template.row.inventory.tpl");
+      $template = "<!DOCTYPE html><html lang=\"{$this->html_lang()}\" dir=\"{$this->html_dir()}\"><head><title>$invoicehtmltitle</title>$extrainvoiceheaddata<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /><style type='text/css'>{$main_css_style}{{{inventory_css_style}}}</style></head>$body_content</html>";
+      $product_row_RAW = $this->read_template_part($templateDirpath, "template.row.inventory.tpl");
       $n = 0;
       $total_weight = 0;
       foreach (apply_filters("puiw_order_items", $order->get_items(), $order) as $item_id => $item) {
@@ -1852,13 +2783,16 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
       return $save_file_loc;
     }
     protected function get_pdf_style($order_id = 0, $order = false) {
-      $template = $this->fn->get_template();
-      $templateDirpath = apply_filters("puiw_get_template_dir_path", $template, $order);
-      $template = file_get_contents("$templateDirpath/style.pdf.css");
+      // the markup is built from $opt["template"], so the stylesheet has to come from the
+      // same place: asking the saved option instead meant a per order template, a
+      // pre-invoice or an advanced e-mail send got its own html with the default css
       $opts = $this->get_default_dynamic_params($order_id, $order);
       $opts["invoice_final_prices"] = $this->get_order_final_prices_pdf($order);
       $opt = apply_filters("puiw_printinvoice_create_html_options", $opts, $order);
-      $opt["CURENT_DIR_URL"] = apply_filters("puiw_get_template_dir_url", plugin_dir_url($template), $template, $order);
+      $template = !empty($opt["template"]) ? $opt["template"] : $this->fn->get_template();
+      $templateDirpath = apply_filters("puiw_get_template_dir_path", $template, $order);
+      $template = $this->read_template_part($templateDirpath, "style.pdf.css");
+      $opt["CURENT_DIR_URL"] = apply_filters("puiw_get_template_dir_url", plugin_dir_url($template . "/default.cfg"), $template, $order);
 
       $keepOriginalHTMLtags = $this->get_preserve_html_tags($opt, $order);
       $keepOriginalENnumbers = $this->get_preserve_english_numbers($opt, $order);
@@ -2027,7 +2961,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
      * @return  string
      * @version 1.0.0
      * @since   1.3.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function custom_css_per_invoice($custom_css_style, $default) {
       if ($this->_woosb_show_bundled_hierarchy == "yes") {
@@ -2045,7 +2979,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
      * @return  string
      * @version 1.0.0
      * @since   1.3.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_order_final_prices($order) {
       ob_start();
@@ -2073,12 +3007,14 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
      * @return  string
      * @version 1.0.0
      * @since   1.3.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_order_final_prices_pdf($order) {
       ob_start();
       foreach ($order->get_order_item_totals() as $key => $total) {
-        echo "<p dir='rtl'>" . esc_html($total['label']) . " " . (('payment_method' === $key) ? esc_html($total['value']) : wp_kses_post($total['value'])) . "</p><br>";
+        // one line per total; the <br> that used to follow each one doubled the gaps and
+        // pushed the totals of a long order onto a page of their own
+        printf("<p dir='%s' class='puiw-total-line puiw-total-%s'><span class='k'>%s</span> %s</p>", $this->page_direction(), esc_attr($key), esc_html($total['label']), ('payment_method' === $key) ? esc_html($total['value']) : wp_kses_post($total['value']));
       }
       $tr = ob_get_contents();
       $tr = apply_filters("puiw_printinvoice_get_order_final_prices_pdf", $tr, $order);
@@ -2094,7 +3030,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
      * @return  string
      * @version 1.0.0
      * @since   1.3.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     private function get_item_meta($item_id, $item, $product) {
       ob_start();
@@ -2144,7 +3080,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
      * @return  array
      * @version 1.0.0
      * @since   1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function woosb_puiw_hide_bundles_parent($data_list, $order) {
       foreach ($data_list as $key => $data) {
@@ -2164,7 +3100,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
      * @return  array
      * @version 1.0.0
      * @since   1.3.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function woosb_puiw_hide_bundled_childs($data_list, $order) {
       foreach ($data_list as $key => $data) {
@@ -2183,7 +3119,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
      * @return  boolean
      * @version 1.0.0
      * @since   1.3.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function is_bundled_parent($key) {
       return wc_get_order_item_meta($key, '_woosb_ids', true);
@@ -2196,7 +3132,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
      * @return  boolean
      * @version 1.0.0
      * @since   1.3.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function is_bundled_child($key) {
       return wc_get_order_item_meta($key, '_woosb_parent_id', true);
@@ -2214,7 +3150,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
      * @return  array classes
      * @version 1.0.0
      * @since   1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function puiw__item_extra_classes($classes, $product, $item_id, $item, $order, $nthitem) {
       if ($nthitem % 2) {
@@ -2271,7 +3207,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
      * @return  string
      * @version 1.0.0
      * @since   1.3.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function woosb_before_order_item_meta($order_item_id) {
       if ($parent_id = wc_get_order_item_meta($order_item_id, '_woosb_parent_id', true)) {
@@ -2289,7 +3225,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
      * @return  array $items
      * @version 1.0.0
      * @since   1.3.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function puiw_sort_order_items($items, $order) {
       if (count($items) > 1) {
@@ -2322,11 +3258,15 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
           }
         }
         if (!empty($item_order)) {
+          $col = array_column($item_order, $sort_by);
+          // an unknown sort key yields an empty column, and array_multisort() on
+          // mismatched sizes is a fatal, so leave the items in their natural order
+          if (count($col) !== count($item_order)) {
+            return $items;
+          }
           if (apply_filters("puiw_order_items_sort_desc", false) === false) {
-            $col = array_column($item_order, $sort_by);
             array_multisort($col, SORT_ASC, $item_order);
           } else {
-            $col = array_column($item_order, $sort_by);
             array_multisort($col, SORT_DESC, $item_order);
           }
           foreach ($item_order as $i => $x) {
@@ -2345,7 +3285,7 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
      * @return array header info
      * @version 2.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     private function parseTemplate($contents) {
       $styleExifDAta = array();

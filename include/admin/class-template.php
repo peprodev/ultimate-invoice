@@ -16,7 +16,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string weight and unit
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_product_weight($product_id)
     {
@@ -32,7 +32,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string weight and unit
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_format_weight($weight)
     {
@@ -46,7 +46,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string dimensions and unit
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_product_dimension($product_id)
     {
@@ -63,7 +63,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
     * @return string formatted datetime
     * @version 1.0.0
     * @since 1.0.0
-    * @license https://pepro.dev/license Pepro.dev License
+    * @license https://peprodev.com/license Pepro.dev License
     */
     public function get_date($date_str="",$default_format="Y/m/d H:i", $force_format=false)
     {
@@ -72,7 +72,8 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
       $date_format = empty($date_format) ? $default_format : $date_format;
       $date_format = $force_format ? $default_format : $date_format;
       $timestamp = $this->local_date_i18n(strtotime($date_str));
-      $converted_date = date_i18n($default_format, $timestamp, true);
+      // the format setting used to apply to Jalali dates only
+      $converted_date = date_i18n($date_format, $timestamp, true);
 
       if ($this->get_date_shamsi() == "yes") {
         $converted_date = pu_jdate($date_format, $timestamp, "", "local", "en");
@@ -101,23 +102,45 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string formtatted context
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function parse_number($context="")
     {
-      if ($this->get_force_persian_numbers() == "arabic") {
-          $western_arabic = array('0','1','2','3','4','5','6','7','8','9');
-          $eastern_arabic = array('٠','١','٢','٣','٤','٥','٦','٧','٨','٩');
-          $context = str_replace($western_arabic, $eastern_arabic, $context);
-          return $context;
+      $mode = $this->get_force_persian_numbers();
+      $english = array("0","1","2","3","4","5","6","7","8","9");
+      $from    = $english;
+      if ("latin" === $mode) {
+        // an English invoice: digits the shop typed in Persian or Arabic come out as 0-9
+        $from   = array("۰","۱","۲","۳","۴","۵","۶","۷","۸","۹","٠","١","٢","٣","٤","٥","٦","٧","٨","٩");
+        $digits = array_merge($english, $english);
+      } elseif ("arabic" === $mode) {
+        $digits = array('٠','١','٢','٣','٤','٥','٦','٧','٨','٩');
+      } elseif ("farsi" === $mode) {
+        $digits = array("۰","۱","۲","۳","۴","۵","۶","۷","۸","۹");
+      } else {
+        return $context;
       }
-      if ($this->get_force_persian_numbers() == "farsi") {
-          $english = array("0","1","2","3","4","5","6","7","8","9");
-          $farsi = array("۰","۱","۲","۳","۴","۵","۶","۷","۸","۹");
-          $context = str_replace($english, $farsi, $context);
-          return $context;
+      if (!is_string($context) || "" === $context) {
+        return $context;
       }
-      return $context;
+      // a bare url or colour ends up in a style block or an attribute (the template's
+      // font urls), so it keeps its digits
+      if (preg_match('~^\s*(?:(?:https?:)?//\S+|#[0-9a-f]{3,8})\s*$~i', $context)) {
+        return $context;
+      }
+      // only the visible text: digits inside a tag (an image url, a barcode size,
+      // an inline width) or an entity have to stay as they are or the markup breaks
+      // a style or script block is text too, but its digits are font urls and sizes
+      $parts = preg_split('/(<style\b[^>]*>.*?<\/style>|<script\b[^>]*>.*?<\/script>|<[^>]*>|&#?[a-z0-9]+;)/is', $context, -1, PREG_SPLIT_DELIM_CAPTURE);
+      if (false === $parts) {
+        return $context;
+      }
+      foreach ($parts as $i => $part) {
+        if ("" !== $part && "<" !== $part[0] && "&" !== $part[0]) {
+          $parts[$i] = str_replace($from, $digits, $part);
+        }
+      }
+      return implode("", $parts);
     }
     /**
      * get store name
@@ -126,7 +149,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string store name
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_store_name()
     {
@@ -141,7 +164,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string invoice title
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_invoice_title($default="")
     {
@@ -157,7 +180,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
     * @return string logo
     * @version 1.0.0
     * @since 1.0.0
-    * @license https://pepro.dev/license Pepro.dev License
+    * @license https://peprodev.com/license Pepro.dev License
     */
     public function get_store_logo($default="")
     {
@@ -173,7 +196,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string store url
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_store_website($default="")
     {
@@ -189,7 +212,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string invoice title
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_email_subject($default="")
     {
@@ -205,7 +228,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string sender email from name
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_email_from_name($default="")
     {
@@ -222,7 +245,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string sender email from address
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_email_from_address($default="")
     {
@@ -239,7 +262,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string store email
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_store_email($default="")
     {
@@ -256,7 +279,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string store phone
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_store_phone($default="")
     {
@@ -272,7 +295,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string store National ID
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_store_national_id($default="")
     {
@@ -288,7 +311,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string store Registration Number
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_store_registration_number($default="")
     {
@@ -304,7 +327,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string store Economical Number
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_store_economical_number($default="")
     {
@@ -320,7 +343,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_store_national_id($default="yes")
     {
@@ -336,7 +359,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_store_registration_number($default="yes")
     {
@@ -352,7 +375,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_store_economical_number($default="yes")
     {
@@ -368,8 +391,21 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string arabic/farsi/no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
+    public function get_template_direction($default="auto")
+    {
+      $dir = get_option("puiw_template_direction", $default);
+      $dir = in_array($dir, array("auto", "ltr", "rtl"), true) ? $dir : $default;
+      return apply_filters("puiw_get_template_direction", $dir, $default);
+    }
+    public function get_invoice_language($default="auto")
+    {
+      $mode = get_option("puiw_invoice_language", $default);
+      $valid = array_merge(array("auto", "site", "en"), function_exists("get_available_languages") ? get_available_languages() : array());
+      $mode  = in_array($mode, $valid, true) ? $mode : $default;
+      return apply_filters("puiw_get_invoice_language", $mode, $default);
+    }
     public function get_force_persian_numbers($default="no")
     {
       $force_persian_numbers = get_option("puiw_force_persian_numbers",$default);
@@ -384,7 +420,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string store address
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_store_address($default="")
     {
@@ -400,7 +436,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string woocommerce store address
      * @version 1.1.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_wc_store_address()
     {
@@ -411,16 +447,19 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
         $get_base_city      = WC()->countries->get_base_city();
         $get_base_state     = WC()->countries->get_base_state();
         $get_base_country   = WC()->countries->get_base_country();
-        $get_base_countries = WC()->countries->__get('countries');
-        $get_base_states    = WC()->countries->get_states($get_base_country);
+        $get_base_countries = (array) WC()->countries->__get('countries');
+        $get_base_states    = $get_base_country ? WC()->countries->get_states($get_base_country) : array();
+        $get_base_states    = is_array($get_base_states) ? $get_base_states : array();
         $get_base_postcode  = WC()->countries->get_base_postcode();
         $puiw_store_address = array(
-          $get_base_countries[$get_base_country] ?: $get_base_country,
-          $get_base_states[$get_base_state] ?: $get_base_state,
+          !empty($get_base_countries[$get_base_country]) ? $get_base_countries[$get_base_country] : $get_base_country,
+          !empty($get_base_states[$get_base_state]) ? $get_base_states[$get_base_state] : $get_base_state,
           $get_base_city,
           $get_base_address,
           $get_base_address_2
         );
+        // an unset country/state used to leave empty segments and a trail of commas
+        $puiw_store_address = array_filter(array_map("trim", $puiw_store_address), "strlen");
         $return = implode(__(", ", "pepro-ultimate-invoice"), $puiw_store_address);
       }
 
@@ -434,7 +473,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string store postcode / zip
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_store_postcode($default="")
     {
@@ -450,7 +489,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string manual / automatic
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_send_invoices_via_email($default="manual")
     {
@@ -466,7 +505,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return array wc order statuses
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_send_invoices_via_email_opt($default=array())
     {
@@ -482,7 +521,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string manual / automatic
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_send_invoices_via_email_admin($default="")
     {
@@ -498,7 +537,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return array wc order statuses
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_send_invoices_via_email_opt_admin($default=array())
     {
@@ -514,7 +553,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return array selected shop managers email
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_send_invoices_via_email_shpmngrs($default=array())
     {
@@ -530,7 +569,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_allow_users_use_invoices($default="no")
     {
@@ -546,7 +585,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_allow_users_have_invoices($default="no")
     {
@@ -562,7 +601,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_allow_guest_users_view_invoices($default="no")
     {
@@ -578,7 +617,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string wc order statuses
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_allow_users_use_invoices_criteria($default=array())
     {
@@ -594,7 +633,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_invoices_id_barcode($default="no")
     {
@@ -610,7 +649,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_shippingslip_store($default="no")
     {
@@ -626,7 +665,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_shippingslip_customer($default="no")
     {
@@ -642,7 +681,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_qr_code_id($default="no")
     {
@@ -658,7 +697,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_postal_qr_code_label_for_store($default="no")
     {
@@ -674,7 +713,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_postal_qr_code_label_for_customer($default="")
     {
@@ -690,7 +729,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_date_shamsi($default="no")
     {
@@ -706,7 +745,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.1.0
      * @since 1.1.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function show_shipped_date($default="no")
     {
@@ -722,7 +761,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.1.0
      * @since 1.1.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function show_shipping_serial($default="no")
     {
@@ -738,7 +777,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_disable_wc_dashboard($default="no")
     {
@@ -754,7 +793,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_allow_preorder_invoice($default="no")
     {
@@ -770,7 +809,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_allow_quick_shop($default="no")
     {
@@ -786,7 +825,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_allow_preorder_emptycart($default="no")
     {
@@ -802,7 +841,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string html/pdf/both
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_allow_pdf_customer($default="html")
     {
@@ -818,7 +857,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string html/pdf/both
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_allow_pdf_guest($default="html")
     {
@@ -834,7 +873,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string pdf page size
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_pdf_size($default="A4")
     {
@@ -856,7 +895,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string pdf page orientation (P: Portrait/ L: Landscape)
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_pdf_orientation($default="P")
     {
@@ -872,7 +911,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_attach_pdf_invoices_to_mail($default="no")
     {
@@ -888,7 +927,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string custom css style
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_custom_css_style($default="")
     {
@@ -904,7 +943,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string custom css style
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_pdf_css_style($default="")
     {
@@ -920,7 +959,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string extra notes on pre order by shop manager
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_preorder_shopmngr_extra_note($default="")
     {
@@ -936,7 +975,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string extra notes on pre order by shop manager
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_preorder_customer_extra_note($default="")
     {
@@ -952,7 +991,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string inventory css style
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_inventory_css_style($default="")
     {
@@ -968,14 +1007,20 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string template slug
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_template($default="default")
     {
       $template = get_option("puiw_template",$default);
       $template = empty($template) ? $default : $template;
       if (!file_exists("{$template}/default.cfg")){
-        $template = PEPROULTIMATEINVOICE_DIR ."/template/default";
+        // the option holds an absolute path, so moving the site or renaming wp-content
+        // used to drop every shop back to the bundled default without a word. The folder
+        // name still identifies the template, so look it up by that before giving up.
+        $recovered = \peproulitmateinvoice\PeproUltimateInvoice_Themes::resolve(basename((string) $template));
+        $template  = ($recovered && file_exists("{$recovered}/default.cfg"))
+          ? $recovered
+          : PEPROULTIMATEINVOICE_DIR . "template/" . (is_rtl() ? "default-rtl" : "default");
       }
       return apply_filters("puiw_get_template", $template, $default);
     }
@@ -987,7 +1032,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string theme color
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_theme_color($default="teal")
     {
@@ -1003,7 +1048,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string theme secondary color
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_theme_color2($default="#2271b9")
     {
@@ -1019,7 +1064,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string theme secondary color
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_theme_color3($default="#555")
     {
@@ -1035,7 +1080,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string template slug
      * @version 1.0.0
      * @since 1.1.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_preinvoice_template($default="default-pre-invoice")
     {
@@ -1054,7 +1099,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string theme color
      * @version 1.0.0
      * @since 1.1.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_preinvoice_theme_color($default="teal")
     {
@@ -1070,7 +1115,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string theme secondary color
      * @version 1.0.0
      * @since 1.1.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_preinvoice_theme_color2($default="#2271b9")
     {
@@ -1086,7 +1131,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string theme secondary color
      * @version 1.0.0
      * @since 1.1.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_preinvoice_theme_color3($default="#555")
     {
@@ -1102,7 +1147,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string font size
      * @version 1.0.0
      * @since 1.1.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_font_size($default="16")
     {
@@ -1118,7 +1163,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string invoice prefix
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_invoice_prefix($default="")
     {
@@ -1134,7 +1179,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string font name
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_pdf_font($default="iranyekanfa")
     {
@@ -1180,7 +1225,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string invoice suffix
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_invoice_suffix($default="")
     {
@@ -1196,7 +1241,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string invoice start number
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_invoice_start($default="0")
     {
@@ -1212,7 +1257,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string signature img url
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_signature($default="")
     {
@@ -1228,7 +1273,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_signatures($default="no")
     {
@@ -1244,7 +1289,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string watermark img url
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_watermark($default="")
     {
@@ -1260,7 +1305,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string watermark opacity
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_watermark_opacity($default="80")
     {
@@ -1276,7 +1321,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string blend mode
      * @version 1.0.0
      * @since 1.9.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_watermark_blend($default="Normal")
     {
@@ -1292,7 +1337,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string invoices footer html
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_invoices_footer($default="")
     {
@@ -1308,7 +1353,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_shelf_number_id($default="no")
     {
@@ -1324,7 +1369,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_product_sku_inventory($default="no")
     {
@@ -1340,7 +1385,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_product_sku2_inventory($default="no")
     {
@@ -1357,7 +1402,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_product_weight_in_inventory($default="no")
     {
@@ -1373,7 +1418,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_product_total_weight_in_inventory($default="no")
     {
@@ -1389,7 +1434,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_product_dimensions_in_inventory($default="no")
     {
@@ -1405,7 +1450,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.1.6
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_discount_precent($default="no")
     {
@@ -1421,7 +1466,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.1.6
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_product_tax($default="no")
     {
@@ -1437,7 +1482,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_product_quantity_in_inventory($default="no")
     {
@@ -1453,7 +1498,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_product_note_in_inventory($default="no")
     {
@@ -1469,7 +1514,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_product_image_inventory($default="no")
     {
@@ -1485,7 +1530,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string price template ( hide_all_price, show_only_regular_price, show_only_sale_price, show_both_regular_and_sale_price)
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_price_inventory_report($default="show_only_sale_price")
     {
@@ -1501,7 +1546,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string order note inventory template ( hide_note_from_invoice, note_provided_by_customer, note_provided_by_shop_manager, note_provided_by_both)
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_order_note_inventory($default="note_provided_by_customer")
     {
@@ -1517,7 +1562,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_customer_address($default="no")
     {
@@ -1533,7 +1578,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_customer_phone($default="no")
     {
@@ -1549,7 +1594,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_customer_email($default="no")
     {
@@ -1565,7 +1610,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_order_date($default="no")
     {
@@ -1581,7 +1626,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_payment_method($default="no")
     {
@@ -1597,7 +1642,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_shipping_method($default="no")
     {
@@ -1613,7 +1658,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string shipping/billing
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_shipping_address($default="billing")
     {
@@ -1629,7 +1674,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string address display template
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_address_display_method($default="[country], [province], [city], [address1], [address2] ([po_box])")
     {
@@ -1645,7 +1690,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_transaction_ref_id($default="no")
     {
@@ -1661,7 +1706,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_paid_date($default="no")
     {
@@ -1677,7 +1722,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_order_status($default="no")
     {
@@ -1693,7 +1738,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_purchase_complete_date($default="no")
     {
@@ -1709,7 +1754,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_shipping_date($default="no")
     {
@@ -1725,7 +1770,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_product_image($default="no")
     {
@@ -1741,7 +1786,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_product_purchase_note($default="no")
     {
@@ -1757,7 +1802,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_order_items($default="no")
     {
@@ -1773,7 +1818,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_order_total($default="no")
     {
@@ -1789,7 +1834,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string order note template (hide_note_from_invoice note_provided_by_customer note_provided_by_shop_manager note_provided_by_both)
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_order_note($default="note_provided_by_customer")
     {
@@ -1812,7 +1857,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string order note
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_order_note($order, $note_type='a')
     {
@@ -1844,7 +1889,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_user_uin($default="no")
     {
@@ -1860,7 +1905,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_shipping_ref_id($default="no")
     {
@@ -1876,7 +1921,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string Line item Price Display (show_wc_price, show_only_regular_price, show_only_sale_price, show_both_regular_and_sale_price, show_saved_regular_price, show_saved_sale_price, show_saved_regular_and_sale_price)
      * @version 2.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_price_template($default="show_only_sale_price")
     {
@@ -1892,7 +1937,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string Line item Tax Display (amount, labelamount, onlytotal)
      * @version 1.0.0
      * @since 1.8.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_tax_display($default="onlytotal")
     {
@@ -1908,7 +1953,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes/no
      * @version 1.0.0
      * @since 1.8.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_coupons_code_at_totals($default="yes")
     {
@@ -1924,7 +1969,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes/no
      * @version 1.0.0
      * @since 1.8.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_coupons_description_at_totals($default="yes")
     {
@@ -1940,7 +1985,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes/no
      * @version 1.0.0
      * @since 1.8.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_coupons_discount_at_totals($default="no")
     {
@@ -1956,7 +2001,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes/no
      * @version 1.0.0
      * @since 1.8.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_coupons_amount_at_totals($default="no")
     {
@@ -1972,7 +2017,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string (wcorder, liveprice, savepirce, advanced)
      * @version 1.0.0
      * @since 1.8.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_discount_calc($default="wcorder")
     {
@@ -1988,7 +2033,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string (value, precnt, both)
      * @version 1.0.0
      * @since 1.8.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_discount_display($default="precnt")
     {
@@ -2004,7 +2049,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_product_weight($default="no")
     {
@@ -2020,7 +2065,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_product_dimensions($default="no")
     {
@@ -2036,7 +2081,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_product_sku($default="no")
     {
@@ -2052,7 +2097,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.0.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_show_product_sku2($default="no")
     {
@@ -2068,7 +2113,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.3.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_woosb_show_bundles($default="no")
     {
@@ -2084,7 +2129,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.3.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_woosb_show_bundles_subtitle($default="no")
     {
@@ -2100,7 +2145,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.3.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_woosb_show_bundled_products($default="no")
     {
@@ -2116,7 +2161,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.3.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_woosb_show_bundled_subtitle($default="no")
     {
@@ -2132,7 +2177,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.3.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_woosb_show_bundled_hierarchy($default="no")
     {
@@ -2148,7 +2193,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.3.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_woosb_bundled_subtitle_prefix($default="")
     {
@@ -2164,7 +2209,7 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.3.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_woosb_bundles_subtitle_prefix($default="")
     {
@@ -2180,13 +2225,189 @@ if (!class_exists("PeproUltimateInvoice_Template")) {
      * @return string yes / no
      * @version 1.0.0
      * @since 1.3.0
-     * @license https://pepro.dev/license Pepro.dev License
+     * @license https://peprodev.com/license Pepro.dev License
      */
     public function get_items_sorting($default="")
     {
       $show_product_sku2 = get_option("puiw_items_sorting",$default);
       $show_product_sku2 = empty($show_product_sku2) ? $default : $show_product_sku2;
       return apply_filters("puiw_get_items_sorting", $show_product_sku2, $default);
+    }
+    /**
+     * whether the checkout UIN field is mandatory
+     *
+     * @method PeproUltimateInvoice_Template->get_user_uin_required()
+     * @param string $default default value
+     * @return string
+     * @version 1.0.0
+     * @since 2.3.0
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    public function get_user_uin_required($default="yes")
+    {
+      $value = get_option("puiw_user_uin_required", $default);
+      $value = ("" === $value || null === $value) ? $default : $value;
+      return apply_filters("puiw_get_user_uin_required", $value, $default);
+    }
+    /**
+     * custom label for the checkout UIN field
+     *
+     * @method PeproUltimateInvoice_Template->get_user_uin_label()
+     * @param string $default default value
+     * @return string
+     * @version 1.0.0
+     * @since 2.3.0
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    public function get_user_uin_label($default="")
+    {
+      $value = get_option("puiw_user_uin_label", $default);
+      $value = ("" === $value || null === $value) ? $default : $value;
+      return apply_filters("puiw_get_user_uin_label", $value, $default);
+    }
+    /**
+     * where the customer postcode is printed
+     *
+     * @method PeproUltimateInvoice_Template->get_postcode_display()
+     * @param string $default default value
+     * @return string
+     * @version 1.0.0
+     * @since 2.3.0
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    public function get_postcode_display($default="both")
+    {
+      $value = get_option("puiw_postcode_display", $default);
+      $value = ("" === $value || null === $value) ? $default : $value;
+      return apply_filters("puiw_get_postcode_display", $value, $default);
+    }
+    /**
+     * roles allowed to view and print invoices
+     *
+     * @method PeproUltimateInvoice_Template->get_allowed_roles()
+     * @param string $default default value
+     * @return string
+     * @version 1.0.0
+     * @since 2.3.0
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    public function get_allowed_roles($default="")
+    {
+      $value = get_option("puiw_allowed_roles", $default);
+      $value = ("" === $value || null === $value) ? $default : $value;
+      return apply_filters("puiw_get_allowed_roles", $value, $default);
+    }
+    /**
+     * print how many orders the customer has placed
+     *
+     * @method PeproUltimateInvoice_Template->get_show_customer_order_count()
+     * @param string $default default value
+     * @return string
+     * @version 1.0.0
+     * @since 2.3.0
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    public function get_show_customer_order_count($default="no")
+    {
+      $value = get_option("puiw_show_customer_order_count", $default);
+      $value = ("" === $value || null === $value) ? $default : $value;
+      return apply_filters("puiw_get_show_customer_order_count", $value, $default);
+    }
+    /**
+     * extra product attributes / meta keys printed per item
+     *
+     * @method PeproUltimateInvoice_Template->get_item_extra_attributes()
+     * @param string $default default value
+     * @return string
+     * @version 1.0.0
+     * @since 2.3.0
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    public function get_item_extra_attributes($default="")
+    {
+      $value = get_option("puiw_item_extra_attributes", $default);
+      $value = ("" === $value || null === $value) ? $default : $value;
+      return apply_filters("puiw_get_item_extra_attributes", $value, $default);
+    }
+    /**
+     * what the order received page shows
+     *
+     * @method PeproUltimateInvoice_Template->get_thankyou_display()
+     * @param string $default default value
+     * @return string
+     * @version 1.0.0
+     * @since 2.3.0
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    public function get_thankyou_display($default="buttons")
+    {
+      $value = get_option("puiw_thankyou_display", $default);
+      $value = ("" === $value || null === $value) ? $default : $value;
+      return apply_filters("puiw_get_thankyou_display", $value, $default);
+    }
+    /**
+     * packing slip sender/receiver arrangement
+     *
+     * @method PeproUltimateInvoice_Template->get_slip_layout()
+     * @param string $default default value
+     * @return string
+     * @version 1.0.0
+     * @since 2.3.0
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    public function get_slip_layout($default="sender-right")
+    {
+      $value = get_option("puiw_slip_layout", $default);
+      $value = ("" === $value || null === $value) ? $default : $value;
+      return apply_filters("puiw_get_slip_layout", $value, $default);
+    }
+    /**
+     * print the parcel weight on the packing slip
+     *
+     * @method PeproUltimateInvoice_Template->get_slip_show_weight()
+     * @param string $default default value
+     * @return string
+     * @version 1.0.0
+     * @since 2.3.0
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    public function get_slip_show_weight($default="yes")
+    {
+      $value = get_option("puiw_slip_show_weight", $default);
+      $value = ("" === $value || null === $value) ? $default : $value;
+      return apply_filters("puiw_get_slip_show_weight", $value, $default);
+    }
+    /**
+     * print the barcode on the packing slip
+     *
+     * @method PeproUltimateInvoice_Template->get_slip_show_barcode()
+     * @param string $default default value
+     * @return string
+     * @version 1.0.0
+     * @since 2.3.0
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    public function get_slip_show_barcode($default="yes")
+    {
+      $value = get_option("puiw_slip_show_barcode", $default);
+      $value = ("" === $value || null === $value) ? $default : $value;
+      return apply_filters("puiw_get_slip_show_barcode", $value, $default);
+    }
+    /**
+     * print original price and discount for each item
+     *
+     * @method PeproUltimateInvoice_Template->get_show_item_discount()
+     * @param string $default default value
+     * @return string
+     * @version 1.0.0
+     * @since 2.3.0
+     * @license https://peprodev.com/license Pepro.dev License
+     */
+    public function get_show_item_discount($default="no")
+    {
+      $value = get_option("puiw_show_item_discount", $default);
+      $value = ("" === $value || null === $value) ? $default : $value;
+      return apply_filters("puiw_get_show_item_discount", $value, $default);
     }
 
   }

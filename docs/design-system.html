@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ultimate Invoice Design System</title>
+<!-- the real admin stylesheet, so every sample below is what the plugin draws -->
+<link rel="stylesheet" href="../assets/admin/settings.css">
+<style>
+  :root {
+    --ds-ink: #1e1e1e; --ds-muted: #646970; --ds-line: #e2e4e7; --ds-canvas: #f6f7f7;
+    --ds-accent: #3858e9; --ds-soft: #eef1fe;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #f0f0f1; color: var(--ds-ink); font: 13px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Vazirmatn, Tahoma, sans-serif; }
+  .ds { max-width: 1080px; margin: 0 auto; padding: 32px 16px 64px; }
+  .ds h1 { font-size: 24px; margin: 0 0 4px; }
+  .ds h2 { font-size: 18px; margin: 40px 0 6px; padding-top: 16px; border-top: 1px solid var(--ds-line); }
+  .ds h3 { font-size: 14px; margin: 22px 0 6px; }
+  .ds p.lead { color: var(--ds-muted); margin: 0 0 20px; }
+  .ds nav { display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0 8px; }
+  .ds nav a { padding: 4px 10px; border: 1px solid var(--ds-line); border-radius: 8px; background: #fff; color: var(--ds-ink); text-decoration: none; font-size: 12px; }
+  .ds ol.rules { margin: 8px 0 0; padding-inline-start: 22px; }
+  .ds ol.rules li { margin: 4px 0; }
+  .ds code { background: #fff; border: 1px solid var(--ds-line); border-radius: 4px; padding: 0 4px; font-size: 12px; }
+  .ds table.tok { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--ds-line); border-radius: 10px; overflow: hidden; }
+  .ds table.tok th, .ds table.tok td { text-align: start; padding: 8px 12px; border-bottom: 1px solid var(--ds-line); font-size: 12.5px; vertical-align: middle; }
+  .ds table.tok th { background: var(--ds-canvas); font-weight: 600; }
+  .sw { display: inline-block; width: 28px; height: 18px; border-radius: 4px; vertical-align: middle; box-shadow: inset 0 0 0 1px rgb(0 0 0 / 10%); }
+  .stage { margin: 10px 0 0; padding: 20px 24px; background: #fff; border: 1px solid var(--ds-line); border-radius: 12px; }
+  .stage[dir=rtl] { font-family: Vazirmatn, Tahoma, sans-serif; }
+  .spec { margin: 8px 0 0; color: var(--ds-muted); font-size: 12px; }
+  .measure { position: relative; height: 18px; margin: 6px 0 0 220px; max-width: 560px; border-inline: 1px solid #d63638; }
+  .measure::after { content: "control column · 560px"; position: absolute; inset: 0; display: grid; place-items: center; font-size: 11px; color: #d63638; border-top: 1px dashed #d63638; top: 9px; height: 0; }
+  .do-dont { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .do-dont > div { padding: 12px 14px; border-radius: 10px; background: #fff; border: 1px solid var(--ds-line); }
+  .do-dont .do { border-color: #8bc79a; }
+  .do-dont .dont { border-color: #f0b4b5; }
+  .do-dont b { display: block; margin-bottom: 4px; }
+  .wp-core-ui .button { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px; border: 1px solid var(--ds-accent); border-radius: 7px; background: #fff; color: var(--ds-accent); font: inherit; cursor: pointer; }
+  .wp-core-ui .button-primary { background: var(--ds-accent); color: #fff; }
+  .puiw-field-input input[type=text] { height: 40px; padding: 0 12px; border: 1px solid #c9ccd0; font: inherit; }
+  @media (max-width: 760px) { .do-dont { grid-template-columns: 1fr; } .measure { margin-inline-start: 0; } }
+</style>
+</head>
+<body class="wp-core-ui puiw-settings-screen">
+<div class="ds">
+  <h1>Ultimate Invoice design system</h1>
+  <p class="lead">Tokens, layout rules and components for every admin screen of the free plugin and PRO: settings, setup wizard, order box and orders list. Every sample uses the plugin's own <code>assets/admin/settings.css</code>. A change that breaks a rule here is a bug.</p>
+  <nav>
+    <a href="#tokens">Tokens</a><a href="#layout">Layout rules</a><a href="#text">Text rules</a>
+    <a href="#field">Field row</a><a href="#controls">Controls</a><a href="#choices">Choice cards</a>
+    <a href="#switches">Switch board</a><a href="#search">Search</a><a href="#macros">Value picker</a>
+    <a href="#colors">Colours</a><a href="#image">Image picker</a><a href="#pro">PRO</a><a href="#notes">Notes</a><a href="#feedback">Dialogs, toasts, toolbars</a>
+  </nav>
+
+  <h2 id="tokens">1. Tokens</h2>
+  <table class="tok">
+    <tr><th>Token</th><th>Value</th><th>Used for</th></tr>
+    <tr><td><code>--puiw-accent</code></td><td><span class="sw" style="background:#3858e9"></span> #3858e9</td><td>Primary buttons, selected cards, focus rings, active nav, icons in tiles</td></tr>
+    <tr><td><code>--puiw-accent-soft</code></td><td><span class="sw" style="background:#eef1fe"></span> #eef1fe</td><td>Selected card background, icon tiles</td></tr>
+    <tr><td><code>--puiw-ink</code> / <code>--puiw-muted</code></td><td><span class="sw" style="background:#1e1e1e"></span> <span class="sw" style="background:#646970"></span></td><td>Text / hints, meta, group labels</td></tr>
+    <tr><td><code>--puiw-line</code> / <code>--puiw-canvas</code></td><td><span class="sw" style="background:#e2e4e7"></span> <span class="sw" style="background:#f6f7f7"></span></td><td>Borders and dividers / search boxes, footers, inactive tiles</td></tr>
+    <tr><td>Control border</td><td><span class="sw" style="background:#c9ccd0"></span> #c9ccd0</td><td>Inputs, textareas, selects, search boxes</td></tr>
+    <tr><td>PRO gold</td><td><span class="sw" style="background:linear-gradient(135deg,#f6c343,#e0a526)"></span> #f6c343 → #e0a526, ink #3d2b03</td><td>Only PRO: crown marks, PRO badge, PRO sidebar group, PRO hero</td></tr>
+    <tr><td>Success / warning / danger</td><td><span class="sw" style="background:#1a7a2e"></span> <span class="sw" style="background:#9a6700"></span> <span class="sw" style="background:#d63638"></span></td><td>Filled values and "on" states / needs attention / destructive and errors</td></tr>
+    <tr><td><code>--puiw-control</code></td><td>560px</td><td>The one width every control in the control column is held to</td></tr>
+    <tr><td>Radius</td><td>4 · 7 · 8 · 10 · 12 · 999</td><td>tags · buttons · inputs and search · cards · containers · switches and chips only</td></tr>
+    <tr><td>Heights</td><td>34 · 40</td><td>search boxes / inputs, buttons, image picker</td></tr>
+    <tr><td>Spacing</td><td>4 · 8 · 12 · 16 · 24</td><td>gaps inside a control · between cards · row padding · between groups · panel padding</td></tr>
+    <tr><td>Type</td><td>11 · 12 · 12.5 · 13 · 14 · 16 · 19</td><td>meta and group labels · hints · rows and chips · body · leads · card titles · page titles</td></tr>
+  </table>
+
+  <h2 id="layout">2. Layout rules</h2>
+  <ol class="rules">
+    <li><b>L1 · Field row.</b> Every setting is one row: label column 220px, control column the rest. Below 960px the row stacks. Only the template picker and choice cards with more than four options take the whole row, label on top.</li>
+    <li><b>L2 · One control width.</b> Inputs, selects, textareas, descriptions, value pickers, image pickers, colour sets and choice grids all stop at <code>--puiw-control</code> (560px). Their start and end edges line up from one row to the next.</li>
+    <li><b>L3 · Compound controls fill it exactly.</b> When a control is made of parts (preview + URL + button + clear), the stretchy part takes the leftover width so the group ends on the same edge as a plain input.</li>
+    <li><b>L4 · Choice grids.</b> Equal columns across the full control width: 1 choice → 1 column, 2 → 2, 3 → 3, 4 → 2×2, 5 or more → rows of 3. Never let the grid size itself to its text.</li>
+    <li><b>L5 · Label alignment.</b> A label sits level with a one-line control and at the top of a tall one (textarea, card grid, switch board, multi choice).</li>
+    <li><b>L6 · One height per row.</b> Everything placed side by side in one control shares a height: 40px for inputs and buttons, 34px for search.</li>
+    <li><b>L7 · Switch boards</b> span the panel in a grid of cards, with a search box once there are more than five.</li>
+    <li><b>L8 · Panels</b> pad 24px. Groups inside a panel are separated by 16px and a hairline.</li>
+    <li><b>L9 · One content edge.</b> Field rows, switch boards and tab bars stop at label + gap + control (796px), so every block in a panel ends on the same edge. The template picker is the one block that runs to the panel's edges.</li>
+    <li><b>L10 · No long sections.</b> A section with more than about ten settings is split into tabs (title field <code>puiw_tabs</code>, each field <code>puiw_tab</code>). Each tab holds one subject. The settings that change the look most (colours) come first in their tab.</li>
+  </ol>
+  <div class="measure"></div>
+
+  <h2 id="text">3. Text rules</h2>
+  <ol class="rules">
+    <li><b>T1 · Card labels ≤ 24 characters</b>, two to four words, no verb. Name the choice and leave out the "show" or "use".</li>
+    <li><b>T2 · Hints are one line</b> (about 90 characters at most) and say what the setting changes, never repeat the label.</li>
+    <li><b>T3 · Placeholders</b> on search boxes are exactly «جست‌وجو…» / "Search…".</li>
+    <li><b>T4 · No "Show" prefix</b> on a switch inside a show/hide board; the board already means show.</li>
+    <li><b>T5 · Every string translated</b> into Persian before it ships. Digits in prose follow the site language; technical values (URLs, codes, colours) stay Latin and LTR.</li>
+  </ol>
+  <div class="do-dont">
+    <div class="do"><b>Do</b>کیوآرکد به‌جای بارکد · بارکد و کیوآرکد · مخفی</div>
+    <div class="dont"><b>Don't</b>به‌جای بارکد، کیوآرکد نمایش داده شود · هم بارکد و هم کیوآرکد نمایش داده شود</div>
+  </div>
+
+  <h2 id="field">4. Field row</h2>
+  <div class="stage" dir="rtl">
+    <div class="puiw-field">
+      <div class="puiw-field-label"><label>نام فروشگاه</label><span class="puiw-field-tip">روی همه‌ی فاکتورها چاپ می‌شود</span></div>
+      <div class="puiw-field-input"><input type="text" value="PeproDev Bench"><p class="puiw-field-desc">اگر خالی بماند نام سایت استفاده می‌شود.</p></div>
+    </div>
+    <div class="puiw-field">
+      <div class="puiw-field-label"><label>وبسایت فروشگاه</label></div>
+      <div class="puiw-field-input"><input type="text" value="https://example.com" dir="ltr"></div>
+    </div>
+  </div>
+  <p class="spec">L1, L2, L5. Label 13px/500, tip 12px muted. Rows divide with a #f0f0f1 hairline and 12px padding.</p>
+
+  <h2 id="controls">5. Buttons</h2>
+  <div class="stage" dir="rtl">
+    <button class="button button-primary">ذخیره تغییرات</button>
+    <button class="button">انتخاب عکس</button>
+    <span class="puiw-imagepicker" style="display:inline-flex;width:auto"><button class="puiw-imagepicker-clear" title="پاک کردن" style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border:1px solid #f0b4b5;border-radius:7px;background:#fdf5f5;color:#d63638">✕</button></span>
+  </div>
+  <p class="spec">40px tall, radius 7. Primary is filled accent, secondary is outlined accent, destructive is a 40×40 square in danger tints. A button never shrinks below the inputs beside it.</p>
+
+  <h2 id="choices">6. Choice cards</h2>
+  <div class="stage" dir="rtl">
+    <div class="puiw-field">
+      <div class="puiw-field-label"><label>آدرس در فاکتور</label></div>
+      <div class="puiw-field-input">
+        <div class="puiw-choicegrid" data-count="2">
+          <label class="puiw-choice"><input type="radio" name="a"><span class="puiw-choice-dot"></span><span class="puiw-choice-text">آدرس صورتحساب</span></label>
+          <label class="puiw-choice is-on"><input type="radio" name="a" checked><span class="puiw-choice-dot"></span><span class="puiw-choice-text">آدرس حمل و نقل</span></label>
+        </div>
+      </div>
+    </div>
+    <div class="puiw-field">
+      <div class="puiw-field-label"><label>کیوآرکد فاکتور</label><span class="puiw-field-tip">به فاکتور آنلاین لینک می‌شود</span></div>
+      <div class="puiw-field-input">
+        <div class="puiw-choicegrid" data-count="3">
+          <label class="puiw-choice"><input type="radio" name="b"><span class="puiw-choice-dot"></span><span class="puiw-choice-text">مخفی</span></label>
+          <label class="puiw-choice is-on"><input type="radio" name="b" checked><span class="puiw-choice-dot"></span><span class="puiw-choice-text">کیوآرکد به‌جای بارکد</span></label>
+          <label class="puiw-choice"><input type="radio" name="b"><span class="puiw-choice-dot"></span><span class="puiw-choice-text">بارکد و کیوآرکد</span></label>
+        </div>
+      </div>
+    </div>
+    <div class="puiw-field">
+      <div class="puiw-field-label"><label>ارسال وقتی وضعیت سفارش این شود</label></div>
+      <div class="puiw-field-input">
+        <div class="puiw-choicegrid is-multi" data-count="5">
+          <label class="puiw-choice is-check"><input type="checkbox"><span class="puiw-choice-dot"></span><span class="puiw-choice-text">در انتظار پرداخت</span></label>
+          <label class="puiw-choice is-check is-on"><input type="checkbox" checked><span class="puiw-choice-dot"></span><span class="puiw-choice-text">در حال انجام</span></label>
+          <label class="puiw-choice is-check is-on"><input type="checkbox" checked><span class="puiw-choice-dot"></span><span class="puiw-choice-text">تکمیل شده</span></label>
+          <label class="puiw-choice is-check"><input type="checkbox"><span class="puiw-choice-dot"></span><span class="puiw-choice-text">لغو شده</span></label>
+          <label class="puiw-choice is-check"><input type="checkbox"><span class="puiw-choice-dot"></span><span class="puiw-choice-text">مسترد شده</span></label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="spec">L4 and T1. A select with up to four choices becomes radio cards; a multiple choice with up to sixteen becomes ticked cards. Selected: accent border and soft fill.</p>
+
+  <h2 id="switches">7. Switch board</h2>
+  <div class="stage" dir="rtl">
+    <div class="puiw-switchboard">
+      <div class="puiw-switchboard-search"><input type="search" placeholder="جست‌وجو…"></div>
+      <div class="puiw-switchboard-grid">
+        <label class="puiw-card-toggle is-on"><input type="checkbox" checked><span class="puiw-card-toggle-switch"></span><span class="puiw-card-toggle-body"><span class="puiw-card-toggle-name">آدرس مشتری</span><span class="puiw-card-toggle-hint">برای نمایش، روشن کنید و برای مخفی‌کردن، خاموش بگذارید</span></span></label>
+        <label class="puiw-card-toggle"><input type="checkbox"><span class="puiw-card-toggle-switch"></span><span class="puiw-card-toggle-body"><span class="puiw-card-toggle-name">روش ارسال</span><span class="puiw-card-toggle-hint">برای نمایش، روشن کنید و برای مخفی‌کردن، خاموش بگذارید</span></span></label>
+        <label class="puiw-card-toggle is-on"><input type="checkbox" checked><span class="puiw-card-toggle-switch"></span><span class="puiw-card-toggle-body"><span class="puiw-card-toggle-name">تلفن مشتری</span><span class="puiw-card-toggle-hint">برای نمایش، روشن کنید و برای مخفی‌کردن، خاموش بگذارید</span></span></label>
+      </div>
+    </div>
+  </div>
+  <p class="spec">L7, T4. Every checkbox is a card with a 36×20 switch whose knob is centred vertically. Every card keeps its hint.</p>
+
+  <h2 id="search">8. Search box</h2>
+  <div class="stage" dir="rtl">
+    <div class="puiw-switchboard-search"><input type="search" placeholder="جست‌وجو…"></div>
+  </div>
+  <p class="spec">One style everywhere (settings sidebar, switch boards, template picker, value picker): 34px tall, radius 8, #c9ccd0 border on canvas, 16px icon at the start, accent focus ring, placeholder per T3. Pills (radius 999) are only for filter chips and switches.</p>
+
+  <h2 id="macros">9. Value picker</h2>
+  <div class="stage" dir="rtl">
+    <div class="puiw-macros" data-mode="insert">
+      <div class="puiw-macros-head"><span class="puiw-macros-title">درج مقدار</span><input type="search" class="puiw-macros-filter" placeholder="جست‌وجو…"></div>
+      <div class="puiw-macros-body">
+        <div class="puiw-macros-group"><span class="puiw-macros-group-label">سفارش</span>
+          <div class="puiw-macros-list">
+            <button type="button" class="puiw-macro"><span class="puiw-macro-label">شماره‌ی سفارش</span><code dir="ltr">{order_number}</code></button>
+            <button type="button" class="puiw-macro"><span class="puiw-macro-label">مبلغ کل</span><code dir="ltr">{order_total}</code></button>
+            <button type="button" class="puiw-macro is-done"><span class="puiw-macro-label">کد رهگیری</span><code dir="ltr">{tracking_id}</code></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="spec">Under every text field that takes placeholders. Grouped, with a search box past eight values, and folded past twelve. A click inserts at the cursor (or appends once in list mode) and flashes green.</p>
+
+  <h2 id="colors">10. Colour set</h2>
+  <div class="stage" dir="rtl">
+    <div class="puiw-swatchcards">
+      <button type="button" class="puiw-swatchcard"><span class="puiw-swatchcard-name">Sea</span><span class="puiw-swatchcard-chips"><i style="background:#90caf9"></i><i style="background:#a6d5fc"></i><i style="background:#b5deff"></i></span></button>
+      <button type="button" class="puiw-swatchcard is-on"><span class="puiw-swatchcard-name">Grass</span><span class="puiw-swatchcard-chips"><i style="background:#a5d6a7"></i><i style="background:#afe0b1"></i><i style="background:#c3ebc5"></i></span></button>
+      <button type="button" class="puiw-swatchcard"><span class="puiw-swatchcard-name">Peach</span><span class="puiw-swatchcard-chips"><i style="background:#ef9a9a"></i><i style="background:#f5abab"></i><i style="background:#f0bbbb"></i></span></button>
+      <button type="button" class="puiw-swatchcard"><span class="puiw-swatchcard-name">Gold</span><span class="puiw-swatchcard-chips"><i style="background:#faee84"></i><i style="background:#fff59d"></i><i style="background:#fff8b5"></i></span></button>
+    </div>
+  </div>
+  <p class="spec">Schemes are cards (name + three chips) above labelled primary, secondary and tertiary pickers, all in one row, at the top of their tab. Picker names are a <code>div</code>, never a <code>label</code> wrapping the input: the WordPress picker hides that text. Template previews are tinted to the chosen primary colour and carry a three chip strip.</p>
+
+  <h2 id="image">11. Image picker</h2>
+  <div class="stage" dir="rtl">
+    <div class="puiw-field">
+      <div class="puiw-field-label"><label>لوگوی فروشگاه</label></div>
+      <div class="puiw-field-input">
+        <input type="text" value="PeproDev Bench" style="width:100%;max-width:560px">
+        <div class="puiw-imagepicker" style="margin-top:12px">
+          <span class="puiw-imagepicker-preview"><img alt="" src="../assets/img/ultimate-invoice-mark.svg"></span>
+          <input type="text" class="puiw-imagepicker-input" value="https://example.com/logo.png" dir="ltr">
+          <button type="button" class="button puiw-imagepicker-pick">انتخاب عکس</button>
+          <button type="button" class="puiw-imagepicker-clear" style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border:1px solid #f0b4b5;border-radius:7px;background:#fdf5f5;color:#d63638">✕</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="spec">L3 and L6: 40px preview, URL field that stretches, choose button, 40×40 clear. The group ends on the same edge as the input above it.</p>
+
+  <h2 id="pro">12. PRO</h2>
+  <div class="stage" dir="rtl">
+    <span class="puiw-pro-mark" style="display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;border-radius:50%;background:#f6c343;color:#4a3505">♛</span>
+    <span style="display:inline-block;margin-inline-start:12px;padding:0 9px;border-radius:10px;background:linear-gradient(135deg,#f6c343,#e0a526);color:#3d2b03;font-weight:600;font-size:11px;line-height:20px">حرفه‌ای</span>
+  </div>
+  <p class="spec">Gold is reserved for PRO. A PRO field or template carries a 17px crown; on a template card the crown sits in the corner opposite the selected tick. The toolbar shows a PRO badge when PRO is active and a Get PRO link when it is not, never a version number.</p>
+
+  <h2 id="notes">13. Notes and states</h2>
+  <div class="stage" dir="rtl">
+    <div class="puiw-note"><span>پیامک با همان سرویس‌دهنده‌ای ارسال می‌شود که در افزونه‌ی WP SMS تنظیم شده است.</span></div>
+  </div>
+  <p class="spec">Information notes are accent tinted. Warnings use #fffaf0 with #f0c674 borders; errors use the danger tints. Filled values show as green pills (#edf7ee on #1a7a2e).</p>
+
+  <h2 id="feedback">14. Dialogs, toasts and toolbars</h2>
+  <ol class="rules">
+    <li><b>C1 · Dialogs</b> are <code>assets/admin/puiw-dialog.js</code>, never jquery-confirm's look: white card, radius 12, title 16px, content, a footer strip with buttons at the end. The last button does the thing and is filled (danger red for destructive). Esc and a click outside close it.</li>
+    <li><b>C2 · Toasts</b> are a small dark card at the bottom centre with a coloured strip on the start edge: green saved, red failed, accent working. One line, an icon when it succeeded.</li>
+    <li><b>C3 · Toolbars</b> sit once, under what they act on, above a hairline: primary first, then secondary, destructive last in a red outline. 40px buttons with an icon and a label.</li>
+    <li><b>C4 · Inline actions</b> inside a field (save a tracking code) are a 28px button at the field's end; the field reserves room for it.</li>
+    <li><b>C5 · Diagnostics</b> put every value on the same edge whatever its script.</li>
+  </ol>
+</div>
+</body>
+</html>

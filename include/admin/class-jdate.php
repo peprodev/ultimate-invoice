@@ -89,7 +89,7 @@ if (!function_exists("pu_jdate")) {
                 $out.=pu_jdate_words(array('rr'=>$j_d), ' ');
                 break;
 
-            case'k';
+            case'k':
                 $out.=pu_tr_num(100-(int)($doy/($kab+365)*1000)/10, $pu_tr_num);
                 break;
 

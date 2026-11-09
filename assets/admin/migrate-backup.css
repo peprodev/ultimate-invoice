@@ -30,7 +30,3 @@
 	cursor: default;
 	transform: none !important;
 }
-
-h2.red::after {
-	background: #fe050578 !important;
-}

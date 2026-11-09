@@ -86,7 +86,7 @@ This plugin lets you to Generate Awesome Invoices for WooCommerce orders and:
 
 <hr>
 
-### **Developed by** [Pepro Development Group](https://pepro.dev/) for WooCommerce
+### **Developed by** [Pepro Development Group](https://peprodev.com/) for WooCommerce
 
 *Current Version: 2.1.0* \| *Lead Developer:* [amirhp.com](https://amirhp.com)
 
@@ -242,7 +242,7 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 #### Version 1.8.8 / 2022-10-13 / 1401-07-21
 - DEV: added public function $PeproUltimateInvoice->make_pdf_file($order_id)
 - Compatibility with TelegramBot (send PDF invoices on Chat/Group/Channel)
-- To Buy TelegramBot plugin contact support@pepro.dev
+- To Buy TelegramBot plugin contact support@peprodev.com
 
 #### Version 1.8.7 / 2022-09-11 / 1401-06-20
 - Swap Packing Slips labels
@@ -464,7 +464,7 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 #### Version 1.1.7
 
-- Added Compatibility to Pepro WooCommerce Receipt Upload (available upon request to support@pepro.dev)
+- Added Compatibility to Pepro WooCommerce Receipt Upload (available upon request to support@peprodev.com)
 - Added Custom CSS Style for PDF Invoices
 - Added Option to show/hide Paid Date
 - Added Option to show/hide Purchase Complete Date
@@ -492,7 +492,7 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 #### Version 1.1.0
 
-- Added Integration with Dokan (available upon request to support@pepro.dev)
+- Added Integration with Dokan (available upon request to support@peprodev.com)
 - Added Multiple-template
 - Added Templates Color scheme editor
 - Added Separated template for pre-invoice

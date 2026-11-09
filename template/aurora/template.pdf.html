@@ -1,0 +1,88 @@
+<div class="page body au-sheet">
+  <table class="au-band"><tr>
+    <td class="au-band-brand">
+      <img height="44px" src="{{{store_logo}}}" />
+      <div class="au-band-store">{{{store_name}}}</div>
+    </td>
+    <td class="au-band-title">
+      <div class="au-title">{{{invoice_title}}}</div>
+      <div class="au-no">{{{i18n:Invoice No.}}} <b dir="ltr">{{{invoice_id_en}}}</b></div>
+      <div class="au-date">{{{order_date_created}}}</div>
+    </td>
+  </tr></table>
+
+  <table class="au-cards"><tr>
+    <td class="au-card">
+      <div class="au-kind">{{{i18n:Issued by}}}</div>
+      <div class="au-name">{{{store_name}}}</div>
+      <div class="ln "><span class="k ">{{{i18n:Store Address:}}}</span> <span class="v ">{{{store_address}}}</span></div>
+<div class="ln "><span class="k ">{{{i18n:Store Postcode:}}}</span> <span class="v " dir="ltr">{{{store_postcode}}}</span></div>
+<div class="ln "><span class="k ">{{{i18n:Store Phone:}}}</span> <span class="v " dir="ltr">{{{store_phone}}}</span></div>
+<div class="ln show_store_email"><span class="k show_store_email">{{{i18n:Email:}}}</span> <span class="v show_store_email" dir="ltr">{{{store_email}}}</span></div>
+<div class="ln show_store_website"><span class="k show_store_website">{{{i18n:Website:}}}</span> <span class="v show_store_website" dir="ltr">{{{store_website}}}</span></div>
+<div class="ln show_store_national_id"><span class="k show_store_national_id">{{{i18n:National ID:}}}</span> <span class="v show_store_national_id" dir="ltr">{{{store_national_id}}}</span></div>
+<div class="ln show_store_registration_number"><span class="k show_store_registration_number">{{{i18n:Registration No.:}}}</span> <span class="v show_store_registration_number" dir="ltr">{{{store_registration_number}}}</span></div>
+<div class="ln show_store_economical_number"><span class="k show_store_economical_number">{{{i18n:Economical No.:}}}</span> <span class="v show_store_economical_number" dir="ltr">{{{store_economical_number}}}</span></div>
+
+    </td>
+    <td class="au-gap"></td>
+    <td class="au-card">
+      <div class="au-kind">{{{i18n:Issued to}}}</div>
+      <div class="au-name">{{{customer_fullname}}} {{{customer_company}}}</div>
+      <div class="ln show_customer_address"><span class="k show_customer_address">{{{i18n:Customer Address:}}}</span> <span class="v show_customer_address">{{{customer_address}}}</span></div>
+<div class="ln show_customer_postcode"><span class="k show_customer_postcode">{{{i18n:Customer Postcode:}}}</span> <span class="v show_customer_postcode" dir="ltr">{{{customer_postcode}}}</span></div>
+<div class="ln show_customer_phone"><span class="k show_customer_phone">{{{i18n:Customer Phone:}}}</span> <span class="v show_customer_phone" dir="ltr">{{{customer_phone}}}</span></div>
+<div class="ln show_customer_email"><span class="k show_customer_email">{{{i18n:Customer Email:}}}</span> <span class="v show_customer_email">{{{customer_email}}}</span></div>
+<div class="ln show_user_uin"><span class="k show_user_uin">{{{i18n:Customer UIN:}}}</span> <span class="v show_user_uin" dir="ltr">{{{customer_uin}}}</span></div>
+
+    </td>
+    <td class="au-gap"></td>
+    <td class="au-card au-card-codes">
+      <img alt="{{{invoice_id_en}}}" class="au-barcode show_invoices_id_barcode" src="{{{invoice_barcode}}}"/>
+      <div class="au-code-v show_invoices_id_barcode" dir="ltr">{{{invoice_id_en}}}</div>
+      <div class="au-qr show_qr_code_id" if="show_qr_code_id">{{{invoice_qrcode_pdf}}}</div>
+    </td>
+  </tr></table>
+
+  <table class="au-meta"><tr><td class="au-m show_order_date"><span class="k show_order_date">{{{i18n:Order Date:}}}</span><span class="v show_order_date">{{{order_date_created}}}</span></td><td class="au-m show_paid_date"><span class="k show_paid_date">{{{i18n:Date Paid:}}}</span><span class="v show_paid_date">{{{order_date_paid}}}</span></td><td class="au-m show_payment_method"><span class="k show_payment_method">{{{i18n:Payment Method:}}}</span><span class="v show_payment_method">{{{order_payment_method}}}</span></td><td class="au-m show_order_status"><span class="k show_order_status">{{{i18n:Order Status:}}}</span><span class="v show_order_status">{{{order_status}}}</span></td></tr>
+<tr><td class="au-m show_purchase_complete_date"><span class="k show_purchase_complete_date">{{{i18n:Date Completed:}}}</span><span class="v show_purchase_complete_date">{{{order_date_completed}}}</span></td><td class="au-m show_shipping_date"><span class="k show_shipping_date">{{{i18n:Date Shipped:}}}</span><span class="v show_shipping_date">{{{order_date_shipped}}}</span></td><td class="au-m show_shipping_method"><span class="k show_shipping_method">{{{i18n:Shipping Method:}}}</span><span class="v show_shipping_method">{{{order_shipping_method}}}</span></td><td class="au-m show_transaction_ref_id"><span class="k show_transaction_ref_id">{{{i18n:Transaction Ref:}}}</span><span class="v show_transaction_ref_id">{{{order_transaction_ref_id}}}</span></td></tr>
+</table>
+  <table id="products_list" class="content-table au-items">
+    <thead>
+      <div class="show_order_items">
+        <tr class="show_order_items au-thead">
+          <th class="show_product_n" style="width: 1cm !important;">{{{i18n:No.}}}</th>
+          <th class="show_product_image" style="{{{show_product_image_hc}}}" width="1.5cm"><div style="{{{show_product_image_dn}}}">{{{i18n:Image}}}</div></th>
+          <th class="show_product_sku" style="{{{show_product_sku_hc}}}" width="1.5cm"><div style="{{{show_product_sku_dn}}}">{{{i18n:SKU}}}</div></th>
+          <th class="show_product_title_description" colspan="{{{product_description_colspan}}}">{{{i18n:Description}}}</th>
+          <th class="show_product_qty" width="1.5cm">{{{i18n:QTY}}}</th>
+          <th class="show_product_weight" style="{{{show_product_weight_hc}}}"><div style="{{{show_product_weight_dn}}}">{{{i18n:Weight}}}</div></th>
+          <th class="show_product_dimensions" style="{{{show_product_dimensions_hc}}}"><div style="{{{show_product_dimensions_dn}}}">{{{i18n:Dimensions}}}</div></th>
+          <th class="show_product_base_price" width="1.5cm">{{{i18n:Price}}}</th>
+          <th class="show_discount_precent" width="1.5cm" style="{{{show_discount_precent_hc}}}"><div style="{{{show_discount_precent_dn}}}">{{{i18n:Discount (%)}}}</div></th>
+          <th class="show_product_tax" width="1.5cm" style="{{{show_product_tax_hc}}}"><div style="{{{show_product_tax_dn}}}">{{{i18n:Tax}}}</div></th>
+          <th class="show_product_total_price" width="1.5cm" colspan="{{{product_nettotal_colspan}}}">{{{i18n:Total}}}</th>
+        </tr>
+      </div>
+    </thead>
+    <tbody>
+      {{{invoice_products_list}}}
+      <div class="show_order_items show_order_total">
+        <tr class="au-total">
+          <td colspan="{{{invoice_final_prices_pre_colspan}}}">{{{i18n:Total}}}</td>
+          <td>{{{invoice_total_qty}}}</td>
+          <td class="show_product_weight" style="{{{show_product_weight_hc}}}"><div style="{{{show_product_weight_dn}}}">{{{invoice_total_weight}}}</div></td>
+          <td colspan="{{{invoice_final_prices_colspan}}}"><span class="ltr" style="vertical-align: middle; text-align: left;">{{{invoice_final_prices_pdf}}}</span></td>
+        </tr>
+      </div>
+      <tr class="show_custom_footer" style="{{{show_custom_footer_hc}}}"><div style="{{{show_custom_footer_dn}}}">
+        <td class="show_custom_footer" style="vertical-align: middle; {{{show_custom_footer_dn}}}" colspan="{{{invoice_final_row_colspan}}}">{{{invoices_footer}}}</td></div>
+      </tr>
+    </tbody>
+  </table>
+  <table id="show_order_notes" style="{{{show_order_notes_hc}}}">
+    <tr class="show_order_notes" style="{{{show_order_notes_hc}}}">
+      {{{invoice_notes}}}
+    </tr>
+  </table>
+</div>

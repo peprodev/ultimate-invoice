@@ -34,3 +34,12 @@ sftp.json
 .vscode/settings.json
 .vscode/bookmarks.json
 **/.DS_Store
+# macOS / editor noise
+.DS_Store
+.vscode/
+
+# audit reports, kept out of the plugin package
+/reports/
+
+# editor backups
+*.po~

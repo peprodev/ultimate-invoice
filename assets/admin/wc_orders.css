@@ -30,25 +30,40 @@
   src: url("../css/96594ad5.woff") format('woff');
 }
 
+/* toasts: a small card at the bottom, its colour as a strip on the start edge */
 toast {
-  display: block;
-  background: var(--toast-bg, rgba(0, 0, 0, .8));
-  color: #fff;
-  text-align: center;
-  bottom: 0;
-  top: auto;
-  width: 100vw;
-  left: 0;
-  padding: 1rem;
-  box-shadow: 0 2px 11px 0 rgba(0, 0, 0, 0.5);
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  -moz-backdrop-filter: blur(10px);
-  transform: translateY(110%);
   position: fixed;
-  z-index: 9999999999999999 !important;
+  z-index: 100200 !important;
+  inset-inline-start: 50%;
+  bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(440px, calc(100vw - 32px));
+  padding: 12px 16px;
+  border-radius: 10px;
+  border-inline-start: 4px solid var(--toast-bg, #646970);
+  background: #1d2327;
+  color: #fff;
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: start;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 25%);
+  cursor: pointer;
+  opacity: 0;
+  transform: translate(-50%, 16px);
+  transition: opacity .2s ease, transform .2s ease;
+}
+
+[dir=rtl] toast {
+  transform: translate(50%, 16px);
+}
+
+toast .puiw-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  color: #7ad48a;
 }
 
 toast:empty {
@@ -56,7 +71,41 @@ toast:empty {
 }
 
 toast.active {
-  transform: translateY(0);
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+[dir=rtl] toast.active {
+  transform: translate(50%, 0);
+}
+
+/* save button inside the tracking code field */
+.form-field.puiw-has-inline-save {
+  position: relative;
+}
+
+.wp-core-ui .form-field .button.puiw-inline-save {
+  position: absolute;
+  inset-inline-end: 4px;
+  bottom: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 28px;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.form-field .button.puiw-inline-save .puiw-icon {
+  width: 15px;
+  height: 15px;
+}
+
+.form-field.puiw-has-inline-save input {
+  padding-inline-end: 84px !important;
 }
 
 #TB_ajaxContent,
@@ -221,60 +270,6 @@ ul.inner_content a:hover {
 
 .piuw_toolkit>* {
   margin-bottom: 0;
-}
-
-input#puiwc_advanced_opts[type=checkbox] {
-  -webkit-appearance: none !important;
-  -moz-appearance: none !important;
-  appearance: none !important;
-  -webkit-tap-highlight-color: transparent !important;
-  cursor: pointer !important;
-}
-
-input#puiwc_advanced_opts[type=checkbox]:focus {
-  outline: 0 !important;
-  box-shadow: none !important;
-  outline: none !important;
-}
-
-input#puiwc_advanced_opts[type=checkbox] {
-  height: 1.25rem !important;
-  width: 3rem !important;
-  min-width: 1.25rem !important;
-  max-width: 3rem !important;
-  border-radius: 16px !important;
-  display: inline-block !important;
-  position: relative !important;
-  margin: 0 !important;
-  border: none !important;
-  background: #ec4f4f !important;
-}
-
-input#puiwc_advanced_opts[type=checkbox]:after {
-  content: "" !important;
-  position: absolute !important;
-  top: 4px !important;
-  left: 4px !important;
-  width: 0.8rem !important;
-  height: 0.8rem !important;
-  border-radius: 50% !important;
-  background: white !important;
-  box-shadow: 0 1px 2px rgba(44, 44, 44, 0.2) !important;
-  transition: all 0.2s cubic-bezier(0.5, 0.1, 0.75, 1.35) !important;
-}
-
-input#puiwc_advanced_opts[type=checkbox]:checked {
-  background: #22be15 !important;
-  box-shadow: none !important;
-  outline: none !important;
-}
-
-input#puiwc_advanced_opts[type=checkbox]:checked:before {
-  content: "" !important;
-}
-
-input#puiwc_advanced_opts[type=checkbox]:checked:after {
-  transform: translatex(calc(3rem - 0.8rem - 8px)) !important;
 }
 
 .puiw_close_overly {
@@ -573,11 +568,6 @@ toast,
   right: auto !important;
 }
 
-.multiple_emails-container {
-  width: 500px !important;
-  margin: auto !important;
-}
-
 .multiple_emails-container input {
   box-shadow: 0 0 0 1px #007cba;
   outline: 2px solid transparent;
@@ -640,27 +630,6 @@ label[for] {
   z-index: 1 !important;
 }
 
-.puiw_half_container a[href] img {
-  display: inline-block;
-  -webkit-filter: invert(.9);
-  filter: invert(.9);
-}
-
-.puiw_half_container a[href] {
-  font-size: 0 !important;
-}
-
-.puiw_half_container>div {
-  width: 100%;
-}
-
-.puiw_half_container {
-  display: grid;
-  margin-bottom: 5px;
-  grid-template-columns: repeat(4, auto);
-  gap: 0.5rem;
-}
-
 .advabced_puiwc>div.puiw_half {
   margin-bottom: 1rem;
 }
@@ -676,9 +645,41 @@ label[for] {
 
 .puiw-color-pickers {
   display: grid;
-  grid-template-columns: repeat(3, auto);
-  justify-content: start;
-  position: relative;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.puiw-color-pickers .puiw-color-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 34px 96px;
+  align-items: center;
+  gap: 8px;
+}
+
+.advabced_puiwc .puiw-color-row label {
+  margin: 0;
+  font-size: 12px;
+  color: #50575e;
+}
+
+.puiw-color-pickers .puiw-alwan-swatch {
+  inline-size: 34px;
+  block-size: 34px;
+  margin: 0;
+  border-radius: 8px;
+}
+
+.puiw-color-pickers input.wc-color-picker {
+  inline-size: 96px;
+  block-size: 34px;
+  min-height: 34px;
+  margin: 0;
+  padding: 0 8px;
+  box-sizing: border-box;
+  direction: ltr;
+  text-align: left;
+  font: 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  text-transform: uppercase;
 }
 
 .wp-picker-container.wp-picker-active {
@@ -686,7 +687,305 @@ label[for] {
   z-index: 9999999999999;
 }
 
-.puiw_half_container>div:nth-of-type(1),
-.puiw_half_container>div:nth-of-type(2) {
-  grid-column: auto / 2 span;
+/* keep the action icons at a fixed size, admin themes setting img{width:100%} used to blow them up */
+.button.pwui_opts img,
+.pwui_overly .inner_content li img,
+.piuw_toolkit img {
+  width: 20px !important;
+  height: 20px !important;
+  max-width: 20px !important;
+  min-width: 0 !important;
+  object-fit: contain;
+}
+
+.button.admn.pwui_opts img {
+  width: 25px !important;
+  height: 25px !important;
+  max-width: 25px !important;
+}
+
+/* ---------------------------------------------------------------------------
+ * orders list column: three links, plus the options menu when it is enabled
+ * ------------------------------------------------------------------------ */
+
+.puiw-col-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.wp-core-ui .puiw-col-actions .button.admn.pwui_opts {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  color: #50575e;
+  transition: background .15s ease, color .15s ease;
+}
+
+.wp-core-ui .puiw-col-actions .button.admn.pwui_opts:hover,
+.wp-core-ui .puiw-col-actions .button.admn.pwui_opts:focus {
+  background: #f0f2fd !important;
+  color: #3858e9 !important;
+}
+
+.puiw-col-actions .button.admn.pwui_opts svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ---------------------------------------------------------------------------
+ * order metabox: documents as tiles, everything else as grouped rows
+ * ------------------------------------------------------------------------ */
+
+.puiw-metabox {
+  --puiw-mb-accent: #3858e9;
+  --puiw-mb-line: #e2e4e7;
+  --puiw-mb-soft: #f6f7f7;
+  --puiw-mb-muted: #646970;
+  margin: 0 -2px;
+}
+
+.puiw-metabox .puiw-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+.puiw-metabox-group {
+  margin-bottom: 16px;
+}
+
+.puiw-metabox-group:last-child {
+  margin-bottom: 4px;
+}
+
+.puiw-metabox-group h4 {
+  margin: 0 0 6px;
+  padding: 0 2px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--puiw-mb-muted);
+}
+
+.puiw-metabox a.puiw-action {
+  box-sizing: border-box;
+  text-decoration: none;
+  color: #1d2327;
+  box-shadow: none;
+  outline: none;
+}
+
+.puiw-metabox a.puiw-action:focus-visible {
+  box-shadow: 0 0 0 2px var(--puiw-mb-accent);
+  position: relative;
+  z-index: 1;
+}
+
+.puiw-metabox a.puiw-action.is-busy {
+  opacity: .55;
+  pointer-events: none;
+}
+
+/* tiles */
+.puiw-metabox-group.is-tiles .puiw-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.puiw-metabox-group.is-tiles a.puiw-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 66px;
+  padding: 8px 4px;
+  border: 1px solid var(--puiw-mb-line);
+  border-radius: 8px;
+  background: #fff;
+  text-align: center;
+  font-size: 11.5px;
+  line-height: 1.35;
+  transition: border-color .15s ease, background .15s ease, color .15s ease;
+}
+
+.puiw-metabox-group.is-tiles a.puiw-action .puiw-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--puiw-mb-accent);
+}
+
+.puiw-metabox-group.is-tiles a.puiw-action:hover {
+  border-color: var(--puiw-mb-accent);
+  background: #f5f7fe;
+  color: var(--puiw-mb-accent);
+}
+
+/* rows */
+.puiw-metabox-group.is-rows .puiw-actions {
+  display: block;
+  border: 1px solid var(--puiw-mb-line);
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.puiw-metabox-group.is-rows a.puiw-action {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  padding: 7px 10px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  transition: background .15s ease;
+}
+
+.puiw-metabox-group.is-rows a.puiw-action + a.puiw-action {
+  border-top: 1px solid var(--puiw-mb-line);
+}
+
+.puiw-metabox-group.is-rows a.puiw-action:hover {
+  background: var(--puiw-mb-soft);
+}
+
+.puiw-metabox-group.is-rows a.puiw-action .puiw-icon {
+  color: var(--puiw-mb-muted);
+}
+
+.puiw-metabox-group.is-rows a.puiw-action:hover .puiw-icon:not(.puiw-action-go) {
+  color: var(--puiw-mb-accent);
+}
+
+.puiw-metabox .puiw-action-label {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.puiw-metabox .puiw-icon.puiw-action-go {
+  width: 14px;
+  height: 14px;
+  opacity: .45;
+}
+
+[dir=rtl] .puiw-metabox .puiw-icon.puiw-action-go {
+  transform: scaleX(-1);
+}
+
+.puiw-metabox .puiw-action-value {
+  flex: 0 1 auto;
+  max-width: 45%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding: 1px 7px;
+  border-radius: 10px;
+  background: #edf7ee;
+  color: #1a7a2e;
+  font-size: 11px;
+}
+
+/* advanced options, attached under the document tiles */
+.puiw-metabox-advanced {
+  margin-top: 8px;
+  border: 1px solid var(--puiw-mb-line);
+  border-radius: 8px;
+  background: var(--puiw-mb-soft);
+}
+
+.puiw-metabox-advanced-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.puiw-metabox-advanced-row > span {
+  flex: 1 1 auto;
+}
+
+.puiw-metabox-advanced-row .puiw-icon {
+  color: var(--puiw-mb-muted);
+}
+
+.puiw-metabox .advabced_puiwc {
+  padding: 4px 10px 10px;
+  border-top: 1px solid var(--puiw-mb-line);
+}
+
+.puiw-metabox .advabced_puiwc label {
+  display: block;
+  margin: 8px 0 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--puiw-mb-muted);
+}
+
+.puiw-metabox-reset {
+  margin: 8px 0 0;
+}
+
+.puiw-metabox-reset a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  text-decoration: none;
+}
+
+/* WordPress ToggleControl, same shape the settings screens use */
+.puiw-metabox input[type=checkbox].puiw-toggle {
+  -webkit-appearance: none;
+  appearance: none;
+  position: relative;
+  display: inline-block;
+  width: 32px;
+  min-width: 32px;
+  height: 18px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #949494;
+  border-radius: 9px;
+  background: #fff;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease;
+  box-shadow: none;
+}
+
+.puiw-metabox input[type=checkbox].puiw-toggle::before {
+  content: "";
+  margin: 0;
+}
+
+.puiw-metabox input[type=checkbox].puiw-toggle::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  inset-inline-start: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #1e1e1e;
+  transition: transform .2s ease, background .2s ease;
+}
+
+.puiw-metabox input[type=checkbox].puiw-toggle:checked {
+  background: var(--puiw-mb-accent);
+  border-color: var(--puiw-mb-accent);
+}
+
+.puiw-metabox input[type=checkbox].puiw-toggle:checked::after {
+  background: #fff;
+  transform: translateX(14px);
+}
+
+[dir=rtl] .puiw-metabox input[type=checkbox].puiw-toggle:checked::after {
+  transform: translateX(-14px);
 }

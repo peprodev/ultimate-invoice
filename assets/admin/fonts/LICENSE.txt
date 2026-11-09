@@ -1,0 +1,6 @@
+Estedad (استعداد) v7.3 — Copyright (c) 2021 Mohamad Reza Hosseini and the Estedad project authors
+Licensed under the SIL Open Font License, Version 1.1: https://openfontlicense.org
+Source: https://github.com/aminabedi68/Estedad
+
+Only the four weights the settings screen uses are bundled (Regular, Medium,
+SemiBold, Bold). The font is loaded on the plugin's own settings screen only.

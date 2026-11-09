@@ -1,0 +1,54 @@
+/**
+ * screen view, generated from style.pdf.css by tplbuild/screen.py
+ */
+@font-face { font-family: iranyekan; font-weight: normal; src: url("{{{CURENT_DIR_URL}}}/fonts/woff2/iranyekanwebregular.woff2") format("woff2"), url("{{{CURENT_DIR_URL}}}/fonts/woff/iranyekanwebregular.woff") format("woff"); }
+@font-face { font-family: iranyekan; font-weight: bold; src: url("{{{CURENT_DIR_URL}}}/fonts/woff2/iranyekanwebbold.woff2") format("woff2"), url("{{{CURENT_DIR_URL}}}/fonts/woff/iranyekanwebbold.woff") format("woff"); }
+html { background: #e9ebef; }
+body { margin: 0; padding: 24px 12px; font-family: iranyekan, Vazirmatn, Tahoma, "Segoe UI", Arial, sans-serif; font-size: {{{font_size}}}; color: #1d2327; direction: rtl; }
+.puiw-screen-sheet { position: relative; box-sizing: border-box; width: 210mm; max-width: 100%; margin: 0 auto; padding: 12mm 10mm; background: #fff; box-shadow: 0 2px 14px rgba(0, 0, 0, .1); border-radius: 4px; }
+.puiw-screen-sheet img { max-width: 100%; }
+/* the PDF sizes item pictures through mPDF; on screen they need a size of their own */
+.puiw-screen-sheet td.show_product_image img, .puiw-screen-sheet .show_product_image img { width: 12mm !important; height: auto !important; max-height: 14mm; object-fit: contain; }
+.puiw-screen-sheet table { border-collapse: collapse; }
+[dir=rtl] .puiw-screen-sheet { text-align: right; }
+/* the watermark set under Theming; the PDF draws its own through mPDF */
+.puiw-screen-watermark { position: absolute; inset: 0; pointer-events: none; user-select: none; background: url("{{{watermark}}}") no-repeat center; background-size: 60%; opacity: {{{watermark_opacity_10}}}; mix-blend-mode: {{{watermark_blend}}}; z-index: 5; }
+@media print {
+  html, body { background: #fff; padding: 0; }
+  .puiw-screen-sheet { width: auto; box-shadow: none; padding: 0; border-radius: 0; }
+}
+
+
+.sl-items { width: 100%; border-collapse: collapse; }
+.sl-items th { font-size: 8pt; font-weight: bold; padding: 0.14cm 0.1cm; }
+.sl-items td { font-size: {{{font_size}}}; padding: 0.15cm 0.1cm; vertical-align: middle; }
+.sl-items .title { font-weight: bold; }
+.sl-items .show_product_image img { width: 1.1cm; height: auto; }
+.k { color: #8a8f98; }
+.sl-items tr.sl-total td { vertical-align: top; }
+.puiw-total-line { margin: 0; padding: 0.04cm 0; font-size: 8.5pt; line-height: 1.45; }
+.puiw-total-order_total { font-size: 11pt; font-weight: bold; padding-top: 0.1cm; }
+#show_order_notes { width: 100%; margin-top: 0.3cm; border-collapse: collapse; }
+#show_order_notes td { font-size: 8.5pt; line-height: 1.6; padding: 0.15cm 0.2cm; vertical-align: top; }
+
+.sl-headbar { width: 100%; }
+.sl-headbar td { font-size: 7pt; color: #9aa0a8; }
+.sl-headbar-b { text-align: left; }
+.sl-sheet { padding-top: 0.3cm; }
+.sl-top { width: 100%; }
+.sl-top-a { vertical-align: bottom; }
+.sl-top-b { vertical-align: top; text-align: left; width: 7cm; }
+.sl-kind { font-size: 7.5pt; letter-spacing: 1pt; color: #8a8f98; text-transform: uppercase; }
+.sl-big { font-size: 34pt; font-weight: bold; line-height: 1; color: #111; }
+.sl-store { font-size: 10pt; font-weight: bold; padding: 0.08cm 0; }
+.ln { font-size: 8pt; line-height: 1.6; }
+.sl-rule { height: 0; border-top: 3px solid #111; margin: 0.35cm 0 0.3cm; }
+.sl-cols { width: 100%; margin-bottom: 0.45cm; }
+.sl-col { width: 36%; vertical-align: top; padding-left: 0.3cm; }
+.sl-col-code { width: 28%; text-align: left; }
+.sl-name { font-size: 11pt; font-weight: bold; padding: 0.06cm 0; }
+.sl-barcode { width: 4.2cm; height: 0.8cm; }
+.sl-qr img { width: 1.8cm; height: 1.8cm; }
+.sl-items th { color: #111; border-bottom: 2px solid #111; text-align: right; }
+.sl-items td { border-bottom: 1px solid #e3e5e8; }
+.sl-items tr.sl-total td { border-top: 3px solid #111; border-bottom: 0; font-size: 12pt; font-weight: bold; padding-top: 0.25cm; }

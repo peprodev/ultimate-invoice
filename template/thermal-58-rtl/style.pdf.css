@@ -1,0 +1,40 @@
+.th-head { height: 0; }
+.th-sheet { width: 100%; }
+.th-logo { text-align: center; padding-bottom: 0.08cm; }
+.th-store { text-align: center; font-weight: bold; font-size: 7.5pt; }
+.th-store-line { text-align: center; font-size: 7pt; line-height: 1.4; }
+.th-rule { border-bottom: 1px dashed #000; height: 1px; margin: 0.12cm 0; }
+.th-kind { text-align: center; font-size: 7pt; letter-spacing: 1pt; }
+.th-no { text-align: center; font-weight: bold; font-size: 7.5pt; padding-bottom: 0.1cm; }
+
+.th-meta { width: 100%; }
+.th-meta td { font-size: 7pt; line-height: 1.5; padding: 0; }
+.th-k { color: #000; }
+.th-v { text-align: left; font-weight: bold; }
+
+/* the engine always renders eleven columns, so the cells are made into lines */
+.th-items { width: 100%; border-collapse: collapse; }
+.th-items th { font-size: 6pt; font-weight: normal; border-bottom: 1px solid #000; padding: 0.04cm 0.02cm; }
+.th-items td { border: 0; padding: 0.06cm 0.02cm; font-size: 7pt; line-height: 1.35; vertical-align: top; }
+/* mPDF keeps every cell of a table, so the ones a receipt does not need are
+   squeezed to nothing rather than hidden */
+.th-items .show_product_image { width: 0.01cm; padding: 0; }
+.th-items .show_product_image img { width: 0.01cm; height: 0.01cm; }
+.th-items .show_product_image div { width: 0.01cm; }
+/* font-size: 0 here divides by zero inside mPDF's RTL text shaping, so the
+   column is hidden with visibility instead */
+.th-items .show_product_sku,
+.th-items .show_product_weight,
+.th-items .show_product_dimensions { width: 0.01cm; padding: 0; visibility: hidden; }
+.th-items .show_product_n { width: 0.35cm; padding: 0; }
+.th-items .show_product_title_description { font-weight: bold; }
+.th-items .show_discount_precent { width: 0.9cm; }
+.th-items .show_product_total_price { text-align: left; font-weight: bold; }
+.th-items tr.th-total td { border-top: 1px dashed #000; font-weight: bold;
+  font-size: 7.5pt; padding-top: 0.12cm; }
+
+.th-codes { text-align: center; padding-top: 0.1cm; }
+.th-barcode { width: 4cm; height: 0.8cm; }
+.th-code-value { font-size: 7pt; }
+.th-qr img { width: 1.8cm; height: 1.8cm; margin-top: 0.1cm; }
+.th-thanks { text-align: center; font-size: 7pt; padding-top: 0.15cm; }

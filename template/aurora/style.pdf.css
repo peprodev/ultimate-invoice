@@ -1,0 +1,41 @@
+
+.au-items { width: 100%; border-collapse: collapse; }
+.au-items th { font-size: 8pt; font-weight: bold; padding: 0.14cm 0.1cm; }
+.au-items td { font-size: {{{font_size}}}; padding: 0.15cm 0.1cm; vertical-align: middle; }
+.au-items .title { font-weight: bold; }
+.au-items .show_product_image img { width: 1.1cm; height: auto; }
+.k { color: #8a8f98; }
+.au-items tr.au-total td { vertical-align: top; }
+.puiw-total-line { margin: 0; padding: 0.04cm 0; font-size: 8.5pt; line-height: 1.45; }
+.puiw-total-order_total { font-size: 11pt; font-weight: bold; padding-top: 0.1cm; }
+#show_order_notes { width: 100%; margin-top: 0.3cm; border-collapse: collapse; }
+#show_order_notes td { font-size: 8.5pt; line-height: 1.6; padding: 0.15cm 0.2cm; vertical-align: top; }
+
+.au-headbar { width: 100%; }
+.au-headbar td { font-size: 7.5pt; color: #8a8f98; }
+.au-headbar-b { text-align: right; }
+.au-band { width: 100%; background: {{{theme_color}}}; }
+.au-band td { padding: 0.45cm 0.5cm; vertical-align: middle; color: #14171c; }
+.au-band-store { font-size: 12pt; font-weight: bold; color: #14171c; padding-top: 0.1cm; }
+.au-band-title { text-align: right; }
+.au-title { font-size: 24pt; font-weight: bold; color: #14171c; line-height: 1.1; }
+.au-no { font-size: 9pt; color: #14171c; }
+.au-date { font-size: 8.5pt; color: #14171c; }
+.au-cards { width: 100%; margin: 0.4cm 0 0.3cm; }
+.au-card { width: 32%; vertical-align: top; padding: 0.3cm; background: {{{theme_color3}}}; }
+.au-gap { width: 2%; }
+.au-card-codes { text-align: center; }
+.au-kind { font-size: 7pt; font-weight: bold; color: {{{theme_color}}}; padding-bottom: 0.08cm; }
+.au-name { font-size: 10.5pt; font-weight: bold; padding-bottom: 0.08cm; }
+.ln { font-size: 8pt; line-height: 1.55; }
+.au-barcode { width: 4.4cm; height: 0.85cm; }
+.au-code-v { font-size: 7.5pt; padding-bottom: 0.15cm; }
+.au-qr img { width: 2cm; height: 2cm; }
+.au-meta { width: 100%; margin-bottom: 0.3cm; border-top: 1px solid #e6e8eb; border-bottom: 1px solid #e6e8eb; }
+.au-m { width: 25%; padding: 0.12cm 0.15cm; font-size: 8.5pt; }
+.au-m .k { display: block; font-size: 7pt; }
+.au-items th { background: {{{theme_color}}}; color: #14171c; }
+.au-items tbody tr:nth-child(even) td { background: {{{theme_color3}}}; }
+.au-items td { border-bottom: 1px solid #eef0f2; }
+.au-items tr.au-total td { background: {{{theme_color2}}}; font-weight: bold; font-size: 10pt; border: 0; }
+.au-thanks { margin-top: 0.1cm; padding: 0.15cm; text-align: center; font-size: 9pt; color: {{{theme_color}}}; border-top: 2px solid {{{theme_color}}}; }
