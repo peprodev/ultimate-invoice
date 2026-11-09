@@ -4,8 +4,8 @@ Donate link: https://peprodev.com/donate
 Tags: woocommerce invoice, pdf invoice, persian, WooCommerce
 Requires at least: 5.0
 Tested up to: 7.1
-Version: 3.2.48
-Stable tag: 3.2.48
+Version: 3.2.49
+Stable tag: 3.2.49
 Requires PHP: 7.4
 WC requires at least: 5.0
 WC tested up to: 11.1
@@ -192,6 +192,9 @@ Service terms: https://peprodev.com/terms  Privacy: https://peprodev.com/privacy
 Thank you for using and supporting this free plugin! If you have any questions or need assistance, please ask on the WordPress support forum. We're here to help!
 
 For full changelog please view [Github Repo.](https://github.com/peprodev/ultimate-invoice)
+
+= v3.2.49 | 2026-11-09 | 1405-08-18 =
+- Fixed: picking a colour scheme (order box and Theming) filled in the hex values but left the colour swatches showing the old colours
 
 = v3.2.48 | 2026-11-09 | 1405-08-18 =
 - Security: images in a PDF are fetched with TLS verification and WordPress's safe request (no private, loopback or cloud-metadata addresses, on any redirect), capped at 8 MB

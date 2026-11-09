@@ -9,8 +9,8 @@ Developer: amirhp.com
 Author URI: https://peprodev.com/
 Developer URI: https://amirhp.com
 Plugin URI: https://peprodev.com/pepro-woocommerce-ultimate-invoice/
-Version: 3.2.48
-Stable tag: 3.2.48
+Version: 3.2.49
+Stable tag: 3.2.49
 Tested up to: 7.1
 WC tested up to: 11.2
 Requires at least: 5.0
@@ -60,7 +60,7 @@ if (!class_exists("PeproUltimateInvoice")) {
    */
   class PeproUltimateInvoice {
     public $td      = "pepro-ultimate-invoice";
-    public $version = "3.2.48";
+    public $version = "3.2.49";
     public $title   = "Ultimate Invoice";
     public $db_slug = "pepro-ultimate-invoice";
     public $plugin_dir;

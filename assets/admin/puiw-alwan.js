@@ -135,6 +135,9 @@
     };
     input.addEventListener("change", sync);
     input.addEventListener("input", sync);
+    // jQuery's .trigger("change") never reaches native listeners, and the scheme
+    // dropdowns set the colours that way
+    if (window.jQuery) { window.jQuery(input).on("change.puiwalwan input.puiwalwan", sync); }
   }
 
   function scan(root) {
