@@ -1872,6 +1872,9 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
      */
     protected function localize_image($src) {
       $path = $this->resolve_local_image_path($src);
+      if ($path && !$this->is_safe_local_image($path)) {
+        return false;
+      }
       if (!$path) {
         $path = $this->download_image($src);
       }
@@ -1896,6 +1899,28 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
       $mimes = array("jpg" => "image/jpeg", "jpeg" => "image/jpeg", "png" => "image/png", "gif" => "image/gif");
       $mime  = isset($mimes[$ext]) ? $mimes[$ext] : "image/png";
       return "data:$mime;base64," . base64_encode($data);
+    }
+    /**
+     * a local file is embedded only when it is an image inside this install: a path with
+     * ../ in an image url must not turn wp-config.php or anything else into a PDF
+     *
+     * @method is_safe_local_image
+     * @param  string $path
+     * @return bool
+     */
+    protected function is_safe_local_image($path) {
+      $real = realpath($path);
+      if (!$real || !in_array(strtolower(pathinfo($real, PATHINFO_EXTENSION)), array("jpg", "jpeg", "png", "gif", "webp", "avif", "svg"), true)) {
+        return false;
+      }
+      $uploads = wp_upload_dir();
+      foreach (array(ABSPATH, WP_CONTENT_DIR, $uploads["basedir"]) as $root) {
+        $root = realpath($root);
+        if ($root && 0 === strpos($real, trailingslashit($root))) {
+          return true;
+        }
+      }
+      return false;
     }
     /**
      * translate a site url into a filesystem path when the file belongs to this install
@@ -1949,7 +1974,10 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
       if ($hit) {
         return $hit[0];
       }
-      $response = wp_remote_get($src, array("timeout" => 10, "sslverify" => false, "redirection" => 3));
+      // wp_safe_remote_get refuses private and loopback addresses on every redirect hop,
+      // so an image url in an order cannot be used to reach the shop's internal network;
+      // the shop's own images never get here, they are read from disk above
+      $response = wp_safe_remote_get($src, array("timeout" => 10, "redirection" => 3, "limit_response_size" => 8 * MB_IN_BYTES));
       if (is_wp_error($response) || 200 !== (int) wp_remote_retrieve_response_code($response)) {
         return false;
       }
@@ -2760,27 +2788,6 @@ if (!class_exists("PeproUltimateInvoice_Print")) {
     }
     protected function CheckPDFRequirementsHTML($print = false) {
       return $this->CheckPDFRequirements($print, true);
-    }
-    protected function puiw__download_file($url) {
-      // Initialize the cURL session
-      $ch = curl_init($url);
-      // Use basename() function to return
-      // the base name of file
-      $file_name = basename($url);
-      // Save file into file location
-      $save_file_loc = plugin_dir_path(__FILE__) . "logo.png";
-      // Open file
-      $fp = fopen($save_file_loc, 'wb');
-      // It set an option for a cURL transfer
-      curl_setopt($ch, CURLOPT_FILE, $fp);
-      curl_setopt($ch, CURLOPT_HEADER, 0);
-      // Perform a cURL session
-      curl_exec($ch);
-      // Closes a cURL session and frees all resources
-      curl_close($ch);
-      // Close file
-      fclose($fp);
-      return $save_file_loc;
     }
     protected function get_pdf_style($order_id = 0, $order = false) {
       // the markup is built from $opt["template"], so the stylesheet has to come from the

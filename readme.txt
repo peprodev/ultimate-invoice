@@ -4,8 +4,8 @@ Donate link: https://peprodev.com/donate
 Tags: woocommerce invoice, pdf invoice, persian, WooCommerce
 Requires at least: 5.0
 Tested up to: 7.1
-Version: 3.2.47
-Stable tag: 3.2.47
+Version: 3.2.48
+Stable tag: 3.2.48
 Requires PHP: 7.4
 WC requires at least: 5.0
 WC tested up to: 11.1
@@ -192,6 +192,11 @@ Service terms: https://peprodev.com/terms  Privacy: https://peprodev.com/privacy
 Thank you for using and supporting this free plugin! If you have any questions or need assistance, please ask on the WordPress support forum. We're here to help!
 
 For full changelog please view [Github Repo.](https://github.com/peprodev/ultimate-invoice)
+
+= v3.2.48 | 2026-11-09 | 1405-08-18 =
+- Security: images in a PDF are fetched with TLS verification and WordPress's safe request (no private, loopback or cloud-metadata addresses, on any redirect), capped at 8 MB
+- Security: a local image path is embedded only when it is an image file inside the WordPress install, so an image URL with ../ cannot pull other files into a PDF
+- Removed an unused raw cURL download helper
 
 = v3.2.47 | 2026-11-09 | 1405-08-18 =
 - New: "Invoice language" can force one language on every invoice, slip, receipt and email printout: Automatic, the order's language, or any language installed in WordPress. Forcing a language now switches even when Polylang or WPML does not list it
