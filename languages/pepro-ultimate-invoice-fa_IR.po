@@ -5486,6 +5486,121 @@ msgctxt "wc-setting"
 msgid "Normal, as the template is written"
 msgstr "عادی، همان جهتی که قالب دارد"
 
+msgctxt "snapshots"
+msgid "Before the update"
+msgstr "پیش از به‌روزرسانی"
+
+msgctxt "snapshots"
+msgid "Saved by hand"
+msgstr "ذخیره‌ی دستی"
+
+msgctxt "snapshots"
+msgid "Before reset to defaults"
+msgstr "پیش از بازگشت به پیش‌فرض"
+
+msgctxt "snapshots"
+msgid "Before clearing all settings"
+msgstr "پیش از پاک کردن همه‌ی تنظیمات"
+
+msgctxt "snapshots"
+msgid "Before filling empty settings"
+msgstr "پیش از پر کردن تنظیمات خالی"
+
+msgctxt "snapshots"
+msgid "Before an import"
+msgstr "پیش از درون‌ریزی"
+
+msgctxt "snapshots"
+msgid "Before a restore"
+msgstr "پیش از بازگردانی"
+
+msgctxt "snapshots"
+msgid "Saved copies"
+msgstr "نسخه‌های ذخیره‌شده"
+
+msgctxt "snapshots"
+msgid ""
+"A copy of every setting is saved before the plugin is updated and before an "
+"import, reset or restore. Download one to keep it, or restore it if you go "
+"back to an older version."
+msgstr ""
+"پیش از هر به‌روزرسانی افزونه و پیش از هر درون‌ریزی، بازنشانی یا بازگردانی، "
+"یک نسخه از همه‌ی تنظیمات ذخیره می‌شود. می‌توانید آن را دانلود و نگه دارید، "
+"یا اگر به نسخه‌ی قدیمی‌تر افزونه برگشتید، آن را بازگردانی کنید."
+
+msgctxt "snapshots"
+msgid ""
+"No copies yet. The first one is saved on the next update, or now with the "
+"button below."
+msgstr ""
+"هنوز نسخه‌ای ذخیره نشده است. اولین نسخه در به‌روزرسانی بعدی ذخیره می‌شود، یا"
+" همین حالا با دکمه‌ی زیر."
+
+msgctxt "snapshots"
+msgid "Saved"
+msgstr "زمان ذخیره"
+
+msgctxt "snapshots"
+msgid "Version"
+msgstr "نسخه"
+
+msgctxt "snapshots"
+msgid "Why"
+msgstr "علت"
+
+msgctxt "snapshots"
+msgid "Actions"
+msgstr "عملیات"
+
+msgctxt "snapshots"
+msgid "Download"
+msgstr "دانلود"
+
+msgctxt "snapshots"
+msgid "Restore"
+msgstr "بازگردانی"
+
+msgctxt "snapshots"
+msgid "Save a copy now"
+msgstr "ذخیره‌ی یک نسخه"
+
+msgctxt "snapshots"
+msgid "Restore this copy?"
+msgstr "این نسخه بازگردانی شود؟"
+
+msgctxt "snapshots"
+msgid ""
+"Every setting goes back to the values in this copy. The current settings are"
+" saved as a new copy first, so you can undo it."
+msgstr ""
+"همه‌ی تنظیمات به مقدارهای این نسخه برمی‌گردد. تنظیمات فعلی پیش از آن به‌صورت"
+" یک نسخه‌ی جدید ذخیره می‌شود تا بتوانید برگردید."
+
+msgctxt "snapshots"
+msgid "Delete this copy? It cannot be brought back."
+msgstr "این نسخه حذف شود؟ دیگر قابل بازگشت نیست."
+
+msgid ""
+"The backup could not be written. Check that the uploads folder is writable."
+msgstr "نسخه‌ی پشتیبان ذخیره نشد. دسترسی نوشتن پوشه‌ی uploads را بررسی کنید."
+
+msgid "A copy of the current settings was saved."
+msgstr "یک نسخه از تنظیمات فعلی ذخیره شد."
+
+msgid "This backup could not be read."
+msgstr "این نسخه‌ی پشتیبان خوانده نشد."
+
+msgid "This backup no longer exists."
+msgstr "این نسخه‌ی پشتیبان دیگر وجود ندارد."
+
+msgid "Deleted."
+msgstr "حذف شد."
+
+msgid "%d setting was restored."
+msgid_plural "%d settings were restored."
+msgstr[0] "%d تنظیم بازگردانی شد."
+msgstr[1] "%d تنظیم بازگردانی شد."
+
 #~ msgctxt "wc-setting"
 #~ msgid "Inventory Report Custom CSS"
 #~ msgstr "کد اختصاصی CSS گزارشات انبارداری"

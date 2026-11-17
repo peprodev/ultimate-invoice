@@ -4,11 +4,11 @@ Donate link: https://peprodev.com/donate
 Tags: woocommerce invoice, pdf invoice, persian, WooCommerce
 Requires at least: 5.0
 Tested up to: 7.1
-Version: 3.2.49
-Stable tag: 3.2.49
+Version: 3.2.50
+Stable tag: 3.2.50
 Requires PHP: 7.4
 WC requires at least: 5.0
-WC tested up to: 11.1
+WC tested up to: 11.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -192,6 +192,11 @@ Service terms: https://peprodev.com/terms  Privacy: https://peprodev.com/privacy
 Thank you for using and supporting this free plugin! If you have any questions or need assistance, please ask on the WordPress support forum. We're here to help!
 
 For full changelog please view [Github Repo.](https://github.com/peprodev/ultimate-invoice)
+
+= v3.2.50 | 2026-11-17 | 1405-08-26 =
+- New: Migrate/Backup keeps saved copies of every setting, taken automatically before each plugin update and before an import, reset or restore, plus a button to save one by hand
+- New: each copy can be downloaded as JSON (readable by Import JSON of older versions), restored in one click, or deleted
+- Copies are kept in uploads/pepro-ultimate-invoice/settings-backups (the plugin folder is replaced on every update), blocked from direct access; the newest 15 are kept
 
 = v3.2.49 | 2026-11-09 | 1405-08-18 =
 - Fixed: picking a colour scheme (order box and Theming) filled in the hex values but left the colour swatches showing the old colours

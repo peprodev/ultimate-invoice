@@ -9,8 +9,8 @@ Developer: amirhp.com
 Author URI: https://peprodev.com/
 Developer URI: https://amirhp.com
 Plugin URI: https://peprodev.com/pepro-woocommerce-ultimate-invoice/
-Version: 3.2.49
-Stable tag: 3.2.49
+Version: 3.2.50
+Stable tag: 3.2.50
 Tested up to: 7.1
 WC tested up to: 11.2
 Requires at least: 5.0
@@ -60,7 +60,7 @@ if (!class_exists("PeproUltimateInvoice")) {
    */
   class PeproUltimateInvoice {
     public $td      = "pepro-ultimate-invoice";
-    public $version = "3.2.49";
+    public $version = "3.2.50";
     public $title   = "Ultimate Invoice";
     public $db_slug = "pepro-ultimate-invoice";
     public $plugin_dir;
@@ -145,6 +145,7 @@ if (!class_exists("PeproUltimateInvoice")) {
         include_once $this->plugin_dir . 'include/admin/class-themes.php';
         include_once $this->plugin_dir . 'include/admin/class-i18n.php';
         include_once $this->plugin_dir . 'include/admin/class-setup.php';
+include_once $this->plugin_dir . 'include/admin/class-snapshots.php';
 
         // per language invoice texts, template and settings
         $this->i18n  = new \peproulitmateinvoice\PeproUltimateInvoice_I18n();
@@ -944,6 +945,7 @@ if (!class_exists("PeproUltimateInvoice")) {
       add_filter("plugin_action_links", array($this, "plugin_action_links"), 10, 2);
       add_action("admin_menu", array($this, "admin_menu"), 1000);
       add_action("admin_init", array($this, "admin_init"));
+      \peproulitmateinvoice\PeproUltimateInvoice_Snapshots::init();
       add_action("wp_ajax_nopriv_puiw_{$this->td}", array($this, "handel_ajax_req"));
       add_action("wp_ajax_puiw_{$this->td}", array($this, "handel_ajax_req"));
       add_action("wp_ajax_puiw_setup_step", array("\\peproulitmateinvoice\\PeproUltimateInvoice_Setup", "ajax_save_step"));
@@ -2176,6 +2178,10 @@ if (!class_exists("PeproUltimateInvoice")) {
         return;
       }
       $from = "" !== (string) $stored ? (string) $stored : (string) get_option("puiw_upgraded_from", "");
+      // the options still hold what the old version saved; keep them before anything converts them
+      if ("" !== $from) {
+        \peproulitmateinvoice\PeproUltimateInvoice_Snapshots::create("update", $from);
+      }
       \peproulitmateinvoice\PeproUltimateInvoice_Setup::upgrade($from, $this->version);
       delete_option("puiw_upgraded_from");
       $this->maybe_switch_to_rtl_template();
@@ -2766,6 +2772,9 @@ if (!class_exists("PeproUltimateInvoice")) {
           "settings-reset"        => "manage_options",
           "settings-clear"        => "manage_options",
           "settings-fill"         => "manage_options",
+          "snapshot-create"       => "manage_woocommerce",
+          "snapshot-restore"      => "manage_options",
+          "snapshot-delete"       => "manage_woocommerce",
           "send-mail-html"        => "manage_woocommerce",
           "save-resid"            => "edit_shop_orders",
           "save-settings"         => "manage_woocommerce",
@@ -2980,6 +2989,7 @@ if (!class_exists("PeproUltimateInvoice")) {
             // the danger zone runs here and answers in place, so the page never has to
             // leave for a bare wp_die screen in another tab
             $mode  = array("settings-reset" => "RESET", "settings-clear" => "CLEAR", "settings-fill" => "SET")[$wparam];
+            \peproulitmateinvoice\PeproUltimateInvoice_Snapshots::create(strtolower(substr($wparam, 9)));
             $count = (int) $this->change_default_settings($mode);
             delete_transient("puiw_dashboard_stats_v2");
             wp_send_json_success(array("msg" => sprintf(
@@ -2988,10 +2998,34 @@ if (!class_exists("PeproUltimateInvoice")) {
               $count
             ), "count" => $count));
             break;
+          case "snapshot-create":
+            if (!\peproulitmateinvoice\PeproUltimateInvoice_Snapshots::create("manual")) {
+              wp_send_json_error(array("msg" => __("The backup could not be written. Check that the uploads folder is writable.", "pepro-ultimate-invoice")));
+            }
+            wp_send_json_success(array("msg" => __("A copy of the current settings was saved.", "pepro-ultimate-invoice")));
+            break;
+          case "snapshot-restore":
+            $count = \peproulitmateinvoice\PeproUltimateInvoice_Snapshots::restore(isset($_POST["file"]) ? sanitize_file_name(wp_unslash($_POST["file"])) : "");
+            if (false === $count) {
+              wp_send_json_error(array("msg" => __("This backup could not be read.", "pepro-ultimate-invoice")));
+            }
+            wp_send_json_success(array("msg" => sprintf(
+              /* translators: %d: number of settings restored */
+              _n("%d setting was restored.", "%d settings were restored.", $count, "pepro-ultimate-invoice"),
+              $count
+            )));
+            break;
+          case "snapshot-delete":
+            if (!\peproulitmateinvoice\PeproUltimateInvoice_Snapshots::delete(isset($_POST["file"]) ? sanitize_file_name(wp_unslash($_POST["file"])) : "")) {
+              wp_send_json_error(array("msg" => __("This backup no longer exists.", "pepro-ultimate-invoice")));
+            }
+            wp_send_json_success(array("msg" => __("Deleted.", "pepro-ultimate-invoice")));
+            break;
           case "import_options":
             $wc_opt       = array();
             $wc_opt_count = 0;
             if (!empty($_POST['lparam'])) {
+              \peproulitmateinvoice\PeproUltimateInvoice_Snapshots::create("import");
               foreach ((array) wp_unslash($_POST['lparam']) as $key => $value) {
                 // the multiselects store arrays, and sanitize_text_field() turns an array
                 // into an empty string, so a straight import used to blank every one of them

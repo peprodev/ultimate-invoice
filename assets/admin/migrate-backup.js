@@ -131,6 +131,37 @@
     });
   });
 
+  /* saved copies: take one now, restore one, delete one */
+  $(document).on("click", ".snapshot-create", function (e) {
+    e.preventDefault();
+    var $btn = $(this).prop("disabled", true);
+    request("snapshot-create").done(function (r) {
+      if (r && r.success) { done(r.data.msg); } else { $btn.prop("disabled", false); fail(r && r.data && r.data.msg); }
+    }).fail(function () { $btn.prop("disabled", false); fail(); });
+  });
+
+  $(document).on("click", ".snapshot-restore, .snapshot-delete", function (e) {
+    e.preventDefault();
+    var restore = $(this).hasClass("snapshot-restore");
+    var file = $(this).closest("tr").data("file");
+    var jc = $.confirm({
+      title: restore ? t.restoreTtl : m.delete,
+      content: restore ? t.restoreAsk : t.deleteAsk,
+      type: restore ? "orange" : "red",
+      buttons: {
+        no: { text: t.txtNop, keys: ["esc"] },
+        yes: { text: t.txtYes, action: function () {
+          jc.showLoading();
+          request(restore ? "snapshot-restore" : "snapshot-delete", { file: file }).done(function (r) {
+            jc.close();
+            if (r && r.success) { done(r.data.msg); } else { fail(r && r.data && r.data.msg); }
+          }).fail(function () { jc.hideLoading(); fail(); });
+          return false;
+        } },
+      },
+    });
+  });
+
   function done(text) {
     // nothing here would know the new values without a fresh page, and the save bar
     // must not offer to save the stale ones back

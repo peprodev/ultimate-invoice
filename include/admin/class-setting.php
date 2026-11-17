@@ -3650,6 +3650,7 @@ add_filter("woocommerce_get_settings_pages", function ($pages) {
                   </p>
                 </div>
               </div>
+              <?php $this->print_settings_snapshots(); ?>
               <div class="puiw-card is-danger">
                 <h3><?php echo \peproulitmateinvoice\PeproUltimateInvoice_Icons::get("warning-circle"); ?><?php echo _x("Danger Zone!", "wc-setting", "pepro-ultimate-invoice"); ?></h3>
                 <p><?php echo _x("Do not use any of buttons below without knowing what your are doing!", "wc-setting", "pepro-ultimate-invoice"); ?></p>
@@ -3664,6 +3665,57 @@ add_filter("woocommerce_get_settings_pages", function ($pages) {
             $html_output = ob_get_contents();
             ob_end_clean();
             echo apply_filters("puiw_section_migrate_backup_html", $html_output);
+          }
+          /**
+           * the copies kept before updates and before the buttons on this panel overwrite anything
+           *
+           * @method print_settings_snapshots
+           * @since 3.2.50
+           */
+          public function print_settings_snapshots() {
+            $snapshots = \peproulitmateinvoice\PeproUltimateInvoice_Snapshots::all();
+            $format    = get_option("date_format") . " " . get_option("time_format");
+            ?>
+            <div class="puiw-card puiw-snapshots">
+              <h3><?php echo \peproulitmateinvoice\PeproUltimateInvoice_Icons::get("arrow-counter-clockwise"); ?><?php echo esc_html_x("Saved copies", "snapshots", "pepro-ultimate-invoice"); ?></h3>
+              <p><?php echo esc_html_x("A copy of every setting is saved before the plugin is updated and before an import, reset or restore. Download one to keep it, or restore it if you go back to an older version.", "snapshots", "pepro-ultimate-invoice"); ?></p>
+              <?php if (empty($snapshots)) : ?>
+                <p class="puiw-snapshots-empty"><?php echo esc_html_x("No copies yet. The first one is saved on the next update, or now with the button below.", "snapshots", "pepro-ultimate-invoice"); ?></p>
+              <?php else : ?>
+                <div class="puiw-snapshots-wrap">
+                  <table class="puiw-snapshots-table">
+                    <thead>
+                      <tr>
+                        <th><?php echo esc_html_x("Saved", "snapshots", "pepro-ultimate-invoice"); ?></th>
+                        <th><?php echo esc_html_x("Version", "snapshots", "pepro-ultimate-invoice"); ?></th>
+                        <th><?php echo esc_html_x("Why", "snapshots", "pepro-ultimate-invoice"); ?></th>
+                        <th><span class="screen-reader-text"><?php echo esc_html_x("Actions", "snapshots", "pepro-ultimate-invoice"); ?></span></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <?php foreach ($snapshots as $snap) : ?>
+                        <tr data-file="<?php echo esc_attr($snap["file"]); ?>">
+                          <td><?php echo esc_html(function_exists("wp_date") ? wp_date($format, $snap["time"]) : date_i18n($format, $snap["time"] + (int) (get_option("gmt_offset") * HOUR_IN_SECONDS))); ?></td>
+                          <td dir="ltr"><?php echo esc_html($snap["version"]); ?></td>
+                          <td><?php echo esc_html(\peproulitmateinvoice\PeproUltimateInvoice_Snapshots::reason_label($snap["reason"])); ?></td>
+                          <td class="puiw-snapshots-actions">
+                            <a class="button button-small" href="<?php echo esc_url(\peproulitmateinvoice\PeproUltimateInvoice_Snapshots::download_url($snap["file"])); ?>"><?php echo esc_html_x("Download", "snapshots", "pepro-ultimate-invoice"); ?></a>
+                            <?php if (current_user_can("manage_options")) : ?>
+                              <button type="button" class="button button-small snapshot-restore"><?php echo esc_html_x("Restore", "snapshots", "pepro-ultimate-invoice"); ?></button>
+                            <?php endif; ?>
+                            <button type="button" class="button button-small puiw-snapshot-delete snapshot-delete" aria-label="<?php echo esc_attr__("Delete", "pepro-ultimate-invoice"); ?>"><?php echo \peproulitmateinvoice\PeproUltimateInvoice_Icons::get("trash"); ?></button>
+                          </td>
+                        </tr>
+                      <?php endforeach; ?>
+                    </tbody>
+                  </table>
+                </div>
+              <?php endif; ?>
+              <p class="puiw-card-actions">
+                <button type="button" class="button button-secondary snapshot-create"><?php echo esc_html_x("Save a copy now", "snapshots", "pepro-ultimate-invoice"); ?></button>
+              </p>
+            </div>
+            <?php
           }
           public function save() {
             $old_main = untrailingslashit((string) get_option("puiw_template", ""));
@@ -3887,6 +3939,9 @@ add_filter("woocommerce_get_settings_pages", function ($pages) {
               "downloadTxt"  => _x("Download", "wc-setting-js", "pepro-ultimate-invoice"),
               "fromFileTxt"  => _x("Or pick a .json file", "wc-setting-js", "pepro-ultimate-invoice"),
               "reloadingTxt" => _x("Reloading the settings…", "wc-setting-js", "pepro-ultimate-invoice"),
+              "restoreTtl"   => _x("Restore this copy?", "snapshots", "pepro-ultimate-invoice"),
+              "restoreAsk"   => _x("Every setting goes back to the values in this copy. The current settings are saved as a new copy first, so you can undo it.", "snapshots", "pepro-ultimate-invoice"),
+              "deleteAsk"    => _x("Delete this copy? It cannot be brought back.", "snapshots", "pepro-ultimate-invoice"),
               "UnknownErr"   => _x("The request failed. Reload the page and try again.", "wc-setting-js", "pepro-ultimate-invoice"),
               "errorTxt"   => _x("Error", "wc-setting-js", "pepro-ultimate-invoice"),
               "cancelTtl"  => _x("Canceled", "wc-setting-js", "pepro-ultimate-invoice"),
